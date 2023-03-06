@@ -1,0 +1,1 @@
+from loc_flow_isp.Utils.class_decorators import Singleton

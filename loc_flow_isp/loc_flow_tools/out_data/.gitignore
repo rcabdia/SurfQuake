@@ -1,0 +1,3 @@
+# ignore files generate in this folder
+*.txt
+*.dat

@@ -1,0 +1,5 @@
+        self._real_d: Optional[RealD] = None
+        self._real_r: Optional[RealR] = RealR(2.5, 50, 0.2, 2, 30)
+        self._real_g: Optional[RealG] = RealG(5, 50, 0.1, 2)
+        self._real_v: Optional[RealV] = RealV(6.2, 3.3)
+        self._real_s: Optional[RealS] = RealS(4, 2, 6, 3, 5, 0, 2, 0.01, 6, 10)
