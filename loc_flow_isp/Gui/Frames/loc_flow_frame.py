@@ -1,6 +1,6 @@
 import os
 import pickle
-from loc_flow_isp import ROOT_DIR, model_dir
+from loc_flow_isp import ROOT_DIR, model_dir, p_dir, station, ttime
 from loc_flow_isp.Gui.Frames.qt_components import MessageDialog
 from loc_flow_isp.Gui.Frames.uis_frames import UiLoc_Flow
 from PyQt5 import QtWidgets, QtGui, QtCore
@@ -8,6 +8,7 @@ from loc_flow_isp.Gui.Utils.pyqt_utils import BindPyqtObject
 from sys import platform
 from concurrent.futures.thread import ThreadPoolExecutor
 from loc_flow_isp.Utils.obspy_utils import MseedUtil
+from loc_flow_isp.loc_flow_tools.internal.real_manager import RealManager
 from loc_flow_isp.loc_flow_tools.phasenet.phasenet_handler import Util
 from loc_flow_isp.loc_flow_tools.phasenet.phasenet_handler import PhasenetISP
 
@@ -34,6 +35,7 @@ class LocFlow(pw.QMainWindow, UiLoc_Flow):
         self.saveBtn.clicked.connect(lambda: self.saveProject())
         self.regularBtn.clicked.connect(lambda: self.load_files_done())
         self.phasenetBtn.clicked.connect(self.run_phasenet)
+        self.realBtn.clicked.connect(self.run_real)
 
     # @pyc.Slot()
     # def _increase_progress(self):
@@ -186,4 +188,21 @@ class LocFlow(pw.QMainWindow, UiLoc_Flow):
         """ PHASENET OUTPUT TO REAL INPUT"""
         picks_ = Util.split_picks(picks)
         Util.convert2real(picks_)
+
+    def run_real(self):
+        """ REAL """
+        # TODO BUILD TTDB
+        real_handler = RealManager(pick_dir=p_dir, station_file=station, time_travel_table_file=ttime)
+        # real_handler.latitude_center = 36.19#36.1 #42.75
+
+        # print(real_handler.stations)
+
+        # for events_info in real_handler:
+        #    print(events_info)
+        #    print(events_info.events_date)
+
+        # real_handler.save()
+        # real_handler.compute_t_dist()
+
+        #convert.real2nll(realout, nllinput)
 
