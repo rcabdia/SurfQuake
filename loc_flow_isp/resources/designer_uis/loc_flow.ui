@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1276</width>
-    <height>672</height>
+    <height>721</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -135,24 +135,195 @@
        </item>
       </layout>
      </widget>
+     <widget class="QGroupBox" name="groupBox_9">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>360</y>
+        <width>657</width>
+        <height>83</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Metadata</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_8">
+       <item row="0" column="0">
+        <widget class="QPushButton" name="saveBtn_2">
+         <property name="toolTip">
+          <string>Save the Project either created from Individual files or Full Project</string>
+         </property>
+         <property name="text">
+          <string>Load Metadata</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="label_25">
+         <property name="text">
+          <string>Metadata Path</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QLineEdit" name="nameForm_2"/>
+       </item>
+      </layout>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab">
      <attribute name="title">
       <string>Params. Associator</string>
      </attribute>
-     <widget class="QGroupBox" name="groupBox">
+     <widget class="QGroupBox" name="groupBox_10">
       <property name="geometry">
        <rect>
         <x>300</x>
-        <y>70</y>
-        <width>571</width>
-        <height>401</height>
+        <y>20</y>
+        <width>651</width>
+        <height>171</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Geraphic Framework</string>
+      </property>
+      <widget class="QDoubleSpinBox" name="lat_refMaxSB">
+       <property name="geometry">
+        <rect>
+         <x>200</x>
+         <y>30</y>
+         <width>201</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <property name="prefix">
+        <string>Ref Latitude Max </string>
+       </property>
+       <property name="decimals">
+        <number>5</number>
+       </property>
+       <property name="maximum">
+        <double>90.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.050000000000000</double>
+       </property>
+      </widget>
+      <widget class="QDoubleSpinBox" name="lon_refMin">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>60</y>
+         <width>201</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <property name="prefix">
+        <string>Ref Longitude Min  </string>
+       </property>
+       <property name="decimals">
+        <number>5</number>
+       </property>
+       <property name="minimum">
+        <double>-180.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>180.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.050000000000000</double>
+       </property>
+      </widget>
+      <widget class="QDoubleSpinBox" name="lon_refMaxSB">
+       <property name="geometry">
+        <rect>
+         <x>400</x>
+         <y>60</y>
+         <width>211</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <property name="prefix">
+        <string>Ref Longitude Max </string>
+       </property>
+       <property name="decimals">
+        <number>5</number>
+       </property>
+       <property name="maximum">
+        <double>90.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.050000000000000</double>
+       </property>
+      </widget>
+      <widget class="QDoubleSpinBox" name="lat_refMinSB">
+       <property name="geometry">
+        <rect>
+         <x>200</x>
+         <y>90</y>
+         <width>201</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <property name="prefix">
+        <string>Ref Latitude Min </string>
+       </property>
+       <property name="decimals">
+        <number>5</number>
+       </property>
+       <property name="maximum">
+        <double>90.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.050000000000000</double>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="plot_grid_stationsBtn">
+       <property name="geometry">
+        <rect>
+         <x>200</x>
+         <y>130</y>
+         <width>191</width>
+         <height>32</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Set &amp; Plot Grid Stations</string>
+       </property>
+      </widget>
+      <widget class="QDoubleSpinBox" name="depthSB">
+       <property name="geometry">
+        <rect>
+         <x>407</x>
+         <y>100</y>
+         <width>201</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <property name="prefix">
+        <string>Depth (km) </string>
+       </property>
+       <property name="decimals">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <double>750.000000000000000</double>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox">
+      <property name="geometry">
+       <rect>
+        <x>290</x>
+        <y>210</y>
+        <width>661</width>
+        <height>411</height>
        </rect>
       </property>
       <property name="title">
        <string>Associator Parameters</string>
       </property>
-      <widget class="QDoubleSpinBox" name="doubleSpinBox">
+      <widget class="QDoubleSpinBox" name="gridSearchParamHorizontalRangeBtn">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -174,7 +345,7 @@
         <double>1.200000000000000</double>
        </property>
       </widget>
-      <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+      <widget class="QDoubleSpinBox" name="DepthSearchParamHorizontalRangeBtn">
        <property name="geometry">
         <rect>
          <x>20</x>
@@ -193,7 +364,7 @@
         <double>50.000000000000000</double>
        </property>
       </widget>
-      <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
+      <widget class="QDoubleSpinBox" name="HorizontalGridSizeBtn">
        <property name="geometry">
         <rect>
          <x>270</x>
@@ -215,7 +386,7 @@
         <double>0.150000000000000</double>
        </property>
       </widget>
-      <widget class="QDoubleSpinBox" name="doubleSpinBox_4">
+      <widget class="QDoubleSpinBox" name="DepthGridSizeBtn">
        <property name="geometry">
         <rect>
          <x>270</x>
@@ -234,7 +405,7 @@
         <double>10.000000000000000</double>
        </property>
       </widget>
-      <widget class="QDoubleSpinBox" name="doubleSpinBox_5">
+      <widget class="QDoubleSpinBox" name="EventTimeWindow">
        <property name="geometry">
         <rect>
          <x>150</x>
@@ -261,7 +432,7 @@
         <rect>
          <x>10</x>
          <y>140</y>
-         <width>551</width>
+         <width>591</width>
          <height>20</height>
         </rect>
        </property>
@@ -295,7 +466,7 @@
         <string>Travel Time Grid Search</string>
        </property>
       </widget>
-      <widget class="QDoubleSpinBox" name="doubleSpinBox_6">
+      <widget class="QDoubleSpinBox" name="TTDepthRangeBtn">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -317,7 +488,7 @@
         <double>50.000000000000000</double>
        </property>
       </widget>
-      <widget class="QDoubleSpinBox" name="doubleSpinBox_7">
+      <widget class="QDoubleSpinBox" name="TTDepthGridSizeBtn">
        <property name="geometry">
         <rect>
          <x>280</x>
@@ -339,7 +510,7 @@
         <double>2.000000000000000</double>
        </property>
       </widget>
-      <widget class="QDoubleSpinBox" name="doubleSpinBox_8">
+      <widget class="QDoubleSpinBox" name="TTHorizontalRangeBtn">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -364,7 +535,7 @@
         <double>5.000000000000000</double>
        </property>
       </widget>
-      <widget class="QDoubleSpinBox" name="doubleSpinBox_9">
+      <widget class="QDoubleSpinBox" name="TTHorizontalGridSizeBtn">
        <property name="geometry">
         <rect>
          <x>280</x>
@@ -394,7 +565,7 @@
         <rect>
          <x>17</x>
          <y>250</y>
-         <width>541</width>
+         <width>581</width>
          <height>21</height>
         </rect>
        </property>
@@ -415,7 +586,7 @@
         <string>Threshold Picks</string>
        </property>
       </widget>
-      <widget class="QSpinBox" name="spinBox_2">
+      <widget class="QSpinBox" name="ThresholdSwaveSB">
        <property name="geometry">
         <rect>
          <x>30</x>
@@ -434,7 +605,7 @@
         <number>2</number>
        </property>
       </widget>
-      <widget class="QSpinBox" name="spinBox_3">
+      <widget class="QSpinBox" name="ThresholdPwaveSB">
        <property name="geometry">
         <rect>
          <x>30</x>
@@ -453,11 +624,11 @@
         <number>4</number>
        </property>
       </widget>
-      <widget class="QSpinBox" name="spinBox_4">
+      <widget class="QSpinBox" name="number_stations_picksSB">
        <property name="geometry">
         <rect>
-         <x>280</x>
-         <y>300</y>
+         <x>270</x>
+         <y>310</y>
          <width>271</width>
          <height>24</height>
         </rect>
@@ -485,7 +656,7 @@
         <string>Run Auto Pick</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="pushButton_2">
+      <widget class="QPushButton" name="realBtn">
        <property name="geometry">
         <rect>
          <x>280</x>

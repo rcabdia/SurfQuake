@@ -6,13 +6,11 @@ import subprocess
 import time
 import warnings
 from typing import Optional, Union, List, Dict, Tuple
-
 from .. import real_bin, root_dir
 from .structs import RealD, RealR, RealG, RealV, RealS, Station, EventLocation, PhaseLocation, \
     EventsInfo
 from ..out_data import out_data_dir
 from ..utils import exc_cmd
-
 
 # Time file is based on https://github.com/Dal-mzhang/LOC-FLOW/blob/main/LOCFLOW-CookBook.pdf
 # reference for structs: https://github.com/Dal-mzhang/REAL/blob/master/REAL_userguide_July2021.pdf
@@ -23,7 +21,7 @@ class RealManager:
     OUT_DIR = out_data_dir
     DEGREE_TO_KM = 111.19
 
-    def __init__(self, pick_dir: str, station_file: str, time_travel_table_file: str):
+    def __init__(self, pick_dir: str, station_file: str, time_travel_table_file: str, **kwargs):
         """
         Handle configuration to run real
 
@@ -32,19 +30,25 @@ class RealManager:
         :param station_file: A valid station file
         :param time_travel_table_file: A valid time travel table file.
         """
+        self.__dict__.update(kwargs)
 
         self._root_pick_dir = pick_dir
         self._station_file = station_file
         self._time_travel_table_file = time_travel_table_file
-
         self._validate_paths()
 
-        # TODO check what data can be construct from station data.
         self._real_d: Optional[RealD] = None
-        self._real_r: Optional[RealR] = RealR(2.5, 50, 0.2, 2, 30)
-        self._real_g: Optional[RealG] = RealG(5, 50, 0.1, 2)
-        self._real_v: Optional[RealV] = RealV(6.2, 3.3)
-        self._real_s: Optional[RealS] = RealS(4, 2, 6, 3, 5, 0, 2, 0.01, 6, 10)
+
+        self._real_r: Optional[RealR] = RealR(self.gridSearchParamHorizontalRange, self.DepthSearchParamHorizontalRange,
+                                              self.HorizontalGridSize, self.DepthGridSize, self.EventTimeW)
+
+        self._real_g: Optional[RealG] = RealG(self.TTHorizontalRange, self.TTDepthRange, self.TTHorizontalGridSize,
+                                              self.TTDepthGridSize)
+
+        self._real_v: Optional[RealV] = RealV(6.2, 3.3) # Fixed Velocity Vp and Vs
+        sum_picks = self.ThresholdPwave+ self.ThresholdSwave
+        self._real_s: Optional[RealS] = RealS(self.ThresholdPwave, self.ThresholdSwave, sum_picks,
+                                              self.number_stations_picks, 5, 0, 2, 0.01, 6, 10)
 
         self._real_out_files_names = [
             "catalog_sel.txt",
