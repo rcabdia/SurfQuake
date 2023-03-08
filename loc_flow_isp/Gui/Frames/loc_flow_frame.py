@@ -236,20 +236,18 @@ class LocFlow(pw.QMainWindow, UiLoc_Flow):
             TTDepthGridSize=TTDepthGridSize, TTDepthRange=TTDepthRange, ThresholdPwave=ThresholdPwave,
                                    ThresholdSwave=ThresholdSwave, number_stations_picks=number_stations_picks)
 
+        self.latitude_center = 42.5
         real_handler.latitude_center = self.latitude_center
         print(real_handler.stations)
 
         ### Real Parameters ####
 
+        for events_info in real_handler:
+             print(events_info)
+             print(events_info.events_date)
 
-
-
-        # for events_info in real_handler:
-        #     print(events_info)
-        #     print(events_info.events_date)
-
-        # real_handler.save()
-        # real_handler.compute_t_dist()
+        real_handler.save()
+        real_handler.compute_t_dist()
 
         #convert.real2nll(realout, nllinput)
 
