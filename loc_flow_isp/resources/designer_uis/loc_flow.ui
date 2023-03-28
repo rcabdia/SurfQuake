@@ -6,1245 +6,1108 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1276</width>
-    <height>721</height>
+    <width>915</width>
+    <height>662</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QTabWidget" name="tabWidget">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>0</y>
-      <width>1271</width>
-      <height>801</height>
-     </rect>
-    </property>
-    <property name="currentIndex">
-     <number>1</number>
-    </property>
-    <widget class="QWidget" name="tab_4">
-     <attribute name="title">
-      <string>Create Project</string>
-     </attribute>
-     <widget class="QGroupBox" name="groupBox_4">
-      <property name="geometry">
-       <rect>
-        <x>140</x>
-        <y>70</y>
-        <width>657</width>
-        <height>84</height>
-       </rect>
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="currentIndex">
+       <number>2</number>
       </property>
-      <property name="title">
-       <string>Create Project from Individual Files</string>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_6">
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="rootPathForm_inv">
-         <property name="text">
-          <string>Seismograms (*.HHZ);;Station (*EMUR*)</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QPushButton" name="regularBtn">
-         <property name="toolTip">
-          <string>Fill blank to automatic set All files (*.*), the filters are additive !!!</string>
-         </property>
-         <property name="text">
-          <string>Search files using Regular expressions</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QGroupBox" name="groupBox_5">
-      <property name="geometry">
-       <rect>
-        <x>140</x>
-        <y>170</y>
-        <width>655</width>
-        <height>70</height>
-       </rect>
-      </property>
-      <property name="title">
-       <string>Create Full Project</string>
-      </property>
-      <layout class="QGridLayout" name="gridLayout">
-       <item row="0" column="0">
-        <widget class="QPushButton" name="pathFilesBtn">
-         <property name="toolTip">
-          <string>Set the rooth path of the data be added to your project</string>
-         </property>
-         <property name="text">
-          <string>Project Path Files</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="rootPathForm"/>
-       </item>
-       <item row="0" column="2">
-        <widget class="QPushButton" name="openProjectBtn">
-         <property name="toolTip">
-          <string>Create project using all files (might be filtered with the settings of Eartuqake analysis)</string>
-         </property>
-         <property name="text">
-          <string>Create Project</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QGroupBox" name="groupBox_6">
-      <property name="geometry">
-       <rect>
-        <x>140</x>
-        <y>260</y>
-        <width>657</width>
-        <height>83</height>
-       </rect>
-      </property>
-      <property name="title">
-       <string>Saving Project Box</string>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_7">
-       <item row="0" column="0">
-        <widget class="QPushButton" name="saveBtn">
-         <property name="toolTip">
-          <string>Save the Project either created from Individual files or Full Project</string>
-         </property>
-         <property name="text">
-          <string>Save Project</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QLabel" name="label_23">
-         <property name="text">
-          <string>Project Name</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2">
-        <widget class="QLineEdit" name="nameForm"/>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QGroupBox" name="groupBox_9">
-      <property name="geometry">
-       <rect>
-        <x>140</x>
-        <y>360</y>
-        <width>657</width>
-        <height>83</height>
-       </rect>
-      </property>
-      <property name="title">
-       <string>Metadata</string>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_8">
-       <item row="0" column="0">
-        <widget class="QPushButton" name="saveBtn_2">
-         <property name="toolTip">
-          <string>Save the Project either created from Individual files or Full Project</string>
-         </property>
-         <property name="text">
-          <string>Load Metadata</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QLabel" name="label_25">
-         <property name="text">
-          <string>Metadata Path</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2">
-        <widget class="QLineEdit" name="nameForm_2"/>
-       </item>
-      </layout>
-     </widget>
-    </widget>
-    <widget class="QWidget" name="tab">
-     <attribute name="title">
-      <string>Params. Associator</string>
-     </attribute>
-     <widget class="QGroupBox" name="groupBox_10">
-      <property name="geometry">
-       <rect>
-        <x>300</x>
-        <y>20</y>
-        <width>651</width>
-        <height>171</height>
-       </rect>
-      </property>
-      <property name="title">
-       <string>Geraphic Framework</string>
-      </property>
-      <widget class="QDoubleSpinBox" name="lat_refMaxSB">
-       <property name="geometry">
-        <rect>
-         <x>200</x>
-         <y>30</y>
-         <width>201</width>
-         <height>24</height>
-        </rect>
-       </property>
-       <property name="prefix">
-        <string>Ref Latitude Max </string>
-       </property>
-       <property name="decimals">
-        <number>5</number>
-       </property>
-       <property name="maximum">
-        <double>90.000000000000000</double>
-       </property>
-       <property name="singleStep">
-        <double>0.050000000000000</double>
-       </property>
+      <widget class="QWidget" name="tab_4">
+       <attribute name="title">
+        <string>Create Project</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QGroupBox" name="groupBox_4">
+          <property name="title">
+           <string>Create Project from Individual Files</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_6">
+           <item row="0" column="1">
+            <widget class="QLineEdit" name="rootPathForm_inv">
+             <property name="text">
+              <string>Seismograms (*.HHZ);;Station (*EMUR*)</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QPushButton" name="regularBtn">
+             <property name="toolTip">
+              <string>Fill blank to automatic set All files (*.*), the filters are additive !!!</string>
+             </property>
+             <property name="text">
+              <string>Search files using Regular expressions</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="groupBox_5">
+          <property name="title">
+           <string>Create Full Project</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout">
+           <item row="0" column="0">
+            <widget class="QPushButton" name="pathFilesBtn">
+             <property name="toolTip">
+              <string>Set the rooth path of the data be added to your project</string>
+             </property>
+             <property name="text">
+              <string>Project Path Files</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLineEdit" name="rootPathForm"/>
+           </item>
+           <item row="0" column="2">
+            <widget class="QPushButton" name="openProjectBtn">
+             <property name="toolTip">
+              <string>Create project using all files (might be filtered with the settings of Eartuqake analysis)</string>
+             </property>
+             <property name="text">
+              <string>Create Project</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="groupBox_6">
+          <property name="title">
+           <string>Saving Project Box</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_7">
+           <item row="0" column="0">
+            <widget class="QPushButton" name="saveBtn">
+             <property name="toolTip">
+              <string>Save the Project either created from Individual files or Full Project</string>
+             </property>
+             <property name="text">
+              <string>Save Project</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLabel" name="label_23">
+             <property name="text">
+              <string>Project Name</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QLineEdit" name="nameForm"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="groupBox_9">
+          <property name="title">
+           <string>Metadata</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_8">
+           <item row="0" column="0">
+            <widget class="QPushButton" name="saveBtn_2">
+             <property name="toolTip">
+              <string>Save the Project either created from Individual files or Full Project</string>
+             </property>
+             <property name="text">
+              <string>Load Metadata</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLabel" name="label_25">
+             <property name="text">
+              <string>Metadata Path</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QLineEdit" name="nameForm_2"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
       </widget>
-      <widget class="QDoubleSpinBox" name="lon_refMin">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>60</y>
-         <width>201</width>
-         <height>24</height>
-        </rect>
-       </property>
-       <property name="prefix">
-        <string>Ref Longitude Min  </string>
-       </property>
-       <property name="decimals">
-        <number>5</number>
-       </property>
-       <property name="minimum">
-        <double>-180.000000000000000</double>
-       </property>
-       <property name="maximum">
-        <double>180.000000000000000</double>
-       </property>
-       <property name="singleStep">
-        <double>0.050000000000000</double>
-       </property>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>Params. Associator</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QGroupBox" name="groupBox_10">
+          <property name="title">
+           <string>Geraphic Framework</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_9">
+           <item row="1" column="0">
+            <widget class="QDoubleSpinBox" name="lon_refMin">
+             <property name="prefix">
+              <string>Ref Longitude Min  </string>
+             </property>
+             <property name="decimals">
+              <number>5</number>
+             </property>
+             <property name="minimum">
+              <double>-180.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>180.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.050000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QDoubleSpinBox" name="lat_refMaxSB">
+             <property name="prefix">
+              <string>Ref Latitude Max </string>
+             </property>
+             <property name="decimals">
+              <number>5</number>
+             </property>
+             <property name="maximum">
+              <double>90.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.050000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QDoubleSpinBox" name="lon_refMaxSB">
+             <property name="prefix">
+              <string>Ref Longitude Max </string>
+             </property>
+             <property name="decimals">
+              <number>5</number>
+             </property>
+             <property name="maximum">
+              <double>90.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.050000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QDoubleSpinBox" name="lat_refMinSB">
+             <property name="prefix">
+              <string>Ref Latitude Min </string>
+             </property>
+             <property name="decimals">
+              <number>5</number>
+             </property>
+             <property name="maximum">
+              <double>90.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.050000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QDoubleSpinBox" name="depthSB">
+             <property name="prefix">
+              <string>Depth (km) </string>
+             </property>
+             <property name="decimals">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <double>750.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QPushButton" name="plot_grid_stationsBtn">
+             <property name="text">
+              <string>Set &amp; Plot Grid Stations</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="groupBox">
+          <property name="title">
+           <string>Associator Parameters</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_10">
+           <item row="7" column="0" colspan="2">
+            <widget class="QDoubleSpinBox" name="TTDepthRangeBtn">
+             <property name="prefix">
+              <string>Depth Range (km) </string>
+             </property>
+             <property name="decimals">
+              <number>2</number>
+             </property>
+             <property name="maximum">
+              <double>700.000000000000000</double>
+             </property>
+             <property name="value">
+              <double>50.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="2">
+            <widget class="QDoubleSpinBox" name="DepthGridSizeBtn">
+             <property name="prefix">
+              <string>Depth Search Grid Size (km) </string>
+             </property>
+             <property name="decimals">
+              <number>2</number>
+             </property>
+             <property name="value">
+              <double>10.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0" colspan="3">
+            <widget class="Line" name="line">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="12" column="0" colspan="2">
+            <widget class="QSpinBox" name="ThresholdSwaveSB">
+             <property name="suffix">
+              <string/>
+             </property>
+             <property name="prefix">
+              <string>Minimum Number S-wave Picks </string>
+             </property>
+             <property name="value">
+              <number>2</number>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="0" rowspan="2" colspan="3">
+            <widget class="Line" name="line_2">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0" colspan="2">
+            <widget class="QDoubleSpinBox" name="gridSearchParamHorizontalRangeBtn">
+             <property name="prefix">
+              <string>Horizontal Search Range (º) </string>
+             </property>
+             <property name="decimals">
+              <number>2</number>
+             </property>
+             <property name="singleStep">
+              <double>0.100000000000000</double>
+             </property>
+             <property name="value">
+              <double>1.200000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QDoubleSpinBox" name="HorizontalGridSizeBtn">
+             <property name="prefix">
+              <string>Horizontal Search Grid Size (º) </string>
+             </property>
+             <property name="decimals">
+              <number>2</number>
+             </property>
+             <property name="singleStep">
+              <double>0.100000000000000</double>
+             </property>
+             <property name="value">
+              <double>0.150000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0" colspan="3">
+            <widget class="QDoubleSpinBox" name="EventTimeWindow">
+             <property name="prefix">
+              <string>Event Time Window (s) </string>
+             </property>
+             <property name="decimals">
+              <number>0</number>
+             </property>
+             <property name="maximum">
+              <double>3600.000000000000000</double>
+             </property>
+             <property name="value">
+              <double>120.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="11" column="0" colspan="2">
+            <widget class="QSpinBox" name="ThresholdPwaveSB">
+             <property name="suffix">
+              <string/>
+             </property>
+             <property name="prefix">
+              <string>Minimum Number P-wave Picks </string>
+             </property>
+             <property name="value">
+              <number>4</number>
+             </property>
+            </widget>
+           </item>
+           <item row="13" column="2">
+            <widget class="QPushButton" name="realBtn">
+             <property name="text">
+              <string>Run Associator</string>
+             </property>
+            </widget>
+           </item>
+           <item row="11" column="2" rowspan="2">
+            <widget class="QSpinBox" name="number_stations_picksSB">
+             <property name="suffix">
+              <string/>
+             </property>
+             <property name="prefix">
+              <string>Number of Stations Recorded (P &amp; S) </string>
+             </property>
+             <property name="value">
+              <number>6</number>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="2">
+            <widget class="QDoubleSpinBox" name="TTDepthGridSizeBtn">
+             <property name="prefix">
+              <string>Depth Grid Resolution Size (km) </string>
+             </property>
+             <property name="decimals">
+              <number>2</number>
+             </property>
+             <property name="maximum">
+              <double>50.000000000000000</double>
+             </property>
+             <property name="value">
+              <double>2.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0" colspan="3">
+            <widget class="QLabel" name="label_21">
+             <property name="text">
+              <string>Travel Time Grid Search</string>
+             </property>
+            </widget>
+           </item>
+           <item row="13" column="0" colspan="2">
+            <widget class="QPushButton" name="phasenetBtn">
+             <property name="text">
+              <string>Run Auto Pick</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="0" colspan="2">
+            <widget class="QDoubleSpinBox" name="TTHorizontalRangeBtn">
+             <property name="prefix">
+              <string>Horizontal Range (º) </string>
+             </property>
+             <property name="decimals">
+              <number>2</number>
+             </property>
+             <property name="maximum">
+              <double>50.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.200000000000000</double>
+             </property>
+             <property name="value">
+              <double>5.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0" colspan="2">
+            <widget class="QDoubleSpinBox" name="DepthSearchParamHorizontalRangeBtn">
+             <property name="prefix">
+              <string>Depth Search Range (km) </string>
+             </property>
+             <property name="decimals">
+              <number>2</number>
+             </property>
+             <property name="value">
+              <double>50.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0" colspan="3">
+            <widget class="QLabel" name="label_20">
+             <property name="text">
+              <string>Grid Search Parameters</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="2">
+            <widget class="QDoubleSpinBox" name="TTHorizontalGridSizeBtn">
+             <property name="prefix">
+              <string>Horizontal Grid Resolution Size (º) </string>
+             </property>
+             <property name="decimals">
+              <number>2</number>
+             </property>
+             <property name="maximum">
+              <double>10.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.250000000000000</double>
+             </property>
+             <property name="value">
+              <double>0.010000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="10" column="0">
+            <widget class="QLabel" name="label_22">
+             <property name="text">
+              <string>Threshold Picks</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
       </widget>
-      <widget class="QDoubleSpinBox" name="lon_refMaxSB">
-       <property name="geometry">
-        <rect>
-         <x>400</x>
-         <y>60</y>
-         <width>211</width>
-         <height>24</height>
-        </rect>
-       </property>
-       <property name="prefix">
-        <string>Ref Longitude Max </string>
-       </property>
-       <property name="decimals">
-        <number>5</number>
-       </property>
-       <property name="maximum">
-        <double>90.000000000000000</double>
-       </property>
-       <property name="singleStep">
-        <double>0.050000000000000</double>
-       </property>
-      </widget>
-      <widget class="QDoubleSpinBox" name="lat_refMinSB">
-       <property name="geometry">
-        <rect>
-         <x>200</x>
-         <y>90</y>
-         <width>201</width>
-         <height>24</height>
-        </rect>
-       </property>
-       <property name="prefix">
-        <string>Ref Latitude Min </string>
-       </property>
-       <property name="decimals">
-        <number>5</number>
-       </property>
-       <property name="maximum">
-        <double>90.000000000000000</double>
-       </property>
-       <property name="singleStep">
-        <double>0.050000000000000</double>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="plot_grid_stationsBtn">
-       <property name="geometry">
-        <rect>
-         <x>200</x>
-         <y>130</y>
-         <width>191</width>
-         <height>32</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Set &amp; Plot Grid Stations</string>
-       </property>
-      </widget>
-      <widget class="QDoubleSpinBox" name="depthSB">
-       <property name="geometry">
-        <rect>
-         <x>407</x>
-         <y>100</y>
-         <width>201</width>
-         <height>24</height>
-        </rect>
-       </property>
-       <property name="prefix">
-        <string>Depth (km) </string>
-       </property>
-       <property name="decimals">
-        <number>1</number>
-       </property>
-       <property name="maximum">
-        <double>750.000000000000000</double>
-       </property>
-      </widget>
-     </widget>
-     <widget class="QGroupBox" name="groupBox">
-      <property name="geometry">
-       <rect>
-        <x>290</x>
-        <y>210</y>
-        <width>661</width>
-        <height>411</height>
-       </rect>
-      </property>
-      <property name="title">
-       <string>Associator Parameters</string>
-      </property>
-      <widget class="QDoubleSpinBox" name="gridSearchParamHorizontalRangeBtn">
-       <property name="geometry">
-        <rect>
-         <x>20</x>
-         <y>50</y>
-         <width>231</width>
-         <height>24</height>
-        </rect>
-       </property>
-       <property name="prefix">
-        <string>Horizontal Search Range (º) </string>
-       </property>
-       <property name="decimals">
-        <number>2</number>
-       </property>
-       <property name="singleStep">
-        <double>0.100000000000000</double>
-       </property>
-       <property name="value">
-        <double>1.200000000000000</double>
-       </property>
-      </widget>
-      <widget class="QDoubleSpinBox" name="DepthSearchParamHorizontalRangeBtn">
-       <property name="geometry">
-        <rect>
-         <x>20</x>
-         <y>80</y>
-         <width>231</width>
-         <height>24</height>
-        </rect>
-       </property>
-       <property name="prefix">
-        <string>Depth Search Range (km) </string>
-       </property>
-       <property name="decimals">
-        <number>2</number>
-       </property>
-       <property name="value">
-        <double>50.000000000000000</double>
-       </property>
-      </widget>
-      <widget class="QDoubleSpinBox" name="HorizontalGridSizeBtn">
-       <property name="geometry">
-        <rect>
-         <x>270</x>
-         <y>50</y>
-         <width>241</width>
-         <height>24</height>
-        </rect>
-       </property>
-       <property name="prefix">
-        <string>Horizontal Search Grid Size (º) </string>
-       </property>
-       <property name="decimals">
-        <number>2</number>
-       </property>
-       <property name="singleStep">
-        <double>0.100000000000000</double>
-       </property>
-       <property name="value">
-        <double>0.150000000000000</double>
-       </property>
-      </widget>
-      <widget class="QDoubleSpinBox" name="DepthGridSizeBtn">
-       <property name="geometry">
-        <rect>
-         <x>270</x>
-         <y>80</y>
-         <width>241</width>
-         <height>24</height>
-        </rect>
-       </property>
-       <property name="prefix">
-        <string>Depth Search Grid Size (km) </string>
-       </property>
-       <property name="decimals">
-        <number>2</number>
-       </property>
-       <property name="value">
-        <double>10.000000000000000</double>
-       </property>
-      </widget>
-      <widget class="QDoubleSpinBox" name="EventTimeWindow">
-       <property name="geometry">
-        <rect>
-         <x>150</x>
-         <y>110</y>
-         <width>231</width>
-         <height>24</height>
-        </rect>
-       </property>
-       <property name="prefix">
-        <string>Event Time Window (s) </string>
-       </property>
-       <property name="decimals">
-        <number>0</number>
-       </property>
-       <property name="maximum">
-        <double>3600.000000000000000</double>
-       </property>
-       <property name="value">
-        <double>120.000000000000000</double>
-       </property>
-      </widget>
-      <widget class="Line" name="line">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>140</y>
-         <width>591</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_20">
-       <property name="geometry">
-        <rect>
-         <x>200</x>
-         <y>20</y>
-         <width>151</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Grid Search Parameters</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_21">
-       <property name="geometry">
-        <rect>
-         <x>200</x>
-         <y>160</y>
-         <width>151</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Travel Time Grid Search</string>
-       </property>
-      </widget>
-      <widget class="QDoubleSpinBox" name="TTDepthRangeBtn">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>220</y>
-         <width>231</width>
-         <height>24</height>
-        </rect>
-       </property>
-       <property name="prefix">
-        <string>Depth Range (km) </string>
-       </property>
-       <property name="decimals">
-        <number>2</number>
-       </property>
-       <property name="maximum">
-        <double>700.000000000000000</double>
-       </property>
-       <property name="value">
-        <double>50.000000000000000</double>
-       </property>
-      </widget>
-      <widget class="QDoubleSpinBox" name="TTDepthGridSizeBtn">
-       <property name="geometry">
-        <rect>
-         <x>280</x>
-         <y>220</y>
-         <width>261</width>
-         <height>24</height>
-        </rect>
-       </property>
-       <property name="prefix">
-        <string>Depth Grid Resolution Size (km) </string>
-       </property>
-       <property name="decimals">
-        <number>2</number>
-       </property>
-       <property name="maximum">
-        <double>50.000000000000000</double>
-       </property>
-       <property name="value">
-        <double>2.000000000000000</double>
-       </property>
-      </widget>
-      <widget class="QDoubleSpinBox" name="TTHorizontalRangeBtn">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>190</y>
-         <width>231</width>
-         <height>24</height>
-        </rect>
-       </property>
-       <property name="prefix">
-        <string>Horizontal Range (º) </string>
-       </property>
-       <property name="decimals">
-        <number>2</number>
-       </property>
-       <property name="maximum">
-        <double>50.000000000000000</double>
-       </property>
-       <property name="singleStep">
-        <double>0.200000000000000</double>
-       </property>
-       <property name="value">
-        <double>5.000000000000000</double>
-       </property>
-      </widget>
-      <widget class="QDoubleSpinBox" name="TTHorizontalGridSizeBtn">
-       <property name="geometry">
-        <rect>
-         <x>280</x>
-         <y>190</y>
-         <width>261</width>
-         <height>24</height>
-        </rect>
-       </property>
-       <property name="prefix">
-        <string>Horizontal Grid Resolution Size (º) </string>
-       </property>
-       <property name="decimals">
-        <number>2</number>
-       </property>
-       <property name="maximum">
-        <double>10.000000000000000</double>
-       </property>
-       <property name="singleStep">
-        <double>0.250000000000000</double>
-       </property>
-       <property name="value">
-        <double>0.010000000000000</double>
-       </property>
-      </widget>
-      <widget class="Line" name="line_2">
-       <property name="geometry">
-        <rect>
-         <x>17</x>
-         <y>250</y>
-         <width>581</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_22">
-       <property name="geometry">
-        <rect>
-         <x>220</x>
-         <y>260</y>
-         <width>101</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Threshold Picks</string>
-       </property>
-      </widget>
-      <widget class="QSpinBox" name="ThresholdSwaveSB">
-       <property name="geometry">
-        <rect>
-         <x>30</x>
-         <y>320</y>
-         <width>231</width>
-         <height>24</height>
-        </rect>
-       </property>
-       <property name="suffix">
-        <string/>
-       </property>
-       <property name="prefix">
-        <string>Minimum Number S-wave Picks </string>
-       </property>
-       <property name="value">
-        <number>2</number>
-       </property>
-      </widget>
-      <widget class="QSpinBox" name="ThresholdPwaveSB">
-       <property name="geometry">
-        <rect>
-         <x>30</x>
-         <y>290</y>
-         <width>231</width>
-         <height>24</height>
-        </rect>
-       </property>
-       <property name="suffix">
-        <string/>
-       </property>
-       <property name="prefix">
-        <string>Minimum Number P-wave Picks </string>
-       </property>
-       <property name="value">
-        <number>4</number>
-       </property>
-      </widget>
-      <widget class="QSpinBox" name="number_stations_picksSB">
-       <property name="geometry">
-        <rect>
-         <x>270</x>
-         <y>310</y>
-         <width>271</width>
-         <height>24</height>
-        </rect>
-       </property>
-       <property name="suffix">
-        <string/>
-       </property>
-       <property name="prefix">
-        <string>Number of Stations Recorded (P &amp; S) </string>
-       </property>
-       <property name="value">
-        <number>6</number>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="phasenetBtn">
-       <property name="geometry">
-        <rect>
-         <x>20</x>
-         <y>360</y>
-         <width>241</width>
-         <height>32</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Run Auto Pick</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="realBtn">
-       <property name="geometry">
-        <rect>
-         <x>280</x>
-         <y>360</y>
-         <width>241</width>
-         <height>32</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Run Associator</string>
-       </property>
-      </widget>
-     </widget>
-    </widget>
-    <widget class="QWidget" name="tab_2">
-     <attribute name="title">
-      <string>Params. Eartquake Location</string>
-     </attribute>
-     <widget class="QGroupBox" name="groupBox_2">
-      <property name="geometry">
-       <rect>
-        <x>290</x>
-        <y>20</y>
-        <width>641</width>
-        <height>561</height>
-       </rect>
-      </property>
-      <property name="title">
-       <string>Earthquake Location Parameters</string>
-      </property>
-      <widget class="QGroupBox" name="groupBox_7">
-       <property name="geometry">
-        <rect>
-         <x>30</x>
-         <y>30</y>
-         <width>571</width>
-         <height>271</height>
-        </rect>
-       </property>
-       <property name="title">
-        <string>Grid Configuration</string>
-       </property>
-       <widget class="QWidget" name="widget_4" native="true">
-        <property name="geometry">
-         <rect>
-          <x>30</x>
-          <y>10</y>
-          <width>270</width>
-          <height>241</height>
-         </rect>
-        </property>
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_4">
-         <item row="3" column="1">
-          <widget class="QLabel" name="label_4">
-           <property name="text">
-            <string>Depth (km)</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <widget class="QDoubleSpinBox" name="griddepthSB">
-           <property name="minimum">
-            <double>-10.000000000000000</double>
-           </property>
-           <property name="maximum">
-            <double>1000.990000000000009</double>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QDoubleSpinBox" name="gridlonSB">
-           <property name="minimum">
-            <double>-180.000000000000000</double>
-           </property>
-           <property name="maximum">
-            <double>180.000000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QDoubleSpinBox" name="gridlatSB">
-           <property name="minimum">
-            <double>-90.000000000000000</double>
-           </property>
-           <property name="maximum">
-            <double>90.000000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QLabel" name="label_9">
-           <property name="text">
-            <string>Latitude</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QLabel" name="label_3">
-           <property name="text">
-            <string>Longitude</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="0" colspan="2">
-          <widget class="QLabel" name="label_2">
-           <property name="text">
-            <string>Geographic Transformation</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0" colspan="2" alignment="Qt::AlignHCenter">
-          <widget class="QLabel" name="label_8">
-           <property name="text">
-            <string>Grid Reference</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="0">
-          <widget class="QComboBox" name="transCB">
+      <widget class="QWidget" name="tab_2">
+       <attribute name="title">
+        <string>Params. Eartquake Location</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <widget class="QGroupBox" name="groupBox_2">
+          <property name="title">
+           <string>Earthquake Location Parameters</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_6">
            <item>
-            <property name="text">
-             <string>SIMPLE</string>
-            </property>
+            <widget class="QGroupBox" name="groupBox_8">
+             <property name="title">
+              <string>Travel Times and Locate</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_11">
+              <item row="1" column="1">
+               <widget class="QWidget" name="widget_3" native="true">
+                <layout class="QGridLayout" name="gridLayout_5">
+                 <item row="1" column="0">
+                  <widget class="QComboBox" name="comboBox_3">
+                   <item>
+                    <property name="text">
+                     <string>OCT-TREE</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item row="3" column="0" colspan="2">
+                  <widget class="QPushButton" name="runlocBtn">
+                   <property name="text">
+                    <string>Run Location</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="1">
+                  <widget class="QPushButton" name="plotpdfBtn">
+                   <property name="text">
+                    <string>Plot PDF</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QLabel" name="label_16">
+                   <property name="text">
+                    <string>Search</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0">
+                  <widget class="QComboBox" name="comboBox_4">
+                   <item>
+                    <property name="text">
+                     <string>GAU_ANALYTIC</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>EDT</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>EDT_OT_WT</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>EDT_OTWT_ML</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item row="0" column="0" colspan="2" alignment="Qt::AlignHCenter">
+                  <widget class="QLabel" name="label_15">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string>Location Parameters</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="QLabel" name="label_17">
+                   <property name="text">
+                    <string>Method</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="0">
+                  <widget class="QPushButton" name="plotmapBtn">
+                   <property name="text">
+                    <string>Plot Location Map</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QWidget" name="widget" native="true">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_2">
+                 <item row="3" column="2">
+                  <widget class="QDoubleSpinBox" name="distanceSB">
+                   <property name="maximum">
+                    <double>5000.000000000000000</double>
+                   </property>
+                   <property name="value">
+                    <double>500.000000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="0" colspan="3">
+                  <widget class="QPushButton" name="grdtimeBtn">
+                   <property name="toolTip">
+                    <string>Click to generate the Travel Times for the previously genrated velocity grid</string>
+                   </property>
+                   <property name="text">
+                    <string>Grid to Time</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0">
+                  <widget class="QComboBox" name="comboBox_grid">
+                   <item>
+                    <property name="text">
+                     <string>GRID2D</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>GRID3D</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item row="2" column="2">
+                  <widget class="QComboBox" name="comboBox_ttwave">
+                   <item>
+                    <property name="text">
+                     <string>P</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>S</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item row="3" column="0" colspan="2" alignment="Qt::AlignHCenter">
+                  <widget class="QLabel" name="label_12">
+                   <property name="text">
+                    <string>Distance limit (km)</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="QComboBox" name="comboBox_angles">
+                   <item>
+                    <property name="text">
+                     <string>ANGLES_YES</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>ANGLES_NO</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item row="0" column="0" colspan="3" alignment="Qt::AlignHCenter">
+                  <widget class="QLabel" name="label_24">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string>Travel Times Parameters</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QPushButton" name="stationsBtn">
+                <property name="toolTip">
+                 <string>Set the metadata file whre the algorithm wil extract the stations coordinates to locate the event.</string>
+                </property>
+                <property name="text">
+                 <string>Metadata</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLineEdit" name="stationsPath"/>
+              </item>
+             </layout>
+            </widget>
            </item>
            <item>
-            <property name="text">
-             <string>GLOBAL</string>
-            </property>
+            <widget class="QGroupBox" name="groupBox_7">
+             <property name="title">
+              <string>Grid Configuration</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_12" rowstretch="0,0,0,0,0,0,0">
+              <item row="2" column="4">
+               <widget class="QLabel" name="label">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>x</string>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="6">
+               <widget class="QPushButton" name="genvelBtn">
+                <property name="toolTip">
+                 <string>Click to Generate the velocity grid</string>
+                </property>
+                <property name="text">
+                 <string>Generate Velocity Grid</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="6">
+               <widget class="QLabel" name="label_14">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>dz</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="3">
+               <widget class="QLabel" name="label_18">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Grid Type</string>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="0">
+               <widget class="QComboBox" name="transCB">
+                <item>
+                 <property name="text">
+                  <string>SIMPLE</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>GLOBAL</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="2" column="5">
+               <widget class="QSpinBox" name="dxsizeSB">
+                <property name="maximum">
+                 <number>10000</number>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="3">
+               <widget class="QSpinBox" name="znodeSB">
+                <property name="maximum">
+                 <number>10000</number>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QDoubleSpinBox" name="gridlatSB">
+                <property name="minimum">
+                 <double>-90.000000000000000</double>
+                </property>
+                <property name="maximum">
+                 <double>90.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="6">
+               <widget class="QLabel" name="label_10">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>dx</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="1">
+               <widget class="QLabel" name="label_4">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Depth (km)</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="3">
+               <widget class="QLabel" name="label_5">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Grid Size (km)</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="5">
+               <widget class="QLabel" name="label_11">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Model</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="3">
+               <widget class="QSpinBox" name="xnodeSB">
+                <property name="maximum">
+                 <number>10000</number>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="3">
+               <widget class="QSpinBox" name="ynodeSB">
+                <property name="maximum">
+                 <number>10000</number>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="0">
+               <widget class="QLabel" name="label_2">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Geographic Transformation</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QLabel" name="label_3">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Longitude</string>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="4">
+               <widget class="QComboBox" name="comboBox_wavetype">
+                <item>
+                 <property name="text">
+                  <string>P</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>S</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="5" column="4">
+               <widget class="QLabel" name="label_19">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Wave</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QLabel" name="label_9">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Latitude</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_8">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Grid Reference</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="QDoubleSpinBox" name="griddepthSB">
+                <property name="minimum">
+                 <double>-10.000000000000000</double>
+                </property>
+                <property name="maximum">
+                 <double>1000.990000000000009</double>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="4">
+               <widget class="QLabel" name="label_6">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>y</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="5">
+               <widget class="QSpinBox" name="dzsizeSB">
+                <property name="maximum">
+                 <number>10000</number>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="3">
+               <widget class="QComboBox" name="comboBox_gridtype">
+                <item>
+                 <property name="text">
+                  <string>SLOW_LEN</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>VELOCITY_METERS</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>SLOWNESS</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>VEL2</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>SLOW2</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>SLOW_2_METERS</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QDoubleSpinBox" name="gridlonSB">
+                <property name="minimum">
+                 <double>-180.000000000000000</double>
+                </property>
+                <property name="maximum">
+                 <double>180.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="6">
+               <widget class="QLabel" name="label_13">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>dy</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="5">
+               <widget class="QSpinBox" name="dysizeSB">
+                <property name="maximum">
+                 <number>10000</number>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="5">
+               <widget class="QComboBox" name="modelCB">
+                <item>
+                 <property name="text">
+                  <string>2D</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>3D</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="4" column="4">
+               <widget class="QLabel" name="label_7">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>z</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="2">
+               <spacer name="horizontalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Fixed</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </widget>
            </item>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="widget_2" native="true">
-        <property name="geometry">
-         <rect>
-          <x>290</x>
-          <y>20</y>
-          <width>274</width>
-          <height>230</height>
-         </rect>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_3">
-         <item row="3" column="0">
-          <widget class="QSpinBox" name="znodeSB">
-           <property name="maximum">
-            <number>10000</number>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="2">
-          <widget class="QComboBox" name="comboBox_wavetype">
-           <item>
-            <property name="text">
-             <string>P</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>S</string>
-            </property>
-           </item>
-          </widget>
-         </item>
-         <item row="3" column="1">
-          <widget class="QLabel" name="label_7">
-           <property name="text">
-            <string>z</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="3">
-          <widget class="QLabel" name="label_14">
-           <property name="text">
-            <string>dz</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="0">
-          <widget class="QComboBox" name="comboBox_gridtype">
-           <item>
-            <property name="text">
-             <string>SLOW_LEN</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>VELOCITY_METERS</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>SLOWNESS</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>VEL2</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>SLOW2</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>SLOW_2_METERS</string>
-            </property>
-           </item>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QLabel" name="label">
-           <property name="text">
-            <string>x</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="2">
-          <widget class="QSpinBox" name="dxsizeSB">
-           <property name="maximum">
-            <number>10000</number>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="3">
-          <widget class="QLabel" name="label_13">
-           <property name="text">
-            <string>dy</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="3">
-          <widget class="QLabel" name="label_10">
-           <property name="text">
-            <string>dx</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QSpinBox" name="ynodeSB">
-           <property name="maximum">
-            <number>10000</number>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="2">
-          <widget class="QSpinBox" name="dysizeSB">
-           <property name="maximum">
-            <number>10000</number>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="2">
-          <widget class="QSpinBox" name="dzsizeSB">
-           <property name="maximum">
-            <number>10000</number>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QLabel" name="label_6">
-           <property name="text">
-            <string>y</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QSpinBox" name="xnodeSB">
-           <property name="maximum">
-            <number>10000</number>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="0">
-          <widget class="QLabel" name="label_18">
-           <property name="text">
-            <string>Grid Type</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="2">
-          <widget class="QLabel" name="label_19">
-           <property name="text">
-            <string>Wave</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0" colspan="4" alignment="Qt::AlignHCenter">
-          <widget class="QLabel" name="label_5">
-           <property name="text">
-            <string>Grid Size (km)</string>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="0" colspan="4">
-          <widget class="QPushButton" name="genvelBtn">
-           <property name="toolTip">
-            <string>Click to Generate the velocity grid</string>
-           </property>
-           <property name="text">
-            <string>Generate Velocity Grid</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="3">
-          <widget class="QLabel" name="label_11">
-           <property name="text">
-            <string>Model</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="3">
-          <widget class="QComboBox" name="modelCB">
-           <item>
-            <property name="text">
-             <string>2D</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>3D</string>
-            </property>
-           </item>
-          </widget>
-         </item>
-        </layout>
-       </widget>
+          </layout>
+         </widget>
+        </item>
+       </layout>
       </widget>
-      <widget class="Line" name="line_3">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>310</y>
-         <width>641</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-      <widget class="QGroupBox" name="groupBox_8">
-       <property name="geometry">
-        <rect>
-         <x>30</x>
-         <y>320</y>
-         <width>601</width>
-         <height>241</height>
-        </rect>
-       </property>
-       <property name="title">
-        <string>Travel Times and Locate</string>
-       </property>
-       <widget class="QWidget" name="widget_3" native="true">
-        <property name="geometry">
-         <rect>
-          <x>293</x>
-          <y>30</y>
-          <width>301</width>
-          <height>211</height>
-         </rect>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_5">
-         <item row="4" column="0">
-          <widget class="QPushButton" name="plotmapBtn">
-           <property name="text">
-            <string>Plot Location Map</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QLabel" name="label_17">
-           <property name="text">
-            <string>Method</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QComboBox" name="comboBox_4">
-           <item>
-            <property name="text">
-             <string>GAU_ANALYTIC</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>EDT</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>EDT_OT_WT</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>EDT_OTWT_ML</string>
-            </property>
-           </item>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QComboBox" name="comboBox_3">
-           <item>
-            <property name="text">
-             <string>OCT-TREE</string>
-            </property>
-           </item>
-          </widget>
-         </item>
-         <item row="0" column="0" colspan="2" alignment="Qt::AlignHCenter">
-          <widget class="QLabel" name="label_15">
-           <property name="text">
-            <string>Location Parameters</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QLabel" name="label_16">
-           <property name="text">
-            <string>Search</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0" colspan="2">
-          <widget class="QPushButton" name="runlocBtn">
-           <property name="text">
-            <string>Run Location</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="1">
-          <widget class="QPushButton" name="plotpdfBtn">
-           <property name="text">
-            <string>Plot PDF</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="0" colspan="2">
-          <widget class="QPushButton" name="firstpolarityBtn">
-           <property name="text">
-            <string>Compute Focal Mechanism (FP)</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="widget" native="true">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>20</y>
-          <width>281</width>
-          <height>221</height>
-         </rect>
-        </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_2">
-         <item row="3" column="2">
-          <widget class="QLineEdit" name="stationsPath"/>
-         </item>
-         <item row="4" column="0" colspan="3">
-          <widget class="QPushButton" name="grdtimeBtn">
-           <property name="toolTip">
-            <string>Click to generate the Travel Times for the previously genrated velocity grid</string>
-           </property>
-           <property name="text">
-            <string>Grid to Time</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0" colspan="2" alignment="Qt::AlignHCenter">
-          <widget class="QLabel" name="label_12">
-           <property name="text">
-            <string>Distance limit (km)</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="2">
-          <widget class="QDoubleSpinBox" name="distanceSB">
-           <property name="maximum">
-            <double>5000.000000000000000</double>
-           </property>
-           <property name="value">
-            <double>500.000000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QComboBox" name="comboBox_grid">
-           <item>
-            <property name="text">
-             <string>GRID2D</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>GRID3D</string>
-            </property>
-           </item>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QComboBox" name="comboBox_angles">
-           <item>
-            <property name="text">
-             <string>ANGLES_YES</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>ANGLES_NO</string>
-            </property>
-           </item>
-          </widget>
-         </item>
-         <item row="1" column="2">
-          <widget class="QComboBox" name="comboBox_ttwave">
-           <item>
-            <property name="text">
-             <string>P</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>S</string>
-            </property>
-           </item>
-          </widget>
-         </item>
-         <item row="3" column="0" colspan="2">
-          <widget class="QPushButton" name="stationsBtn">
-           <property name="toolTip">
-            <string>Set the metadata file whre the algorithm wil extract the stations coordinates to locate the event.</string>
-           </property>
-           <property name="text">
-            <string>Metadata</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1" colspan="2">
-          <widget class="QLabel" name="label_24">
-           <property name="text">
-            <string>Travel Times Parameters</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
+      <widget class="QWidget" name="tab_3">
+       <attribute name="title">
+        <string>Params. Magnitudes</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_5">
+        <item>
+         <widget class="QGroupBox" name="groupBox_3">
+          <property name="title">
+           <string>Magnitudes Parameters</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </widget>
-    </widget>
-    <widget class="QWidget" name="tab_3">
-     <attribute name="title">
-      <string>Params. Magnitudes</string>
-     </attribute>
-     <widget class="QGroupBox" name="groupBox_3">
-      <property name="geometry">
-       <rect>
-        <x>260</x>
-        <y>10</y>
-        <width>721</width>
-        <height>551</height>
-       </rect>
-      </property>
-      <property name="title">
-       <string>Magnitudes Parameters</string>
-      </property>
-     </widget>
-    </widget>
-   </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1276</width>
+     <width>915</width>
      <height>24</height>
     </rect>
    </property>

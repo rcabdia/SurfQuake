@@ -2,6 +2,7 @@ import os
 import pickle
 from obspy.geodetics import gps2dist_azimuth, kilometers2degrees
 from loc_flow_isp import ROOT_DIR, model_dir, p_dir, station, ttime
+from loc_flow_isp.Exceptions.exceptions import parse_excepts
 from loc_flow_isp.Gui.Frames.qt_components import MessageDialog
 from loc_flow_isp.Gui.Frames.uis_frames import UiLoc_Flow
 from PyQt5 import QtWidgets, QtGui, QtCore
@@ -10,6 +11,7 @@ from sys import platform
 from concurrent.futures.thread import ThreadPoolExecutor
 from loc_flow_isp.Utils.obspy_utils import MseedUtil
 from loc_flow_isp.loc_flow_tools.internal.real_manager import RealManager
+from loc_flow_isp.loc_flow_tools.nll.run_nll import NllManager
 from loc_flow_isp.loc_flow_tools.phasenet.phasenet_handler import Util
 from loc_flow_isp.loc_flow_tools.phasenet.phasenet_handler import PhasenetISP
 from loc_flow_isp.loc_flow_tools.tt_db.taup_tt import create_tt_db
@@ -25,7 +27,9 @@ class LocFlow(pw.QMainWindow, UiLoc_Flow):
     def __init__(self):
         super(LocFlow, self).__init__()
         self.setupUi(self)
-
+        #self.__pick_output_path = PickerManager.get_default_output_path()
+        self.__dataless_dir = None
+        self.__nll_manager = None
         ####### Project ###########
         self.progressbar = pw.QProgressDialog(self)
         self.progressbar.setLabelText("Computing Project ")
@@ -40,10 +44,30 @@ class LocFlow(pw.QMainWindow, UiLoc_Flow):
         self.realBtn.clicked.connect(self.run_real)
         self.plot_grid_stationsBtn.clicked.connect(self.plot_real_grid)
 
+        # NonLinLoc
+        self.grid_latitude_bind = BindPyqtObject(self.gridlatSB)
+        self.grid_longitude_bind = BindPyqtObject(self.gridlonSB)
+        self.grid_depth_bind = BindPyqtObject(self.griddepthSB)
+        self.grid_xnode_bind = BindPyqtObject(self.xnodeSB)
+        self.grid_ynode_bind = BindPyqtObject(self.ynodeSB)
+        self.grid_znode_bind = BindPyqtObject(self.znodeSB)
+        self.grid_dxsize_bind = BindPyqtObject(self.dxsizeSB)
+        self.grid_dysize_bind = BindPyqtObject(self.dysizeSB)
+        self.grid_dzsize_bind = BindPyqtObject(self.dzsizeSB)
+        self.genvelBtn.clicked.connect(lambda: self.on_click_run_vel_to_grid())
+        self.grdtimeBtn.clicked.connect(lambda: self.on_click_run_grid_to_time())
+        self.runlocBtn.clicked.connect(lambda: self.on_click_run_loc())
+        #self.plotmapBtn.clicked.connect(lambda: self.on_click_plot_map())
+        self.stationsBtn.clicked.connect(lambda: self.on_click_select_metadata_file())
+
     # @pyc.Slot()
     # def _increase_progress(self):
     #      self.progressbar.setValue(self.progressbar.value() + 1)
-
+    @property
+    def nll_manager(self):
+        if not self.__nll_manager:
+            self.__nll_manager = NllManager(self.__pick_output_path, self.__dataless_dir)
+        return self.__nll_manager
     def onChange_root_path(self, value):
         """
         Fired every time the root_path is changed
@@ -203,8 +227,6 @@ class LocFlow(pw.QMainWindow, UiLoc_Flow):
         self.h_range = kilometers2degrees(gps2dist_azimuth(self.latitude_center, self.longitude_center, lat_max, lon_max) * 0.001)
         self.gridSearchParamHorizontalRangeBtn.set_value(self.h_range)
 
-
-
     def run_real(self):
         """ REAL """
         #tt_db = create_tt_db()
@@ -248,6 +270,23 @@ class LocFlow(pw.QMainWindow, UiLoc_Flow):
 
         real_handler.save()
         real_handler.compute_t_dist()
-
         #convert.real2nll(realout, nllinput)
+
+    def on_click_select_metadata_file(self):
+        selected = pw.QFileDialog.getOpenFileName(self, "Select metadata/stations coordinates file")
+        if isinstance(selected[0], str) and os.path.isfile(selected[0]):
+            self.stationsPath.setText(selected[0])
+            self.set_dataless_dir(self.stationsPath.text())
+
+    def set_dataless_dir(self, dir_path):
+        self.__dataless_dir = dir_path
+        self.nll_manager.set_dataless_dir(dir_path)
+    @parse_excepts(lambda self, msg: self.subprocess_feedback(msg))
+    def on_click_run_vel_to_grid(self):
+        self.nll_manager.vel_to_grid(self.grid_latitude_bind.value, self.grid_longitude_bind.value,
+                                     self.grid_depth_bind.value, self.grid_xnode_bind.value,
+                                     self.grid_ynode_bind.value, self.grid_znode_bind.value,
+                                     self.grid_dxsize_bind.value, self.grid_dysize_bind.value,
+                                     self.grid_dzsize_bind.value, self.comboBox_gridtype.currentText(),
+                                     self.comboBox_wavetype.currentText(), self.modelCB.currentText())
 
