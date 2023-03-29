@@ -1,5 +1,8 @@
 import os
 from PyQt5 import uic
+from contextlib import suppress
+from datetime import datetime
+from obspy import UTCDateTime
 from loc_flow_isp.Gui.package.interface_tools import UIS_PATH
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -7,7 +10,49 @@ pyc = QtCore
 pqg = QtGui
 pyc = QtCore
 pw = QtWidgets
+user_preferences = pyc.QSettings(pyc.QSettings.NativeFormat, pyc.QSettings.UserScope, "isp", "user_pref")
+def set_qdatetime(time, pyqt_time_object: pw.QDateTimeEdit):
+    """
+    Set the datetime to an edit time qt object.
 
+    :param time: A str or obspy.UTCDateTime.
+
+    :param pyqt_time_object: A QDateTimeEdit pyqt object to set the time.
+
+    :return:
+    """
+    if type(time) is str:
+        time = UTCDateTime(time)
+    elif isinstance(time, UTCDateTime):
+        time = time.datetime
+    elif not isinstance(time, datetime):
+        raise ValueError("Time must by either str, UTCDatetime or datetime")
+
+    pyqt_time_object.setDateTime(time)
+def save_preferences(pyqt_object, ui_name=None):
+    """
+    Save the fields QDoubleSpinBox, QSpinBox, QLineEdit from the pyqt_object into a file.
+
+    :param pyqt_object: A pyqt object like QFrame or QWidget.
+    :param ui_name: The name to use in the group, If not given it will use the object name to group it.
+    :return:
+    """
+    try:
+        ui_name = type(pyqt_object).__name__ if ui_name is None else ui_name
+        user_preferences.beginGroup(ui_name)
+        for key, item in pyqt_object.__dict__.items():
+            if isinstance(item, pw.QDoubleSpinBox) or isinstance(item, pw.QSpinBox):
+                user_preferences.setValue(key, item.value())
+            elif isinstance(item, pw.QLineEdit):
+                user_preferences.setValue(key, item.text())
+            elif isinstance(item, pw.QDateTimeEdit):
+                user_preferences.setValue(key, item.dateTime().toPyDateTime())
+            elif hasattr(item, "save_values"):
+                item.save_values()
+
+        user_preferences.endGroup()
+    except:
+        pass
 
 def load_ui_designers(ui_file):
     ui_path = os.path.join(UIS_PATH, ui_file)
@@ -17,6 +62,65 @@ def load_ui_designers(ui_file):
     ui_class, _ = uic.loadUiType(ui_path, from_imports=True, import_from='isp.resources')
     return ui_class
 
+def load_preferences(pyqt_object, ui_name=None):
+    """
+    Load data from user_pref to fields QDoubleSpinBox, QSpinBox, QLineEdit
+
+    :param pyqt_object: A pyqt object like QFrame or QWidget.
+    :param ui_name: The name to use in the group, If not given it will use the object name to group it.
+    :return:
+    """
+    ui_name = type(pyqt_object).__name__ if ui_name is None else ui_name
+    user_preferences.beginGroup(ui_name)
+    for key, item in pyqt_object.__dict__.items():
+        if hasattr(item, "load_values"):
+            item.load_values()
+        else:
+            value = user_preferences.value(key)
+            if value is not None:
+                with suppress(TypeError):
+                    str(value, "utf-8")
+                value = value.strip() if type(value) == str else value
+                if value is not "" or type(value) is not str:
+                    if isinstance(item, pw.QDoubleSpinBox):
+                        item.setValue(float(value))
+                    elif isinstance(item, pw.QSpinBox):
+                        item.setValue(int(value))
+                    elif isinstance(item, pw.QLineEdit):
+                        item.setText(value)
+                    elif isinstance(item, pw.QDateTimeEdit):
+                        set_qdatetime(value, item)
+
+    user_preferences.endGroup()
+def save_values(self):
+    if hasattr(self, "parent_name"):
+        save_preferences(self, ui_name=self.parent_name)
+    else:
+        save_preferences(self)
+
+
+def load_values(self):
+    if hasattr(self, "parent_name"):
+        load_preferences(self, ui_name=self.parent_name)
+    else:
+        load_preferences(self)
+
+
+def add_save_load():
+    """
+    Class decorator to add save_values and load_values methods. Using this decorator will make this class
+    to save and load its pyqt widgets values.
+
+    :return:
+    """
+    def wrapper(cls):
+        name = save_values.__name__
+        setattr(cls, name, eval(name))
+        name = load_values.__name__
+        setattr(cls, name, eval(name))
+        return cls
+
+    return wrapper
 
 class BindPyqtObject(pyc.QObject):
     """

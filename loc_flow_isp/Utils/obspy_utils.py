@@ -428,3 +428,16 @@ class MseedUtil:
                 })
 
         return pd.DataFrame.from_dict(project_converted)
+
+    @classmethod
+    def get_metadata_files(cls, file):
+        from obspy import read_inventory
+        try:
+
+            inv = read_inventory(file)
+
+            return inv
+
+        except IOError:
+
+           return []

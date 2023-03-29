@@ -1,33 +1,34 @@
 import os
 import pickle
 from obspy.geodetics import gps2dist_azimuth, kilometers2degrees
-from loc_flow_isp import ROOT_DIR, model_dir, p_dir, station, ttime
+from loc_flow_isp import ROOT_DIR, model_dir, p_dir, station, ttime, nllinput
 from loc_flow_isp.Exceptions.exceptions import parse_excepts
 from loc_flow_isp.Gui.Frames.qt_components import MessageDialog
 from loc_flow_isp.Gui.Frames.uis_frames import UiLoc_Flow
 from PyQt5 import QtWidgets, QtGui, QtCore
-from loc_flow_isp.Gui.Utils.pyqt_utils import BindPyqtObject
+from loc_flow_isp.Gui.Utils.pyqt_utils import BindPyqtObject, add_save_load
 from sys import platform
 from concurrent.futures.thread import ThreadPoolExecutor
 from loc_flow_isp.Utils.obspy_utils import MseedUtil
 from loc_flow_isp.loc_flow_tools.internal.real_manager import RealManager
-from loc_flow_isp.loc_flow_tools.nll.run_nll import NllManager
+from loc_flow_isp.loc_flow_tools.location_output.run_nll import NllManager
 from loc_flow_isp.loc_flow_tools.phasenet.phasenet_handler import Util
 from loc_flow_isp.loc_flow_tools.phasenet.phasenet_handler import PhasenetISP
 from loc_flow_isp.loc_flow_tools.tt_db.taup_tt import create_tt_db
+import numpy as np
 
 #from PyQt5.QtCore import pyqtSlot
 
 pw = QtWidgets
 pqg = QtGui
 pyc = QtCore
-
+@add_save_load()
 class LocFlow(pw.QMainWindow, UiLoc_Flow):
 
     def __init__(self):
         super(LocFlow, self).__init__()
         self.setupUi(self)
-        #self.__pick_output_path = PickerManager.get_default_output_path()
+        self.__pick_output_path = nllinput
         self.__dataless_dir = None
         self.__nll_manager = None
         ####### Project ###########
@@ -68,6 +69,34 @@ class LocFlow(pw.QMainWindow, UiLoc_Flow):
         if not self.__nll_manager:
             self.__nll_manager = NllManager(self.__pick_output_path, self.__dataless_dir)
         return self.__nll_manager
+
+    def info_message(self, msg, detailed_message=None):
+        md = MessageDialog(self)
+        md.set_info_message(msg, detailed_message)
+
+    def subprocess_feedback(self, err_msg: str, set_default_complete=True):
+        """
+        This method is used as a subprocess feedback. It runs when a raise expect is detected.
+
+        :param err_msg: The error message from the except.
+        :param set_default_complete: If True it will set a completed successfully message. Otherwise nothing will
+            be displayed.
+        :return:
+        """
+        if err_msg:
+            md = MessageDialog(self)
+            if "Error code" in err_msg:
+                md.set_error_message("Click in show details detail for more info.", err_msg)
+            else:
+                md.set_warning_message("Click in show details for more info.", err_msg)
+        else:
+            if set_default_complete:
+                md = MessageDialog(self)
+                md.set_info_message("Completed Successfully.")
+
+    def set_pick_output_path(self, file_path):
+        self.__pick_output_path = file_path
+        self.nll_manager.set_observation_file(file_path)
     def onChange_root_path(self, value):
         """
         Fired every time the root_path is changed
@@ -289,4 +318,26 @@ class LocFlow(pw.QMainWindow, UiLoc_Flow):
                                      self.grid_dxsize_bind.value, self.grid_dysize_bind.value,
                                      self.grid_dzsize_bind.value, self.comboBox_gridtype.currentText(),
                                      self.comboBox_wavetype.currentText(), self.modelCB.currentText())
+
+
+    @parse_excepts(lambda self, msg: self.subprocess_feedback(msg))
+    def on_click_run_grid_to_time(self):
+
+
+        if self.distanceSB.value()>0:
+            limit = self.distanceSB.value()
+        else:
+            limit = np.sqrt((self.grid_xnode_bind.value * self.grid_dxsize_bind.value) ** 2 +
+                            (self.grid_xnode_bind.value * self.grid_dxsize_bind.value) ** 2)
+
+        self.nll_manager.grid_to_time(self.grid_latitude_bind.value, self.grid_longitude_bind.value,
+                                      self.grid_depth_bind.value, self.comboBox_grid.currentText(),
+                                      self.comboBox_angles.currentText(), self.comboBox_ttwave.currentText(), limit)
+
+    @parse_excepts(lambda self, msg: self.subprocess_feedback(msg, set_default_complete=False))
+    def on_click_run_loc(self):
+        transform = self.transCB.currentText()
+        std_out = self.nll_manager.run_nlloc(self.grid_latitude_bind.value, self.grid_longitude_bind.value,
+                                             self.grid_depth_bind.value, transform)
+        self.info_message("Location complete. Check details.", std_out)
 
