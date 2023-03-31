@@ -12,7 +12,7 @@ from concurrent.futures.thread import ThreadPoolExecutor
 from loc_flow_isp.Utils.obspy_utils import MseedUtil
 from loc_flow_isp.loc_flow_tools.internal.real_manager import RealManager
 from loc_flow_isp.loc_flow_tools.location_output.run_nll import NllManager
-from loc_flow_isp.loc_flow_tools.phasenet.phasenet_handler import Util
+from loc_flow_isp.loc_flow_tools.phasenet.phasenet_handler import PhasenetUtils as Util
 from loc_flow_isp.loc_flow_tools.phasenet.phasenet_handler import PhasenetISP
 from loc_flow_isp.loc_flow_tools.tt_db.taup_tt import create_tt_db
 import numpy as np
