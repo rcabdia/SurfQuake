@@ -5,3 +5,4 @@ from loc_flow_isp.Gui.Utils.pyqt_utils import load_ui_designers
 #UiMainFrame = load_ui_designers("MainFrame.ui")
 #UiHelp = load_ui_designers("help.ui")
 UiLoc_Flow = load_ui_designers("loc_flow.ui")
+UiEventLocationFrame = load_ui_designers("EventLocationFrame.ui")

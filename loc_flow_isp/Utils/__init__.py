@@ -1,1 +1,2 @@
 from loc_flow_isp.Utils.class_decorators import Singleton
+from loc_flow_isp.Utils.obspy_utils import ObspyUtil

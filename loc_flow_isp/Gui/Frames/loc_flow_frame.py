@@ -14,6 +14,7 @@ from loc_flow_isp.loc_flow_tools.internal.real_manager import RealManager
 from loc_flow_isp.loc_flow_tools.location_output.run_nll import NllManager
 from loc_flow_isp.loc_flow_tools.phasenet.phasenet_handler import PhasenetUtils as Util
 from loc_flow_isp.loc_flow_tools.phasenet.phasenet_handler import PhasenetISP
+from loc_flow_isp.Gui.Frames.event_location_frame import EventLocationFrame
 from loc_flow_isp.loc_flow_tools.tt_db.taup_tt import create_tt_db
 import numpy as np
 
@@ -31,6 +32,7 @@ class LocFlow(pw.QMainWindow, UiLoc_Flow):
         self.__pick_output_path = nllinput
         self.__dataless_dir = None
         self.__nll_manager = None
+        self.db_frame = None
         ####### Project ###########
         self.progressbar = pw.QProgressDialog(self)
         self.progressbar.setLabelText("Computing Project ")
@@ -60,10 +62,16 @@ class LocFlow(pw.QMainWindow, UiLoc_Flow):
         self.runlocBtn.clicked.connect(lambda: self.on_click_run_loc())
         #self.plotmapBtn.clicked.connect(lambda: self.on_click_plot_map())
         self.stationsBtn.clicked.connect(lambda: self.on_click_select_metadata_file())
-
+        self.actionData_Base.triggered.connect(lambda: self.open_data_base())
     # @pyc.Slot()
     # def _increase_progress(self):
     #      self.progressbar.setValue(self.progressbar.value() + 1)
+
+    def open_data_base(self):
+        if self.db_frame is None:
+            self.db_frame = EventLocationFrame()
+        self.db_frame.show()
+
     @property
     def nll_manager(self):
         if not self.__nll_manager:

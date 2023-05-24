@@ -3,7 +3,6 @@ import os
 import pickle
 from multiprocessing import Pool
 from enum import unique, Enum
-
 import xmltodict as xmltodict
 from obspy.geodetics import degrees2kilometers, gps2dist_azimuth
 from obspy.io.nlloc.core import read_nlloc_hyp

@@ -12,7 +12,8 @@ nllinput = os.path.join(os.path.dirname(ROOT_DIR), "loc_flow_isp/loc_flow_tools"
 location_output = os.path.join(os.path.dirname(ROOT_DIR), "loc_flow_isp/loc_flow_tools", "location_output")
 UIS_PATH = os.path.join(os.path.dirname(ROOT_DIR), 'loc_flow_isp/resources', 'designer_uis')
 TT_DB_PATH = os.path.join(os.path.dirname(ROOT_DIR), "loc_flow_isp/loc_flow_tools/tt_db", "mymodel.nd")
-
+MOMENT_TENSOR_OUTPUT = os.path.join(os.path.dirname(ROOT_DIR), "loc_flow_isp/moment_tensor_output")
+magnitudes = os.path.join(os.path.dirname(ROOT_DIR), "loc_flow_isp/magnitudes_output/magnitudes.txt")
 def create_logger():
 
     # create logger.

@@ -503,7 +503,7 @@
              <property name="title">
               <string>Set stations framework</string>
              </property>
-             <widget class="QWidget" name="">
+             <widget class="QWidget" name="layoutWidget">
               <property name="geometry">
                <rect>
                 <x>10</x>
@@ -1130,8 +1130,20 @@
      <height>24</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuOpen">
+    <property name="title">
+     <string>Open</string>
+    </property>
+    <addaction name="actionData_Base"/>
+   </widget>
+   <addaction name="menuOpen"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionData_Base">
+   <property name="text">
+    <string>Data Base</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
