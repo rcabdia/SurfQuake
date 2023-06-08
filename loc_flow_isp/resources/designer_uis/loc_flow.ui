@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>3</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_4">
        <attribute name="title">
@@ -1122,88 +1122,6 @@
                 <string>Time Window Parameters</string>
                </property>
                <layout class="QGridLayout" name="gridLayout_4">
-                <item row="1" column="1">
-                 <widget class="QDoubleSpinBox" name="mag_vpDB">
-                  <property name="toolTip">
-                   <string>P wave velocity (in km/s) for travel time calculation</string>
-                  </property>
-                  <property name="suffix">
-                   <string> (km/s)</string>
-                  </property>
-                  <property name="maximum">
-                   <double>10.000000000000000</double>
-                  </property>
-                  <property name="value">
-                   <double>6.000000000000000</double>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="3">
-                 <widget class="QSpinBox" name="mag_tol_vpSB">
-                  <property name="toolTip">
-                   <string>Arrival tolerances (in seconds) to accept a manual P pick</string>
-                  </property>
-                  <property name="suffix">
-                   <string> (s)</string>
-                  </property>
-                  <property name="maximum">
-                   <number>10</number>
-                  </property>
-                  <property name="value">
-                   <number>4</number>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="2">
-                 <widget class="QLabel" name="label_30">
-                  <property name="text">
-                   <string>Arrival Tolerance</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="3">
-                 <widget class="QSpinBox" name="mag_vs_tolSB">
-                  <property name="toolTip">
-                   <string>Arrival tolerances (in seconds) to accept a manual S pick</string>
-                  </property>
-                  <property name="suffix">
-                   <string> (s)</string>
-                  </property>
-                  <property name="value">
-                   <number>4</number>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="0">
-                 <widget class="QLabel" name="label_27">
-                  <property name="text">
-                   <string>Vp</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="4">
-                 <widget class="QLabel" name="label_31">
-                  <property name="text">
-                   <string>signal pre-arrival</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="1">
-                 <widget class="QDoubleSpinBox" name="doubleSpinBox">
-                  <property name="toolTip">
-                   <string>S wave velocity (in km/s) for travel time calculation</string>
-                  </property>
-                  <property name="suffix">
-                   <string> (km/s)</string>
-                  </property>
-                  <property name="maximum">
-                   <double>10.000000000000000</double>
-                  </property>
-                  <property name="value">
-                   <double>3.500000000000000</double>
-                  </property>
-                 </widget>
-                </item>
                 <item row="0" column="1">
                  <widget class="QDoubleSpinBox" name="mag_max_distDB">
                   <property name="prefix">
@@ -1226,39 +1144,46 @@
                   </property>
                  </widget>
                 </item>
-                <item row="2" column="0">
-                 <widget class="QLabel" name="label_28">
-                  <property name="text">
-                   <string>Vs</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="0">
+                <item row="0" column="0" alignment="Qt::AlignHCenter">
                  <widget class="QLabel" name="label_26">
                   <property name="text">
                    <string>Maximum Epicentral Distance</string>
                   </property>
                  </widget>
                 </item>
-                <item row="1" column="2">
+                <item row="1" column="0" alignment="Qt::AlignHCenter">
                  <widget class="QLabel" name="label_29">
                   <property name="text">
-                   <string>Arrival Tolerance</string>
+                   <string>Vp arrival time weight</string>
                   </property>
                  </widget>
                 </item>
-                <item row="1" column="5">
-                 <widget class="QSpinBox" name="spinBox"/>
-                </item>
-                <item row="2" column="4">
-                 <widget class="QLabel" name="label_32">
+                <item row="2" column="0" alignment="Qt::AlignHCenter">
+                 <widget class="QLabel" name="label_30">
                   <property name="text">
-                   <string>Win Length</string>
+                   <string>Vp arrival time weight</string>
                   </property>
                  </widget>
                 </item>
-                <item row="2" column="5">
-                 <widget class="QSpinBox" name="spinBox_2"/>
+                <item row="1" column="1">
+                 <widget class="QDoubleSpinBox" name="doubleSpinBox">
+                  <property name="maximum">
+                   <double>1.000000000000000</double>
+                  </property>
+                  <property name="singleStep">
+                   <double>0.100000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>0.750000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QDoubleSpinBox" name="doubleSpinBox_5">
+                  <property name="value">
+                   <double>0.750000000000000</double>
+                  </property>
+                 </widget>
                 </item>
                </layout>
               </widget>
@@ -1270,10 +1195,17 @@
              <item row="0" column="0">
               <widget class="QGroupBox" name="groupBox_13">
                <property name="title">
-                <string>Spectral Parameters</string>
+                <string>Source Parameters</string>
                </property>
                <layout class="QGridLayout" name="gridLayout_13">
-                <item row="0" column="0">
+                <item row="1" column="0" alignment="Qt::AlignHCenter">
+                 <widget class="QLabel" name="label_34">
+                  <property name="text">
+                   <string>rpp</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="0" alignment="Qt::AlignHCenter">
                  <widget class="QLabel" name="label_33">
                   <property name="text">
                    <string>Density</string>
@@ -1281,7 +1213,134 @@
                  </widget>
                 </item>
                 <item row="0" column="1">
-                 <widget class="QDoubleSpinBox" name="doubleSpinBox_2"/>
+                 <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+                  <property name="suffix">
+                   <string> (kg/m3)</string>
+                  </property>
+                  <property name="decimals">
+                   <number>1</number>
+                  </property>
+                  <property name="maximum">
+                   <double>5000.000000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>2500.000000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
+                  <property name="toolTip">
+                   <string>P-wave average radiation pattern coefficient</string>
+                  </property>
+                  <property name="value">
+                   <double>0.520000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0" alignment="Qt::AlignHCenter">
+                 <widget class="QLabel" name="label_35">
+                  <property name="toolTip">
+                   <string>S-wave average radiation pattern coefficient</string>
+                  </property>
+                  <property name="text">
+                   <string>rps</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QDoubleSpinBox" name="doubleSpinBox_4">
+                  <property name="value">
+                   <double>0.620000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="2">
+                 <widget class="QGroupBox" name="groupBox_14">
+                  <property name="title">
+                   <string>Geometrical spreading correction</string>
+                  </property>
+                  <layout class="QGridLayout" name="gridLayout_15">
+                   <item row="0" column="0">
+                    <layout class="QHBoxLayout" name="horizontalLayout_2">
+                     <item>
+                      <widget class="QRadioButton" name="radioButton">
+                       <property name="text">
+                        <string>r_power_n</string>
+                       </property>
+                       <property name="checked">
+                        <bool>true</bool>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QRadioButton" name="radioButton_2">
+                       <property name="text">
+                        <string>boatwright</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item row="1" column="2">
+                 <widget class="QGroupBox" name="groupBox_15">
+                  <property name="title">
+                   <string>Local Magnitude</string>
+                  </property>
+                  <layout class="QGridLayout" name="gridLayout_16">
+                   <item row="0" column="1">
+                    <widget class="QDoubleSpinBox" name="mag_aDB">
+                     <property name="value">
+                      <double>1.110000000000000</double>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="4">
+                    <widget class="QLabel" name="label_38">
+                     <property name="text">
+                      <string>c</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="0">
+                    <widget class="QLabel" name="label_36">
+                     <property name="text">
+                      <string>a</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="2">
+                    <widget class="QLabel" name="label_37">
+                     <property name="text">
+                      <string>b</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="3">
+                    <widget class="QDoubleSpinBox" name="mag_bDB">
+                     <property name="decimals">
+                      <number>6</number>
+                     </property>
+                     <property name="value">
+                      <double>0.001890000000000</double>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="5">
+                    <widget class="QDoubleSpinBox" name="mag_cDB">
+                     <property name="minimum">
+                      <double>-10.000000000000000</double>
+                     </property>
+                     <property name="value">
+                      <double>-2.090000000000000</double>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
                 </item>
                </layout>
               </widget>
