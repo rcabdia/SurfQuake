@@ -292,10 +292,12 @@ class ObspyUtil:
 
         with open(stationfile, 'w') as f:
             for data in dataXml:
+                if type(data['Station']) is dict:
+                    data['Station'] = [data['Station']]
                 for info in data['Station']:
                     info_channel = [ch for ch in info['Channel'] if ch['@code'] in channels]
                     f.write(f"{info['Longitude']}\t{info['Latitude']}\t{data['@code']}\t{info['@code']}\t"
-                            f"{info_channel[0]['@code']}\t{float(info['Elevation']) / 1000:.3f}\n")
+                        f"{info_channel[0]['@code']}\t{float(info['Elevation']) / 1000:.3f}\n")
                     print(info)
 
             f.close()
@@ -307,9 +309,12 @@ class ObspyUtil:
 
         with open(stationfile, 'w') as f:
             for data in dataXml:
+                if type(data['Station']) is dict:
+                    data['Station'] = [data['Station']]
                 for info in data['Station']:
                     f.write(f"{'GTSRCE'}\t{info['@code']}\t{'LATLON'}\t{info['Latitude']}\t{info['Longitude']}\t"
                             f"{float(0.0):.1f}\t{float(info['Elevation']) / 1000:.3f}\n")
+
 
                     print(info)
 
