@@ -150,6 +150,9 @@
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
          <widget class="QGroupBox" name="groupBox_10">
+          <property name="toolTip">
+           <string>Search range in depth (km)</string>
+          </property>
           <property name="title">
            <string>Geraphic Framework</string>
           </property>
@@ -268,6 +271,9 @@
            </item>
            <item row="2" column="2">
             <widget class="QDoubleSpinBox" name="DepthGridSizeBtn">
+             <property name="toolTip">
+              <string>Tamaño del grid de búsqueda para la profundidad (km)</string>
+             </property>
              <property name="prefix">
               <string>Depth Search Grid Size (km) </string>
              </property>
@@ -288,6 +294,9 @@
            </item>
            <item row="12" column="0" colspan="2">
             <widget class="QSpinBox" name="ThresholdSwaveSB">
+             <property name="toolTip">
+              <string>Minimum number of S-phase selections required in an event</string>
+             </property>
              <property name="suffix">
               <string/>
              </property>
@@ -295,7 +304,7 @@
               <string>Minimum Number S-wave Picks </string>
              </property>
              <property name="value">
-              <number>2</number>
+              <number>1</number>
              </property>
             </widget>
            </item>
@@ -308,6 +317,9 @@
            </item>
            <item row="1" column="0" colspan="2">
             <widget class="QDoubleSpinBox" name="gridSearchParamHorizontalRangeBtn">
+             <property name="toolTip">
+              <string>Horizontal search range centered on the station where the first phase is recorded (degrees).</string>
+             </property>
              <property name="prefix">
               <string>Horizontal Search Range (º) </string>
              </property>
@@ -318,12 +330,15 @@
               <double>0.100000000000000</double>
              </property>
              <property name="value">
-              <double>1.200000000000000</double>
+              <double>4.800000000000000</double>
              </property>
             </widget>
            </item>
            <item row="1" column="2">
             <widget class="QDoubleSpinBox" name="HorizontalGridSizeBtn">
+             <property name="toolTip">
+              <string>Search grid size for epicenter (degree)</string>
+             </property>
              <property name="prefix">
               <string>Horizontal Search Grid Size (º) </string>
              </property>
@@ -334,12 +349,15 @@
               <double>0.100000000000000</double>
              </property>
              <property name="value">
-              <double>0.150000000000000</double>
+              <double>0.600000000000000</double>
              </property>
             </widget>
            </item>
            <item row="3" column="0" colspan="3">
             <widget class="QDoubleSpinBox" name="EventTimeWindow">
+             <property name="toolTip">
+              <string>Search grid size for depth (km)</string>
+             </property>
              <property name="prefix">
               <string>Event Time Window (s) </string>
              </property>
@@ -356,6 +374,9 @@
            </item>
            <item row="11" column="0" colspan="2">
             <widget class="QSpinBox" name="ThresholdPwaveSB">
+             <property name="statusTip">
+              <string>Minimum number of P-phase selections required in an event</string>
+             </property>
              <property name="suffix">
               <string/>
              </property>
@@ -363,7 +384,7 @@
               <string>Minimum Number P-wave Picks </string>
              </property>
              <property name="value">
-              <number>4</number>
+              <number>3</number>
              </property>
             </widget>
            </item>
@@ -376,6 +397,9 @@
            </item>
            <item row="11" column="2" rowspan="2">
             <widget class="QSpinBox" name="number_stations_picksSB">
+             <property name="toolTip">
+              <string>Minimum number of stations where there must be P and S picks</string>
+             </property>
              <property name="suffix">
               <string/>
              </property>
@@ -383,12 +407,15 @@
               <string>Number of Stations Recorded (P &amp; S) </string>
              </property>
              <property name="value">
-              <number>6</number>
+              <number>1</number>
              </property>
             </widget>
            </item>
            <item row="7" column="2">
             <widget class="QDoubleSpinBox" name="TTDepthGridSizeBtn">
+             <property name="statusTip">
+              <string>Grid size of travel times table (km)</string>
+             </property>
              <property name="prefix">
               <string>Depth Grid Resolution Size (km) </string>
              </property>
@@ -419,6 +446,9 @@
            </item>
            <item row="6" column="0" colspan="2">
             <widget class="QDoubleSpinBox" name="TTHorizontalRangeBtn">
+             <property name="statusTip">
+              <string>Horizontal range in the travel times table (degree)</string>
+             </property>
              <property name="prefix">
               <string>Horizontal Range (º) </string>
              </property>
@@ -438,6 +468,9 @@
            </item>
            <item row="2" column="0" colspan="2">
             <widget class="QDoubleSpinBox" name="DepthSearchParamHorizontalRangeBtn">
+             <property name="statusTip">
+              <string>Vertical range in the travel times table (km)</string>
+             </property>
              <property name="prefix">
               <string>Depth Search Range (km) </string>
              </property>
@@ -458,6 +491,9 @@
            </item>
            <item row="6" column="2">
             <widget class="QDoubleSpinBox" name="TTHorizontalGridSizeBtn">
+             <property name="statusTip">
+              <string>Travel times table grid size (degree)</string>
+             </property>
              <property name="prefix">
               <string>Horizontal Grid Resolution Size (º) </string>
              </property>
@@ -1410,7 +1446,7 @@
      <x>0</x>
      <y>0</y>
      <width>1233</width>
-     <height>24</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuOpen">
