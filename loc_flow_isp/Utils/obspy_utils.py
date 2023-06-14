@@ -3,7 +3,7 @@ import os
 import pickle
 from multiprocessing import Pool
 from enum import unique, Enum
-import xmltodict as xmltodict
+from obspy import read_inventory
 from obspy.geodetics import degrees2kilometers, gps2dist_azimuth
 from obspy.io.nlloc.core import read_nlloc_hyp
 from obspy.taup import TauPyModel
@@ -287,51 +287,33 @@ class ObspyUtil:
     @staticmethod
     def realStation(dataXml, stationfile):
         channels = ['HNZ', 'HHZ', 'BHZ', 'EHZ']
-        if type(dataXml) is dict:
-            dataXml = [dataXml]
 
         with open(stationfile, 'w') as f:
-            for data in dataXml:
-                if type(data['Station']) is dict:
-                    data['Station'] = [data['Station']]
-                for info in data['Station']:
-                    info_channel = [ch for ch in info['Channel'] if ch['@code'] in channels]
-                    f.write(f"{info['Longitude']}\t{info['Latitude']}\t{data['@code']}\t{info['@code']}\t"
-                        f"{info_channel[0]['@code']}\t{float(info['Elevation']) / 1000:.3f}\n")
-                    print(info)
+            for network in dataXml:
+                for stations in network.stations:
+                    info_channel = [ch for ch in stations.channels if ch.code in channels]
+                    f.write(f"{stations.longitude}\t{stations.latitude}\t{network.code}\t{stations.code}\t"
+                            f"{info_channel[0].code}\t{float(stations.elevation) / 1000: .3f}\n")
 
             f.close()
 
     @staticmethod
     def nllStation(dataXml, stationfile):
-        if type(dataXml) is dict:
-            dataXml = [dataXml]
-
         with open(stationfile, 'w') as f:
-            for data in dataXml:
-                if type(data['Station']) is dict:
-                    data['Station'] = [data['Station']]
-                for info in data['Station']:
-                    f.write(f"{'GTSRCE'}\t{info['@code']}\t{'LATLON'}\t{info['Latitude']}\t{info['Longitude']}\t"
-                            f"{float(0.0):.1f}\t{float(info['Elevation']) / 1000:.3f}\n")
-
-
-                    print(info)
+            for network in dataXml:
+                for stations in network.stations:
+                    f.write(f"{'GTSRCE '}{stations.code + ' '}{'LATLON '}{stations.latitude}{' '}{stations.longitude}"
+                            f"{' '}{float(0.0):.1f}{' '}{float(stations.elevation) / 1000:.3f}\n")
 
             f.close()
 
     @staticmethod
     def readXml(file, real_station, nll_station):
-        print(file)
+        xml = read_inventory(file)
 
-        xml = open(file)
-        xmldict = xmltodict.parse(xml.read())
+        ObspyUtil.realStation(xml, real_station)
+        ObspyUtil.nllStation(xml, nll_station)
 
-        network = xmldict['FDSNStationXML']['Network']
-
-        print(network)
-        ObspyUtil.realStation(network, real_station)
-        ObspyUtil.nllStation(network, nll_station)
 
 class MseedUtil:
 
