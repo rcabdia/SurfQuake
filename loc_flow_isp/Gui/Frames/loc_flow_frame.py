@@ -295,6 +295,7 @@ class LocFlow(pw.QMainWindow, UiLoc_Flow):
             TTDepthGridSize=TTDepthGridSize, TTDepthRange=TTDepthRange, ThresholdPwave=ThresholdPwave,
                                    ThresholdSwave=ThresholdSwave, number_stations_picks=number_stations_picks)
 
+        # TODO ESTIMATE LAT_CENTER
         self.latitude_center = 42.5
         real_handler.latitude_center = self.latitude_center
         print(real_handler.stations)
@@ -348,4 +349,8 @@ class LocFlow(pw.QMainWindow, UiLoc_Flow):
         std_out = self.nll_manager.run_nlloc(self.grid_latitude_bind.value, self.grid_longitude_bind.value,
                                              self.grid_depth_bind.value, transform)
         self.info_message("Location complete. Check details.", std_out)
+
+    # def mag_runBtn(self):
+    #     # self.project
+
 

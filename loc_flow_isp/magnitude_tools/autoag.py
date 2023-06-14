@@ -3,12 +3,12 @@ from collections import ChainMap
 import numpy as np
 from datetime import datetime
 from obspy import read, read_events, UTCDateTime, Stream
-from isp import ALL_LOCATIONS
+from loc_flow_isp import location_output
 from loc_flow_isp.magnitude_tools.automag_processing_tools import ssp_inversion
 from loc_flow_isp.magnitude_tools.automag_statistics import compute_summary_statistics, SourceSpecOutput
 from loc_flow_isp.magnitude_tools.automag_tools import preprocess_tools
 from loc_flow_isp.magnitude_tools.radiated_energy import Energy
-from loc_flow_isp.Utils import MseedUtil
+from loc_flow_isp.Utils.obspy_utils import MseedUtil
 #from loc_flow_isp.metadata_manager import MetadataManager
 from loc_flow_isp.Utils import read_nll_performance
 
@@ -181,7 +181,7 @@ class Automag:
     def scan_folder(self):
         obsfiles1 = []
         dates = {}
-        for top_dir, _, files in os.walk(ALL_LOCATIONS):
+        for top_dir, _, files in os.walk(location_output):
 
             for file in files:
                 try:
@@ -189,7 +189,7 @@ class Automag:
                     cat = read_events(file_hyp, format="NLLOC_HYP")
                     ev = cat[0]
                     date = ev.origins[0]["time"]
-                    date = str(date.julday)+ "."+ str(date.year)
+                    date = str(date.julday) + "." + str(date.year)
 
                     obsfiles1.append(file_hyp)
                     if date not in dates:
@@ -375,11 +375,5 @@ if __name__ == "__main__":
                       spectral_model_params, postinversion_params, radiated_energy_params, statistics)
 
 
-    project_path = "/Volumes/LaCie/test_meli/test_meli_casa"
-    inv_path = "/Volumes/LaCie/test_meli/metadata/metadata.xml"
-    project = MseedUtil.load_project(project_path)
-    mg = Automag(project, inv_path)
-    mg.load_metadata()
-    mg.scan_folder()
-    mg.estimate_magnitudes(config)
-    #mg.get_now_files()
+    # mg = Automag(project, inventoy)
+    # mg.estimate_magnitudes(config)

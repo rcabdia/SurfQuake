@@ -3,9 +3,8 @@ from obspy.geodetics import gps2dist_azimuth
 from obspy.taup import TauPyModel
 from scipy.signal import find_peaks
 from scipy.stats import gaussian_kde
-
-from isp.DataProcessing.automag_processing_tools import signal_preprocess_tools
-from isp.Structures.structures import StationCoordinates
+from loc_flow_isp.magnitude_tools.automag_processing_tools import signal_preprocess_tools
+from loc_flow_isp.Structures.structures import StationCoordinates
 import numpy as np
 import logging
 from obspy.core import Stream
