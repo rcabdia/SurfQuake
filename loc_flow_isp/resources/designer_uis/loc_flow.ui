@@ -159,6 +159,9 @@
           <layout class="QGridLayout" name="gridLayout_9">
            <item row="1" column="0">
             <widget class="QDoubleSpinBox" name="lon_refMin">
+             <property name="toolTip">
+              <string>Longitude min</string>
+             </property>
              <property name="prefix">
               <string>Ref Longitude Min  </string>
              </property>
@@ -178,6 +181,9 @@
            </item>
            <item row="0" column="0">
             <widget class="QDoubleSpinBox" name="lat_refMaxSB">
+             <property name="toolTip">
+              <string>Latitude max</string>
+             </property>
              <property name="prefix">
               <string>Ref Latitude Max </string>
              </property>
@@ -194,6 +200,9 @@
            </item>
            <item row="0" column="1">
             <widget class="QDoubleSpinBox" name="lon_refMaxSB">
+             <property name="toolTip">
+              <string>Longitude max.</string>
+             </property>
              <property name="prefix">
               <string>Ref Longitude Max </string>
              </property>
@@ -210,6 +219,9 @@
            </item>
            <item row="1" column="1">
             <widget class="QDoubleSpinBox" name="lat_refMinSB">
+             <property name="toolTip">
+              <string>Latitude min</string>
+             </property>
              <property name="prefix">
               <string>Ref Latitude Min </string>
              </property>
@@ -226,6 +238,9 @@
            </item>
            <item row="0" column="2">
             <widget class="QDoubleSpinBox" name="depthSB">
+             <property name="toolTip">
+              <string>Depth max</string>
+             </property>
              <property name="prefix">
               <string>Depth (km) </string>
              </property>
@@ -239,6 +254,9 @@
            </item>
            <item row="1" column="2">
             <widget class="QPushButton" name="plot_grid_stationsBtn">
+             <property name="toolTip">
+              <string>Plot Grid Stations</string>
+             </property>
              <property name="text">
               <string>Set &amp; Plot Grid Stations</string>
              </property>
@@ -255,6 +273,9 @@
           <layout class="QGridLayout" name="gridLayout_10">
            <item row="7" column="0" colspan="2">
             <widget class="QDoubleSpinBox" name="TTDepthRangeBtn">
+             <property name="toolTip">
+              <string>Vertical range in the travel times table (km)</string>
+             </property>
              <property name="prefix">
               <string>Depth Range (km) </string>
              </property>
@@ -272,7 +293,7 @@
            <item row="2" column="2">
             <widget class="QDoubleSpinBox" name="DepthGridSizeBtn">
              <property name="toolTip">
-              <string>Tamaño del grid de búsqueda para la profundidad (km)</string>
+              <string>Search grid size for depth (km)</string>
              </property>
              <property name="prefix">
               <string>Depth Search Grid Size (km) </string>
@@ -356,7 +377,7 @@
            <item row="3" column="0" colspan="3">
             <widget class="QDoubleSpinBox" name="EventTimeWindow">
              <property name="toolTip">
-              <string>Search grid size for depth (km)</string>
+              <string>Time between two events (seconds)</string>
              </property>
              <property name="prefix">
               <string>Event Time Window (s) </string>
@@ -374,6 +395,9 @@
            </item>
            <item row="11" column="0" colspan="2">
             <widget class="QSpinBox" name="ThresholdPwaveSB">
+             <property name="toolTip">
+              <string>Minimum number of P-phase selections required in an event</string>
+             </property>
              <property name="statusTip">
               <string>Minimum number of P-phase selections required in an event</string>
              </property>
@@ -390,6 +414,9 @@
            </item>
            <item row="13" column="2">
             <widget class="QPushButton" name="realBtn">
+             <property name="toolTip">
+              <string>Associator</string>
+             </property>
              <property name="text">
               <string>Run Associator</string>
              </property>
@@ -413,6 +440,9 @@
            </item>
            <item row="7" column="2">
             <widget class="QDoubleSpinBox" name="TTDepthGridSizeBtn">
+             <property name="toolTip">
+              <string>Vertical grid size of travel times table (km)</string>
+             </property>
              <property name="statusTip">
               <string>Grid size of travel times table (km)</string>
              </property>
@@ -439,6 +469,9 @@
            </item>
            <item row="13" column="0" colspan="2">
             <widget class="QPushButton" name="phasenetBtn">
+             <property name="toolTip">
+              <string>Auto Pick</string>
+             </property>
              <property name="text">
               <string>Run Auto Pick</string>
              </property>
@@ -446,6 +479,9 @@
            </item>
            <item row="6" column="0" colspan="2">
             <widget class="QDoubleSpinBox" name="TTHorizontalRangeBtn">
+             <property name="toolTip">
+              <string>Horizontal range in the travel times table (degree)</string>
+             </property>
              <property name="statusTip">
               <string>Horizontal range in the travel times table (degree)</string>
              </property>
@@ -468,6 +504,9 @@
            </item>
            <item row="2" column="0" colspan="2">
             <widget class="QDoubleSpinBox" name="DepthSearchParamHorizontalRangeBtn">
+             <property name="toolTip">
+              <string>Depth search range (km)</string>
+             </property>
              <property name="statusTip">
               <string>Vertical range in the travel times table (km)</string>
              </property>
@@ -491,6 +530,9 @@
            </item>
            <item row="6" column="2">
             <widget class="QDoubleSpinBox" name="TTHorizontalGridSizeBtn">
+             <property name="toolTip">
+              <string>Grid size of the travel times table (degree)</string>
+             </property>
              <property name="statusTip">
               <string>Travel times table grid size (degree)</string>
              </property>
