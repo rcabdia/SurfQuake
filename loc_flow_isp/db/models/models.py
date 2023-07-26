@@ -2,7 +2,7 @@
 from obspy.core.event import Origin
 from sqlalchemy import Column, Integer, String, DateTime, Float, ForeignKey
 from sqlalchemy.orm import relationship
-from loc_flow_isp.db import db, generate_id
+from loc_flow_isp.db import db, generate_id, generate_id_from_origin
 from loc_flow_isp.db.models import RelationShip
 from loc_flow_isp.db.models.base_model import BaseModel
 
@@ -160,11 +160,14 @@ class EventLocationModel(db.Model, BaseModel):
 
     @classmethod
     def create_from_origin(cls, origin: Origin):
+
+        origin_id = generate_id_from_origin(origin)
+        
         if cls.find_by(latitude=origin.latitude, longitude=origin.longitude, depth=origin.depth,
                        origin_time=origin.time.datetime):
             raise AttributeError("Object already exist in the database.")
-        id = origin.time.strftime("%Y%m%d%H%M%S")
-        event_dict = {"id": id, "origin_time": origin.time.datetime, "transformation": "SIMPLE",
+
+        event_dict = {"id": origin_id, "origin_time": origin.time.datetime, "transformation": "SIMPLE",
                       "rms": origin.quality.standard_error, "latitude": origin.latitude,
                       "longitude": origin.longitude, "depth": origin.depth,
                       "uncertainty": origin.depth_errors["uncertainty"],
