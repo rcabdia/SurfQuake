@@ -104,9 +104,6 @@ venv.bak/
 .mypy_cache/
 .idea
 
-# remove this dir or file from git
-/isp/NLL7/
-/isp/FOCMEC/
 # remove the db file
 *.db
 *.DS_Store
@@ -114,18 +111,17 @@ venv.bak/
 # local file to test stuff.
 playground.py
 
-# ignore folders
-isp/examples/catalog/catalog.csv
-isp/examples/catalog/catalog.numbers
-isp/UPFLOW/macro_upflow.pkl
-Test/read_catalogFile.py
-isp/mti/green_source/compile_mti.sh
-isp/mti/green_source/compile_mti_ifort.sh
-isp/mti/green_source/dimen1.inc
-isp/mti/green_source/dimen2.inc
-isp/mti/green_source/elemse
-isp/mti/green_source/elemse.o
-isp/mti/green_source/gr_xyz
-isp/mti/green_source/gr_xyz.o
-isp/mti/green_source/grdat.hed
-isp/mti/green_source/param.inc
+# ignore files inside folders
+loc_flow_isp/loc_flow_tools/location_output/loc/*last
+loc_flow_isp/loc_flow_tools/location_output/loc/*location
+
+loc_flow_isp/loc_flow_tools/location_output/model/*hdr
+loc_flow_isp/loc_flow_tools/location_output/model/*buf
+
+loc_flow_isp/loc_flow_tools/location_output/model3D/*hdr
+loc_flow_isp/loc_flow_tools/location_output/model3D/*buf
+
+loc_flow_isp/loc_flow_tools/location_output/stations/stations.txt
+
+loc_flow_isp/loc_flow_tools/location_output/time/*hdr
+loc_flow_isp/loc_flow_tools/location_output/time/*buf
