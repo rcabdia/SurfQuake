@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_4">
        <attribute name="title">
@@ -108,6 +108,13 @@
            </item>
            <item row="0" column="2">
             <widget class="QLineEdit" name="nameForm"/>
+           </item>
+           <item row="0" column="3">
+            <widget class="QPushButton" name="loadProjectBtn">
+             <property name="text">
+              <string>Load Project</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -1488,7 +1495,7 @@
      <x>0</x>
      <y>0</y>
      <width>1233</width>
-     <height>22</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuOpen">

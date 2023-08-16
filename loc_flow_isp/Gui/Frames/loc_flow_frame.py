@@ -40,6 +40,7 @@ class LocFlow(pw.QMainWindow, UiLoc_Flow):
         self.progressbar.close()
         self.root_path_bind = BindPyqtObject(self.rootPathForm, self.onChange_root_path)
         self.pathFilesBtn.clicked.connect(lambda: self.on_click_select_directory(self.root_path_bind))
+        self.loadProjectBtn.clicked.connect(lambda: self.load_project())
         self.openProjectBtn.clicked.connect(lambda: self.openProject())
         self.saveBtn.clicked.connect(lambda: self.saveProject())
         self.regularBtn.clicked.connect(lambda: self.load_files_done())
@@ -114,6 +115,23 @@ class LocFlow(pw.QMainWindow, UiLoc_Flow):
         :return:
         """
         pass
+
+    def load_project(self):
+        self.loaded_project = True
+        selected = pw.QFileDialog.getOpenFileName(self, "Select Project", ROOT_DIR)
+
+        md = MessageDialog(self)
+
+        if isinstance(selected[0], str) and os.path.isfile(selected[0]):
+            try:
+                self.current_project_file = selected[0]
+                self.project = MseedUtil.load_project(file = selected[0])
+                project_name = os.path.basename(selected[0])
+                md.set_info_message("Project {} loaded  ".format(project_name))
+            except:
+                md.set_error_message("Project couldn't be loaded ")
+        else:
+            md.set_error_message("Project couldn't be loaded ")
 
     def load_files_done(self):
 
