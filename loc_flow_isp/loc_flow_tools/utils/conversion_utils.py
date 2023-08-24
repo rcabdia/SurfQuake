@@ -27,12 +27,15 @@ class ConversionUtils:
 
         for i in np.arange(0, len(data)):
             data[i] = data[i].split('EventLocation')
-            for j in np.arange(0, len(data[i])):
-                if j == len(data[i]) - 1:
-                    data[i][j] = data[i][j][:-1]
-                    data_save.append(eval('EventLocation' + data[i][j]))
-                else:
-                    data_save.append(eval('EventLocation' + data[i][j])[0])
+            try:
+                for j in np.arange(0, len(data[i])):
+                    if j == len(data[i]) - 1:
+                        data[i][j] = data[i][j][:-1]
+                        data_save.append(eval('EventLocation' + data[i][j]))
+                    else:
+                        data_save.append(eval('EventLocation' + data[i][j])[0])
+            except:
+                pass
 
         with open(nllfile, 'w') as g:
             for i in np.arange(0, len(data_save)):

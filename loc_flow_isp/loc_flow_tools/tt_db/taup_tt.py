@@ -30,18 +30,19 @@ class create_tt_db:
         depth interval, be exactly divided by dep
         """
 
-        ndep=int(depth/ddep)+1
-        ndist=int(dist/ddist)+1
+        ndep = int(depth/ddep)+1
+        ndist = int(dist/ddist)+1
 
         with open(ttime, "w") as f:
 
             """    
             # f.write("dist dep tp ts tp_slowness ts_slowness tp_hslowness ts_hslowness p_elvecorr s_elvecorr\n")
+            # Wil write at "loc_flow_isp/data/tt_real/ttdb.txt")
             """
 
             t0 = time.time()
-            for idep in range(0,ndep,1): # in depth
-                for idist in range(1,ndist,1): # in horizontal
+            for idep in range(0, ndep, 1): # in depth
+                for idist in range(1, ndist, 1): # in horizontal
                     dist = idist*ddist
                     dep = idep*ddep
                     # print(dep,dist)
@@ -51,7 +52,7 @@ class create_tt_db:
                     i = 0
                     pi = 0
                     si = 0
-                    while(i<len(arrivals)):
+                    while(i < len(arrivals)):
                         arr = arrivals[i]
                         i = i + 1
                         if((arr.name == 'P' or arr.name == 'p') and pi == 0):

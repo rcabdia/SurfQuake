@@ -1,7 +1,7 @@
 import os
 import pickle
 from obspy.geodetics import gps2dist_azimuth, kilometers2degrees
-from loc_flow_isp import ROOT_DIR, model_dir, p_dir, station, ttime, nllinput
+from loc_flow_isp import ROOT_DIR, model_dir, p_dir, station, ttime, nllinput, realout
 from loc_flow_isp.Exceptions.exceptions import parse_excepts
 from loc_flow_isp.Gui.Frames.qt_components import MessageDialog
 from loc_flow_isp.Gui.Frames.uis_frames import UiLoc_Flow
@@ -18,6 +18,8 @@ from loc_flow_isp.Gui.Frames.event_location_frame import EventLocationFrame
 from loc_flow_isp.loc_flow_tools.tt_db.taup_tt import create_tt_db
 import numpy as np
 
+from loc_flow_isp.loc_flow_tools.utils import ConversionUtils
+
 #from PyQt5.QtCore import pyqtSlot
 
 pw = QtWidgets
@@ -33,6 +35,9 @@ class LocFlow(pw.QMainWindow, UiLoc_Flow):
         self.__dataless_dir = None
         self.__nll_manager = None
         self.db_frame = None
+        self.latitude_center = None
+        self.longitude_center = None
+        self.h_range = None
         ####### Project ###########
         self.progressbar = pw.QProgressDialog(self)
         self.progressbar.setLabelText("Computing Project ")
@@ -268,6 +273,7 @@ class LocFlow(pw.QMainWindow, UiLoc_Flow):
         picks = phISP.phasenet()
 
         """ PHASENET OUTPUT TO REAL INPUT"""
+        Util.save_original_picks(picks)
         picks_ = Util.split_picks(picks)
         Util.convert2real(picks_)
 
@@ -279,11 +285,21 @@ class LocFlow(pw.QMainWindow, UiLoc_Flow):
         lat_min = self.lat_refMinSB.value()
         self.latitude_center = (lat_min + lat_max) / 2
         self.longitude_center = (lon_min + lon_max) / 2
-        self.h_range = kilometers2degrees(gps2dist_azimuth(self.latitude_center, self.longitude_center, lat_max, lon_max) * 0.001)
-        self.gridSearchParamHorizontalRangeBtn.set_value(self.h_range)
+        distance, az1, az2 = gps2dist_azimuth(self.latitude_center, self.longitude_center, lat_max, lon_max)
+        self.h_range = kilometers2degrees(distance*0.001)
+        # TODO A MAP with All available stations and the Grid
+        #self.gridSearchParamHorizontalRangeBtn.setValue(self.h_range)
+
+    def __get_lat_mean(self):
+
+        lat_max = self.lat_refMaxSB.value()
+        lat_min = self.lat_refMinSB.value()
+        latitude_center = (lat_min + lat_max) / 2
+        return latitude_center
 
     def run_real(self):
         """ REAL """
+
         #tt_db = create_tt_db()
         #tt_db.run_tt_db(dist=self.h_range, depth=self.depthSB.value(), ddist=0.01, ddep=1)
 
@@ -308,14 +324,12 @@ class LocFlow(pw.QMainWindow, UiLoc_Flow):
 
         real_handler = RealManager(pick_dir=p_dir, station_file=station, time_travel_table_file=ttime,
             gridSearchParamHorizontalRange=gridSearchParamHorizontalRange, HorizontalGridSize=HorizontalGridSize,
-            DepthSearchParamHorizontalRange = DepthSearchParamHorizontalRange, DepthGridSize=DepthGridSize,
-            EventTimeW = EventTimeW, TTHorizontalRange=TTHorizontalRange, TTHorizontalGridSize=TTHorizontalGridSize,
+            DepthSearchParamHorizontalRange=DepthSearchParamHorizontalRange, DepthGridSize=DepthGridSize,
+            EventTimeW=EventTimeW, TTHorizontalRange=TTHorizontalRange, TTHorizontalGridSize=TTHorizontalGridSize,
             TTDepthGridSize=TTDepthGridSize, TTDepthRange=TTDepthRange, ThresholdPwave=ThresholdPwave,
                                    ThresholdSwave=ThresholdSwave, number_stations_picks=number_stations_picks)
 
-        # TODO ESTIMATE LAT_CENTER
-        self.latitude_center = 42.5
-        real_handler.latitude_center = self.latitude_center
+        real_handler.latitude_center = self.__get_lat_mean()
         print(real_handler.stations)
 
         ### Real Parameters ####
@@ -326,7 +340,7 @@ class LocFlow(pw.QMainWindow, UiLoc_Flow):
 
         real_handler.save()
         real_handler.compute_t_dist()
-        #convert.real2nll(realout, nllinput)
+        ConversionUtils.real2nll(realout, nllinput)
 
     def on_click_select_metadata_file(self):
         selected = pw.QFileDialog.getOpenFileName(self, "Select metadata/stations coordinates file")

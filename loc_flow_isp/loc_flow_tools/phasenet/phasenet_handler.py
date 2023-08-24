@@ -11,7 +11,7 @@ from datetime import datetime
 from collections import namedtuple
 from scipy.interpolate import interp1d
 from ...Utils.obspy_utils import MseedUtil as util
-from ... import p_dir
+from ... import p_dir, original_p_dir
 
 
 
@@ -1013,8 +1013,15 @@ class PhasenetUtils:
         print('TIME SAVING ALL FILES: ', _time.time() - start)
 
     @staticmethod
+    def save_original_picks(original_picks):
+        print('saving_picks_original_format')
+        pick_path = os.path.join(original_p_dir, "original_picks")
+        original_picks = pd.DataFrame.from_dict(original_picks)
+        original_picks.to_csv(pick_path)
+
+    @staticmethod
     def split_picks(picks):
-        print('get_picks')
+        print('get_picks & converting to REAL associator format')
         prob_threshold = 0.3
         columns = ['date', 'fname', 'year', 'month', 'day', 'net', 'station', 'flag', 'tt',
                    'weight', 'amplitude', 'phase']

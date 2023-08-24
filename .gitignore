@@ -111,6 +111,11 @@ venv.bak/
 # local file to test stuff.
 playground.py
 
+# local files
+loc_flow_isp/*app.log
+loc_flow_isp/Gui/__pycache__/
+loc_flow_isp/Utils/__pycache__/
+loc_flow_isp/loc_flow_tools/__pycache__/
 # ignore files inside folders
 loc_flow_isp/loc_flow_tools/location_output/loc/*last
 loc_flow_isp/loc_flow_tools/location_output/loc/*location
@@ -122,6 +127,7 @@ loc_flow_isp/loc_flow_tools/location_output/model3D/*hdr
 loc_flow_isp/loc_flow_tools/location_output/model3D/*buf
 
 loc_flow_isp/loc_flow_tools/location_output/stations/stations.txt
+loc_flow_isp/loc_flow_tools/location_output/obs/nll_input.txt
 
 loc_flow_isp/loc_flow_tools/location_output/time/*hdr
 loc_flow_isp/loc_flow_tools/location_output/time/*buf

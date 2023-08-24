@@ -3,6 +3,7 @@ import os
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 p_dir = os.path.join(os.path.dirname(ROOT_DIR), "loc_flow_isp/data", "picks")
+original_p_dir = os.path.join(os.path.dirname(ROOT_DIR), "loc_flow_isp/data", "original_picks")
 station = os.path.join(os.path.dirname(ROOT_DIR), "loc_flow_isp/data", "station", "station.dat")
 ttime = os.path.join(os.path.dirname(ROOT_DIR), "loc_flow_isp/data", "tt_real", "ttdb.txt")
 mseed_dir = os.path.join(os.path.dirname(ROOT_DIR), "loc_flow_isp/data", "mseed")

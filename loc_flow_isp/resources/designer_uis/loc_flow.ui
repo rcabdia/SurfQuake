@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_4">
        <attribute name="title">
@@ -164,7 +164,17 @@
            <string>Geraphic Framework</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_9">
-           <item row="1" column="0">
+           <item row="1" column="3">
+            <widget class="QPushButton" name="plot_grid_stationsBtn">
+             <property name="toolTip">
+              <string>Plot Grid Stations</string>
+             </property>
+             <property name="text">
+              <string>Set &amp; Plot Grid Stations</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
             <widget class="QDoubleSpinBox" name="lon_refMin">
              <property name="toolTip">
               <string>Longitude min</string>
@@ -180,6 +190,41 @@
              </property>
              <property name="maximum">
               <double>180.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.050000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="3">
+            <widget class="QDoubleSpinBox" name="depthSB">
+             <property name="toolTip">
+              <string>Depth max</string>
+             </property>
+             <property name="prefix">
+              <string>Depth (km) </string>
+             </property>
+             <property name="decimals">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <double>750.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QDoubleSpinBox" name="lat_refMinSB">
+             <property name="toolTip">
+              <string>Latitude min</string>
+             </property>
+             <property name="prefix">
+              <string>Ref Latitude Min </string>
+             </property>
+             <property name="decimals">
+              <number>5</number>
+             </property>
+             <property name="maximum">
+              <double>90.000000000000000</double>
              </property>
              <property name="singleStep">
               <double>0.050000000000000</double>
@@ -221,51 +266,6 @@
              </property>
              <property name="singleStep">
               <double>0.050000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QDoubleSpinBox" name="lat_refMinSB">
-             <property name="toolTip">
-              <string>Latitude min</string>
-             </property>
-             <property name="prefix">
-              <string>Ref Latitude Min </string>
-             </property>
-             <property name="decimals">
-              <number>5</number>
-             </property>
-             <property name="maximum">
-              <double>90.000000000000000</double>
-             </property>
-             <property name="singleStep">
-              <double>0.050000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="2">
-            <widget class="QDoubleSpinBox" name="depthSB">
-             <property name="toolTip">
-              <string>Depth max</string>
-             </property>
-             <property name="prefix">
-              <string>Depth (km) </string>
-             </property>
-             <property name="decimals">
-              <number>1</number>
-             </property>
-             <property name="maximum">
-              <double>750.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="2">
-            <widget class="QPushButton" name="plot_grid_stationsBtn">
-             <property name="toolTip">
-              <string>Plot Grid Stations</string>
-             </property>
-             <property name="text">
-              <string>Set &amp; Plot Grid Stations</string>
              </property>
             </widget>
            </item>
