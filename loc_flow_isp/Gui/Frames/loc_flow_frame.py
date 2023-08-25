@@ -4,6 +4,7 @@ from obspy.geodetics import gps2dist_azimuth, kilometers2degrees
 from loc_flow_isp import ROOT_DIR, model_dir, p_dir, station, ttime, nllinput, realout
 from loc_flow_isp.DataProcessing.metadata_manager import MetadataManager
 from loc_flow_isp.Exceptions.exceptions import parse_excepts
+from loc_flow_isp.Gui.Frames import BaseFrame
 from loc_flow_isp.Gui.Frames.qt_components import MessageDialog
 from loc_flow_isp.Gui.Frames.uis_frames import UiLoc_Flow
 from PyQt5 import QtWidgets, QtGui, QtCore, Qt
@@ -28,7 +29,7 @@ pw = QtWidgets
 pqg = QtGui
 pyc = QtCore
 @add_save_load()
-class LocFlow(pw.QMainWindow, UiLoc_Flow):
+class LocFlow(BaseFrame, UiLoc_Flow):
 
     def __init__(self):
         super(LocFlow, self).__init__()
