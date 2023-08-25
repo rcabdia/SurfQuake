@@ -1,8 +1,6 @@
 import sys
 from loc_flow_isp.db import db
 import os
-from PyQt5 import QtWidgets
-
 
 if __name__ == '__main__':
 

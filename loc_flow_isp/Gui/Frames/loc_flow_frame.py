@@ -2,6 +2,7 @@ import os
 import pickle
 from obspy.geodetics import gps2dist_azimuth, kilometers2degrees
 from loc_flow_isp import ROOT_DIR, model_dir, p_dir, station, ttime, nllinput, realout
+from loc_flow_isp.DataProcessing.metadata_manager import MetadataManager
 from loc_flow_isp.Exceptions.exceptions import parse_excepts
 from loc_flow_isp.Gui.Frames.qt_components import MessageDialog
 from loc_flow_isp.Gui.Frames.uis_frames import UiLoc_Flow
@@ -9,17 +10,16 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 from loc_flow_isp.Gui.Utils.pyqt_utils import BindPyqtObject, add_save_load
 from sys import platform
 from concurrent.futures.thread import ThreadPoolExecutor
+from loc_flow_isp.Utils import obspy_utils
 from loc_flow_isp.Utils.obspy_utils import MseedUtil
 from loc_flow_isp.loc_flow_tools.internal.real_manager import RealManager
 from loc_flow_isp.loc_flow_tools.location_output.run_nll import NllManager
 from loc_flow_isp.loc_flow_tools.phasenet.phasenet_handler import PhasenetUtils as Util
 from loc_flow_isp.loc_flow_tools.phasenet.phasenet_handler import PhasenetISP
 from loc_flow_isp.Gui.Frames.event_location_frame import EventLocationFrame
-from loc_flow_isp.loc_flow_tools.tt_db.taup_tt import create_tt_db
+#from loc_flow_isp.loc_flow_tools.tt_db.taup_tt import create_tt_db
 import numpy as np
-
 from loc_flow_isp.loc_flow_tools.utils import ConversionUtils
-
 #from PyQt5.QtCore import pyqtSlot
 
 pw = QtWidgets
@@ -38,7 +38,13 @@ class LocFlow(pw.QMainWindow, UiLoc_Flow):
         self.latitude_center = None
         self.longitude_center = None
         self.h_range = None
+
+        ####### Metadata ##########
+        self.metadata_path_bind = BindPyqtObject(self.datalessPathForm, self.onChange_metadata_path)
+        self.loadMetaBtn.clicked.connect(lambda: self.on_click_select_file(self.metadata_path_bind))
+
         ####### Project ###########
+
         self.progressbar = pw.QProgressDialog(self)
         self.progressbar.setLabelText("Computing Project ")
         self.progressbar.setWindowIcon(pqg.QIcon(':\icons\map-icon.png'))
@@ -88,6 +94,11 @@ class LocFlow(pw.QMainWindow, UiLoc_Flow):
         md = MessageDialog(self)
         md.set_info_message(msg, detailed_message)
 
+    def on_click_select_file(self, bind: BindPyqtObject):
+        selected = pw.QFileDialog.getOpenFileName(self, "Select metadata file")
+        if isinstance(selected[0], str) and os.path.isfile(selected[0]):
+            bind.value = selected[0]
+
     def subprocess_feedback(self, err_msg: str, set_default_complete=True):
         """
         This method is used as a subprocess feedback. It runs when a raise expect is detected.
@@ -120,6 +131,16 @@ class LocFlow(pw.QMainWindow, UiLoc_Flow):
         :return:
         """
         pass
+
+    @parse_excepts(lambda self, msg: self.subprocess_feedback(msg))
+    def onChange_metadata_path(self, value):
+
+        try:
+            self.__metadata_manager = MetadataManager(value)
+            self.inventory = self.__metadata_manager.get_inventory()
+            print(self.inventory)
+        except:
+            raise FileNotFoundError("The metadata is not valid")
 
     def load_project(self):
         self.loaded_project = True
@@ -176,7 +197,6 @@ class LocFlow(pw.QMainWindow, UiLoc_Flow):
             md.set_error_message("Something went wrong. Please check that your data files are correct mseed files")
 
         md.show()
-
 
 
     def on_click_select_directory(self, bind: BindPyqtObject):
@@ -302,6 +322,10 @@ class LocFlow(pw.QMainWindow, UiLoc_Flow):
 
         #tt_db = create_tt_db()
         #tt_db.run_tt_db(dist=self.h_range, depth=self.depthSB.value(), ddist=0.01, ddep=1)
+
+        # create stations file
+        #obspy_utils.ObspyUtil.readXml(path_xml_file, path_output_real, path_output_nll)
+        #obspy_utils.ObspyUtil.realStation(self.inventory, station)
 
         ### grid ###
         gridSearchParamHorizontalRange = self.gridSearchParamHorizontalRangeBtn.value()
