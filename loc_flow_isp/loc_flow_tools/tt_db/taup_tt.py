@@ -16,7 +16,8 @@ class create_tt_db:
         # so that VELEST (mode=0) can update it
         # TauP, velest, and hypoinverse don't like low velocity layers...
         """
-        build_taup_model("mymodel.nd")
+        #build_taup_model("mymodel.nd")
+        build_taup_model(TT_DB_PATH)
         self.model = TauPyModel(model="mymodel")
 
 

@@ -19,7 +19,7 @@ from loc_flow_isp.loc_flow_tools.phasenet.phasenet_handler import PhasenetUtils 
 from loc_flow_isp.loc_flow_tools.phasenet.phasenet_handler import PhasenetISP
 from loc_flow_isp.Gui.Frames.event_location_frame import EventLocationFrame
 from obspy.core.inventory.inventory import Inventory
-#from loc_flow_isp.loc_flow_tools.tt_db.taup_tt import create_tt_db
+from loc_flow_isp.loc_flow_tools.tt_db.taup_tt import create_tt_db
 import numpy as np
 from loc_flow_isp.loc_flow_tools.utils import ConversionUtils
 from loc_flow_isp.Utils.time_utils import AsycTime
@@ -82,9 +82,10 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         self.actionData_Base.triggered.connect(lambda: self.open_data_base())
 
         # Dialog
-        self.progress_dialog.setWindowTitle('Processing.....')
+
         self.progress_dialog = pw.QProgressDialog(self)
         self.progress_dialog.setRange(0, 0)
+        self.progress_dialog.setWindowTitle('Processing.....')
         self.progress_dialog.setLabelText('Please Wait')
         self.progress_dialog.setWindowIcon(self.windowIcon())
         self.progress_dialog.setWindowTitle(self.windowTitle())
@@ -313,11 +314,11 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         pyc.QMetaObject.invokeMethod(self.progress_dialog, 'accept', Qt.Qt.QueuedConnection)
 
     def run_phasenet(self):
+
         if self.project is None:
             md = MessageDialog(self)
             md.set_error_message("Metadata run Picking, Please load a project first")
         else:
-
             self.send_phasenet()
             self.progress_dialog.exec()
             md = MessageDialog(self)
@@ -325,6 +326,9 @@ class LocFlow(BaseFrame, UiLoc_Flow):
 
 
     def plot_real_grid(self):
+        print("Work in progress")
+
+    def get_real_grid(self):
 
         lon_min = self.lon_refMin.value()
         lon_max = self.lon_refMaxSB.value()
@@ -348,7 +352,10 @@ class LocFlow(BaseFrame, UiLoc_Flow):
     def send_real(self):
 
         obspy_utils.ObspyUtil.realStation(self.inventory, station)
-
+        # create travel times
+        tt_db = create_tt_db()
+        self.get_real_grid()
+        tt_db.run_tt_db(dist=self.h_range, depth=self.depthSB.value(), ddist=0.01, ddep=1)
         ### grid ###
         gridSearchParamHorizontalRange = self.gridSearchParamHorizontalRangeBtn.value()
         HorizontalGridSize = self.HorizontalGridSizeBtn.value()
@@ -395,8 +402,7 @@ class LocFlow(BaseFrame, UiLoc_Flow):
     def run_real(self):
 
         """ REAL """
-        #tt_db = create_tt_db()
-        #tt_db.run_tt_db(dist=self.h_range, depth=self.depthSB.value(), ddist=0.01, ddep=1)
+
         # create stations file
         #if isinstance(self.inventory, Inventory):
         if self.inventory is None:
