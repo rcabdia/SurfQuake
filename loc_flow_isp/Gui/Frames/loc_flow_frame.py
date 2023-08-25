@@ -34,6 +34,7 @@ class LocFlow(BaseFrame, UiLoc_Flow):
     def __init__(self):
         super(LocFlow, self).__init__()
         self.setupUi(self)
+        self.setWindowTitle('SurfQuake')
         self.__pick_output_path = nllinput
         self.__dataless_dir = None
         self.__nll_manager = None
@@ -42,6 +43,7 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         self.longitude_center = None
         self.h_range = None
         self.inventory = None
+        self.project = None
         ####### Metadata ##########
         self.metadata_path_bind = BindPyqtObject(self.datalessPathForm, self.onChange_metadata_path)
         self.loadMetaBtn.clicked.connect(lambda: self.on_click_select_file(self.metadata_path_bind))
@@ -80,9 +82,10 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         self.actionData_Base.triggered.connect(lambda: self.open_data_base())
 
         # Dialog
+        self.progress_dialog.setWindowTitle('Processing.....')
         self.progress_dialog = pw.QProgressDialog(self)
         self.progress_dialog.setRange(0, 0)
-        self.progress_dialog.setLabelText('Processing Assiciation')
+        self.progress_dialog.setLabelText('Please Wait')
         self.progress_dialog.setWindowIcon(self.windowIcon())
         self.progress_dialog.setWindowTitle(self.windowTitle())
         self.progress_dialog.close()
@@ -134,6 +137,7 @@ class LocFlow(BaseFrame, UiLoc_Flow):
     def set_pick_output_path(self, file_path):
         self.__pick_output_path = file_path
         self.nll_manager.set_observation_file(file_path)
+
     def onChange_root_path(self, value):
         """
         Fired every time the root_path is changed
@@ -250,8 +254,6 @@ class LocFlow(BaseFrame, UiLoc_Flow):
 
         md.show()
 
-
-
     def saveProject(self):
 
         try:
@@ -297,10 +299,10 @@ class LocFlow(BaseFrame, UiLoc_Flow):
 
     ######################
 
-    def run_phasenet(self):
-        self.project = None
+    @AsycTime.run_async()
+    def send_phasenet(self):
         print("Starting Picking")
-        self.load_project()
+
         phISP = PhasenetISP(self.project, modelpath=model_dir, amplitude=True)
         picks = phISP.phasenet()
 
@@ -308,6 +310,19 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         Util.save_original_picks(picks)
         picks_ = Util.split_picks(picks)
         Util.convert2real(picks_)
+        pyc.QMetaObject.invokeMethod(self.progress_dialog, 'accept', Qt.Qt.QueuedConnection)
+
+    def run_phasenet(self):
+        if self.project is None:
+            md = MessageDialog(self)
+            md.set_error_message("Metadata run Picking, Please load a project first")
+        else:
+
+            self.send_phasenet()
+            self.progress_dialog.exec()
+            md = MessageDialog(self)
+            md.set_info_message("Picking Done")
+
 
     def plot_real_grid(self):
 
