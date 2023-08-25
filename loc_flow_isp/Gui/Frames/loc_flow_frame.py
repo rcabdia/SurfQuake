@@ -6,7 +6,7 @@ from loc_flow_isp.DataProcessing.metadata_manager import MetadataManager
 from loc_flow_isp.Exceptions.exceptions import parse_excepts
 from loc_flow_isp.Gui.Frames.qt_components import MessageDialog
 from loc_flow_isp.Gui.Frames.uis_frames import UiLoc_Flow
-from PyQt5 import QtWidgets, QtGui, QtCore
+from PyQt5 import QtWidgets, QtGui, QtCore, Qt
 from loc_flow_isp.Gui.Utils.pyqt_utils import BindPyqtObject, add_save_load
 from sys import platform
 from concurrent.futures.thread import ThreadPoolExecutor
@@ -17,9 +17,11 @@ from loc_flow_isp.loc_flow_tools.location_output.run_nll import NllManager
 from loc_flow_isp.loc_flow_tools.phasenet.phasenet_handler import PhasenetUtils as Util
 from loc_flow_isp.loc_flow_tools.phasenet.phasenet_handler import PhasenetISP
 from loc_flow_isp.Gui.Frames.event_location_frame import EventLocationFrame
+from obspy.core.inventory.inventory import Inventory
 #from loc_flow_isp.loc_flow_tools.tt_db.taup_tt import create_tt_db
 import numpy as np
 from loc_flow_isp.loc_flow_tools.utils import ConversionUtils
+from loc_flow_isp.Utils.time_utils import AsycTime
 #from PyQt5.QtCore import pyqtSlot
 
 pw = QtWidgets
@@ -38,7 +40,7 @@ class LocFlow(pw.QMainWindow, UiLoc_Flow):
         self.latitude_center = None
         self.longitude_center = None
         self.h_range = None
-
+        self.inventory = None
         ####### Metadata ##########
         self.metadata_path_bind = BindPyqtObject(self.datalessPathForm, self.onChange_metadata_path)
         self.loadMetaBtn.clicked.connect(lambda: self.on_click_select_file(self.metadata_path_bind))
@@ -75,6 +77,15 @@ class LocFlow(pw.QMainWindow, UiLoc_Flow):
         #self.plotmapBtn.clicked.connect(lambda: self.on_click_plot_map())
         self.stationsBtn.clicked.connect(lambda: self.on_click_select_metadata_file())
         self.actionData_Base.triggered.connect(lambda: self.open_data_base())
+
+        # Dialog
+        self.progress_dialog = pw.QProgressDialog(self)
+        self.progress_dialog.setRange(0, 0)
+        self.progress_dialog.setLabelText('Processing Assiciation')
+        self.progress_dialog.setWindowIcon(self.windowIcon())
+        self.progress_dialog.setWindowTitle(self.windowTitle())
+        self.progress_dialog.close()
+
     # @pyc.Slot()
     # def _increase_progress(self):
     #      self.progressbar.setValue(self.progressbar.value() + 1)
@@ -137,7 +148,7 @@ class LocFlow(pw.QMainWindow, UiLoc_Flow):
 
         try:
             self.__metadata_manager = MetadataManager(value)
-            self.inventory = self.__metadata_manager.get_inventory()
+            self.inventory: Inventory = self.__metadata_manager.get_inventory()
             print(self.inventory)
         except:
             raise FileNotFoundError("The metadata is not valid")
@@ -317,15 +328,10 @@ class LocFlow(pw.QMainWindow, UiLoc_Flow):
         latitude_center = (lat_min + lat_max) / 2
         return latitude_center
 
-    def run_real(self):
-        """ REAL """
+    @AsycTime.run_async()
+    def send_real(self):
 
-        #tt_db = create_tt_db()
-        #tt_db.run_tt_db(dist=self.h_range, depth=self.depthSB.value(), ddist=0.01, ddep=1)
-
-        # create stations file
-        #obspy_utils.ObspyUtil.readXml(path_xml_file, path_output_real, path_output_nll)
-        #obspy_utils.ObspyUtil.realStation(self.inventory, station)
+        obspy_utils.ObspyUtil.realStation(self.inventory, station)
 
         ### grid ###
         gridSearchParamHorizontalRange = self.gridSearchParamHorizontalRangeBtn.value()
@@ -341,16 +347,19 @@ class LocFlow(pw.QMainWindow, UiLoc_Flow):
         TTDepthRange = self.TTDepthRangeBtn.value()
 
         # Picks Thresholds
-
         ThresholdPwave = self.ThresholdPwaveSB.value()
         ThresholdSwave = self.ThresholdSwaveSB.value()
         number_stations_picks = self.number_stations_picksSB.value()
 
         real_handler = RealManager(pick_dir=p_dir, station_file=station, time_travel_table_file=ttime,
-            gridSearchParamHorizontalRange=gridSearchParamHorizontalRange, HorizontalGridSize=HorizontalGridSize,
-            DepthSearchParamHorizontalRange=DepthSearchParamHorizontalRange, DepthGridSize=DepthGridSize,
-            EventTimeW=EventTimeW, TTHorizontalRange=TTHorizontalRange, TTHorizontalGridSize=TTHorizontalGridSize,
-            TTDepthGridSize=TTDepthGridSize, TTDepthRange=TTDepthRange, ThresholdPwave=ThresholdPwave,
+                                   gridSearchParamHorizontalRange=gridSearchParamHorizontalRange,
+                                   HorizontalGridSize=HorizontalGridSize,
+                                   DepthSearchParamHorizontalRange=DepthSearchParamHorizontalRange,
+                                   DepthGridSize=DepthGridSize,
+                                   EventTimeW=EventTimeW, TTHorizontalRange=TTHorizontalRange,
+                                   TTHorizontalGridSize=TTHorizontalGridSize,
+                                   TTDepthGridSize=TTDepthGridSize, TTDepthRange=TTDepthRange,
+                                   ThresholdPwave=ThresholdPwave,
                                    ThresholdSwave=ThresholdSwave, number_stations_picks=number_stations_picks)
 
         real_handler.latitude_center = self.__get_lat_mean()
@@ -359,12 +368,30 @@ class LocFlow(pw.QMainWindow, UiLoc_Flow):
         ### Real Parameters ####
 
         for events_info in real_handler:
-             print(events_info)
-             print(events_info.events_date)
+            print(events_info)
+            print(events_info.events_date)
 
         real_handler.save()
         real_handler.compute_t_dist()
         ConversionUtils.real2nll(realout, nllinput)
+        pyc.QMetaObject.invokeMethod(self.progress_dialog, 'accept', Qt.Qt.QueuedConnection)
+
+    def run_real(self):
+
+        """ REAL """
+        #tt_db = create_tt_db()
+        #tt_db.run_tt_db(dist=self.h_range, depth=self.depthSB.value(), ddist=0.01, ddep=1)
+        # create stations file
+        #if isinstance(self.inventory, Inventory):
+        if self.inventory is None:
+            md = MessageDialog(self)
+            md.set_error_message("Metadata couldn't be loaded")
+        else:
+
+            self.send_real()
+            self.progress_dialog.exec()
+            md = MessageDialog(self)
+            md.set_info_message("Association Done")
 
     def on_click_select_metadata_file(self):
         selected = pw.QFileDialog.getOpenFileName(self, "Select metadata/stations coordinates file")
