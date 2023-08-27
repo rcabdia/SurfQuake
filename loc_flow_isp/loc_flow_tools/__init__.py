@@ -14,7 +14,7 @@ elif _os.lower() == 'windows':
     real_bin = os.path.join(bin_dir, "REAL.exe")
 elif _os.lower() == 'mac' or _os.lower() == 'darwin':
     bin_dir = os.path.join(_parent_dir, "binaries", "mac")
-    real_bin = os.path.join(bin_dir, "REAL")  # TODO Roberto please add binaries for mac
+    real_bin = os.path.join(bin_dir, "REAL")
 else:
     raise AttributeError(f"The OS {_os} is not valid.")
 
