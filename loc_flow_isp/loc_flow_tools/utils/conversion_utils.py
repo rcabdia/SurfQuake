@@ -61,9 +61,10 @@ class ConversionUtils:
 
                     hour = f'{_time.hour:02}'
                     minute = f'{_time.minute:02}'
-
+                    month = f'{data_save[i].date.month:02}'
+                    day = f'{data_save[i].date.day:02}'
                     g.write(f"{data_save[i].phases[j].station}\t?\t?\t?\t{data_save[i].phases[j].phase_name}\t?\t"
-                            f"{str(data_save[i].date.year) + str(data_save[i].date.month) + str(data_save[i].date.day)}\t"
+                            f"{str(data_save[i].date.year) + month + day}\t"
                             f"{hour + minute}\t"
                             f"{_time.second + _time.microsecond / 1000000:06.3f}\t"
                             f"GAU\t{weight:.2E}\t"

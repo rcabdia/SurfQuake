@@ -34,7 +34,7 @@ def start_locflow():
     controller().open_locflow()
     set_isp_mpl_style_file()
 
-    app_logger.info("ISP Gui Started")
+    app_logger.info("Surf Quake Gui Started")
     app_logger.info("User preferences is at: {}".format(get_settings_file()))
     sys.exit(app.exec_())
 

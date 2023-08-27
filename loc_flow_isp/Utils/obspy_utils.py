@@ -298,6 +298,26 @@ class ObspyUtil:
             f.close()
 
     @staticmethod
+    def stationsCoodsFromMeta(dataXml):
+
+        sta_names = []
+        latitudes = []
+        longitudes = []
+        networks = {}
+
+        for network in dataXml:
+            for station in network.stations:
+                if station.code not in sta_names:
+                    sta_names.append(network.code + "." + station.code)
+                    latitudes.append(station.latitude)
+                    longitudes.append(station.longitude)
+                else:
+                    pass
+            networks[network.code] = [sta_names, longitudes, latitudes]
+        print(networks)
+        return networks
+
+    @staticmethod
     def nllStation(dataXml, stationfile):
         with open(stationfile, 'w') as f:
             for network in dataXml:
