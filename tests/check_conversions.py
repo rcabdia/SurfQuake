@@ -3,4 +3,5 @@ from loc_flow_isp import ROOT_DIR, model_dir, p_dir, station, ttime, nllinput, r
 
 
 if __name__ == "__main__":
-    ConversionUtils.real2nll(realout, nllinput)
+    #ConversionUtils.real2nll(realout, nllinput)
+    catalog = ConversionUtils.previewCatalog(realout)

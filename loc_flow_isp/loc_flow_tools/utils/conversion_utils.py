@@ -16,6 +16,42 @@ class PhaseLocation:
 
 
 class ConversionUtils:
+
+    @staticmethod
+    def previewCatalog(realfile):
+        with open(realfile, 'r') as f:
+            data = f.read()
+            f.close()
+
+        data = data.split('[EventLocation')[1:]
+        data_save = []
+        catalog_preview = {}
+        lats = []
+        longs = []
+        dates = []
+        for i in np.arange(0, len(data)):
+            data[i] = data[i].split('EventLocation')
+            try:
+                for j in np.arange(0, len(data[i])):
+                    if j == len(data[i]) - 1:
+                        data[i][j] = data[i][j][:-1]
+                        data_save.append(eval('EventLocation' + data[i][j]))
+                    else:
+                        data_save.append(eval('EventLocation' + data[i][j])[0])
+            except:
+                pass
+
+        for i in np.arange(0, len(data_save)):
+            #print(data_save[i].date, data_save[i].lat, data_save[i].long, data_save[i].depth, data_save[i].var_magnitude)
+            dates.append(data_save[i].date)
+            lats.append(data_save[i].lat)
+            longs.append(data_save[i].long)
+
+        catalog_preview["date"] = dates
+        catalog_preview["lats"] = lats
+        catalog_preview["longs"] = longs
+
+        return catalog_preview
     @staticmethod
     def real2nll(realfile, nllfile):
         with open(realfile, 'r') as f:

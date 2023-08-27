@@ -1,3 +1,4 @@
+import pandas as pd
 from matplotlib.transforms import offset_copy
 import cartopy.crs as ccrs
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
@@ -6,11 +7,17 @@ from matplotlib.patheffects import Stroke
 import cartopy.feature as cfeature
 import shapely.geometry as sgeom
 from matplotlib import pyplot as plt
-def plot_real_map(networks, **kwargs):
+from loc_flow_isp import realout
+from loc_flow_isp.loc_flow_tools.utils import ConversionUtils
+
+
+def plot_real_map(networks, earthquakes=False, **kwargs):
 
     ##Extract Area values##
 
     area = kwargs.pop('area', None)
+   # earthquakes = kwargs.pop(True, False)
+
     if area is not None:
         x = [area[0], area[1], area[2], area[3], area[4]]
         y = [area[5], area[6], area[7], area[8], area[9]]
@@ -42,7 +49,12 @@ def plot_real_map(networks, **kwargs):
 
     geodetic_transform = ccrs.PlateCarree()._as_mpl_transform(ax)
     text_transform = offset_copy(geodetic_transform, units='dots', x=-25)
-    ax.scatter(all_lon, all_lat, s=12, marker="^", color='red', alpha=0.7, transform=ccrs.PlateCarree())
+    ax.scatter(all_lon, all_lat, s=12, marker="^", color='green', alpha=0.7, transform=ccrs.PlateCarree())
+
+    if earthquakes:
+        catalog = ConversionUtils.previewCatalog(realout)
+        ax.scatter(catalog["longs"], catalog["lats"], s=12, marker="o", color='red', alpha= 0.75, transform=ccrs.PlateCarree())
+
 
     if area is not None:
         ax.plot(x, y, color='blue', transform=ccrs.PlateCarree())
