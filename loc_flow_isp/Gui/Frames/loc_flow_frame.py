@@ -23,6 +23,8 @@ from loc_flow_isp.loc_flow_tools.tt_db.taup_tt import create_tt_db
 import numpy as np
 from loc_flow_isp.loc_flow_tools.utils import ConversionUtils
 from loc_flow_isp.Utils.time_utils import AsycTime
+from loc_flow_isp.maps.plot_map import plot_real_map
+
 #from PyQt5.QtCore import pyqtSlot
 
 pw = QtWidgets
@@ -63,6 +65,7 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         self.phasenetBtn.clicked.connect(self.run_phasenet)
         self.realBtn.clicked.connect(self.run_real)
         self.plot_grid_stationsBtn.clicked.connect(self.plot_real_grid)
+        self.realCatlogBtn.clicked.connect(self.plot_previewCatalog)
 
         # NonLinLoc
         self.grid_latitude_bind = BindPyqtObject(self.gridlatSB)
@@ -327,6 +330,28 @@ class LocFlow(BaseFrame, UiLoc_Flow):
 
     def plot_real_grid(self):
         print("Work in progress")
+        lon_min = self.lon_refMin.value()
+        lon_max = self.lon_refMaxSB.value()
+        lat_max = self.lat_refMaxSB.value()
+        lat_min = self.lat_refMinSB.value()
+        x = [lon_min, lon_max, lon_max, lon_min, lon_min]
+        y = [lat_max, lat_max, lat_min, lat_min, lat_max]
+        area = x + y
+        network = obspy_utils.ObspyUtil.stationsCoodsFromMeta(self.inventory)
+        plot_real_map(network, area=area)
+
+    def plot_previewCatalog(self):
+        print("plotting Preview")
+        lon_min = self.lon_refMin.value()
+        lon_max = self.lon_refMaxSB.value()
+        lat_max = self.lat_refMaxSB.value()
+        lat_min = self.lat_refMinSB.value()
+        x = [lon_min, lon_max, lon_max, lon_min, lon_min]
+        y = [lat_max, lat_max, lat_min, lat_min, lat_max]
+        area = x + y
+        network = obspy_utils.ObspyUtil.stationsCoodsFromMeta(self.inventory)
+        plot_real_map(network, earthquakes=True, area=area)
+
 
     def get_real_grid(self):
 

@@ -70,28 +70,31 @@ def load_preferences(pyqt_object, ui_name=None):
     :param ui_name: The name to use in the group, If not given it will use the object name to group it.
     :return:
     """
-    ui_name = type(pyqt_object).__name__ if ui_name is None else ui_name
-    user_preferences.beginGroup(ui_name)
-    for key, item in pyqt_object.__dict__.items():
-        if hasattr(item, "load_values"):
-            item.load_values()
-        else:
-            value = user_preferences.value(key)
-            if value is not None:
-                with suppress(TypeError):
-                    str(value, "utf-8")
-                value = value.strip() if type(value) == str else value
-                if value is not "" or type(value) is not str:
-                    if isinstance(item, pw.QDoubleSpinBox):
-                        item.setValue(float(value))
-                    elif isinstance(item, pw.QSpinBox):
-                        item.setValue(int(value))
-                    elif isinstance(item, pw.QLineEdit):
-                        item.setText(value)
-                    elif isinstance(item, pw.QDateTimeEdit):
-                        set_qdatetime(value, item)
+    try:
+        ui_name = type(pyqt_object).__name__ if ui_name is None else ui_name
+        user_preferences.beginGroup(ui_name)
+        for key, item in pyqt_object.__dict__.items():
+            if hasattr(item, "load_values"):
+                item.load_values()
+            else:
+                value = user_preferences.value(key)
+                if value is not None:
+                    with suppress(TypeError):
+                        str(value, "utf-8")
+                    value = value.strip() if type(value) == str else value
+                    if value is not "" or type(value) is not str:
+                        if isinstance(item, pw.QDoubleSpinBox):
+                            item.setValue(float(value))
+                        elif isinstance(item, pw.QSpinBox):
+                            item.setValue(int(value))
+                        elif isinstance(item, pw.QLineEdit):
+                            item.setText(value)
+                        elif isinstance(item, pw.QDateTimeEdit):
+                            set_qdatetime(value, item)
 
-    user_preferences.endGroup()
+        user_preferences.endGroup()
+    except:
+        print("Couldn't load preferences")
 def save_values(self):
     if hasattr(self, "parent_name"):
         save_preferences(self, ui_name=self.parent_name)

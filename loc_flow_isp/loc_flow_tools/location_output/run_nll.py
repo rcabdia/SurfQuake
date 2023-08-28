@@ -9,16 +9,17 @@ Created on Tue Dec 17 20:26:28 2019
 import os
 from pathlib import Path
 import fnmatch
+import platform
 import numpy as np
 import pandas as pd
 import shutil
 from obspy.core.event import Origin
 from obspy.geodetics import gps2dist_azimuth
-from loc_flow_isp import ROOT_DIR, location_output
+from loc_flow_isp import ROOT_DIR, location_output, BINARIES
 from loc_flow_isp.DataProcessing.metadata_manager import MetadataManager
 from loc_flow_isp.Utils.subprocess_utils import exc_cmd
 from loc_flow_isp.Utils.obspy_utils import ObspyUtil
-
+_os = platform.system()
 class NllManager:
 
     def __init__(self, obs_file_path, dataless_path):
@@ -40,13 +41,27 @@ class NllManager:
         return [n for n in fnmatch.filter(os.listdir(base), pattern) if os.path.isfile(os.path.join(base, n))]
 
 
+    def __get_binaries(self):
 
+        if _os.lower() == 'linux':
+            bin_dir = os.path.join(BINARIES, "linux")
+
+        elif _os.lower() == 'windows':
+            bin_dir = os.path.join(BINARIES, "win")
+
+        elif _os.lower() == 'mac' or _os.lower() == 'darwin':
+            bin_dir = os.path.join(BINARIES, "mac")
+
+        else:
+            raise AttributeError(f"The OS {_os} is not valid.")
+
+        return bin_dir
     @property
     def nll_bin_path(self):
-        bin_path = os.path.join(ROOT_DIR, "NLL7", "binaries")
+        bin_path = self.__get_binaries()
         if not os.path.isdir(bin_path):
             raise FileNotFoundError("The dir {} doesn't exist. Please make sure to run: "
-                                    "python setup.py build_ext --inplace. These should create a bin folder fo nll."
+                                    "python setup.py build_ext --inplace. These should create a bin folder for nll."
                                     .format(bin_path))
         return bin_path
 
@@ -266,9 +281,9 @@ class NllManager:
         file_path = self.get_vel_template_file_path
         data = pd.read_csv(file_path)
         df = pd.DataFrame(data)
-        df.iloc[1, 0] = 'TRANS SIMPLE {lat:.2f} {lon:.2f} {depth:.2f}'.format(lat=latitude, lon=longitude, depth=depth)
-        df.iloc[2, 0] = 'VGGRID {xnd} {ynd} {znd} 0.0 0.0 -1.0  {dx:.2f} ' \
-                        '{dy:.2f} {dz:.2f} {type}'.format(xnd=x_node, ynd=y_node, znd=z_node, dx=dx,
+        df.iloc[1, 0] = 'TRANS SIMPLE {lat:.2f} {lon:.2f} 0.0'.format(lat=latitude, lon=longitude, depth=depth)
+        df.iloc[2, 0] = 'VGGRID {xnd} {ynd} {znd} 0.0 0.0 {depth:.2f}  {dx:.2f} ' \
+                        '{dy:.2f} {dz:.2f} {type}'.format(xnd=x_node, ynd=y_node, znd=z_node, depth=depth, dx=dx,
                                                           dy=dy, dz=dz, type=grid_type)
         df.iloc[3, 0] = 'VGOUT {}'.format(os.path.join(self.get_model_dir, "layer"))
         df.iloc[4, 0] = 'VGTYPE {wavetype}'.format(wavetype=wave_type)
