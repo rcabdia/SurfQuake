@@ -311,8 +311,9 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         picks = phISP.phasenet()
 
         """ PHASENET OUTPUT TO REAL INPUT"""
-        Util.save_original_picks(picks)
+
         picks_ = Util.split_picks(picks)
+        Util.save_original_picks(picks_)
         Util.convert2real(picks_)
         pyc.QMetaObject.invokeMethod(self.progress_dialog, 'accept', Qt.Qt.QueuedConnection)
 

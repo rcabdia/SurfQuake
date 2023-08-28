@@ -1,4 +1,6 @@
 import os
+import pickle
+
 import pandas as pd
 import numpy as np
 import tensorflow as tf
@@ -1012,13 +1014,19 @@ class PhasenetUtils:
 
         print('TIME SAVING ALL FILES: ', _time.time() - start)
 
+    # @staticmethod
+    # def save_original_picks(original_picks):
+    #     print('saving_picks_original_format')
+    #     pick_path = os.path.join(original_p_dir, "original_picks")
+    #     original_picks = pd.DataFrame.from_dict(original_picks)
+    #     original_picks.to_csv(pick_path)
+
     @staticmethod
     def save_original_picks(original_picks):
         print('saving_picks_original_format')
         pick_path = os.path.join(original_p_dir, "original_picks")
-        original_picks = pd.DataFrame.from_dict(original_picks)
-        original_picks.to_csv(pick_path)
-
+        file_to_store = open(pick_path, "wb")
+        pickle.dump(original_picks, file_to_store)
     @staticmethod
     def split_picks(picks):
         print('get_picks & converting to REAL associator format')
@@ -1093,7 +1101,7 @@ class PhasenetUtils:
                         fname = network + '.' + station + '.' + 'P'
                         tp = int(ppick[j])*samplingrate+ss
                         amp = float(pamp[j])*2080*25 if len(p_amp) > 0 else 0
-                        split_aux_p.append([str(year)+str(month)+str(day), fname, year, month, day, network, station,
+                        split_aux_p.append([str(year)+"{:02d}".format(month)+"{:02d}".format(day), fname, year, month, day, network, station,
                                             1, tp, pprob[j], amp, "P"])
 
                 split_picks_ = pd.concat([split_picks_, pd.DataFrame(split_aux_p, columns=columns)], ignore_index=True)
@@ -1123,7 +1131,7 @@ class PhasenetUtils:
                         fname = network + '.' + station + '.' + 'S'
                         tp = int(spick[j])*samplingrate+ss
                         amp = float(samp[j]) * 2080 * 25 if len(s_amp) > 0 else 0
-                        split_aux_s.append([str(year)+str(month)+str(day), fname, year, month, day, network, station, 1,
+                        split_aux_s.append([str(year)+"{:02d}".format(month)+"{:02d}".format(day), fname, year, month, day, network, station, 1,
                                             tp, sprob[j], amp, "S"])
 
                 split_picks_ = pd.concat([split_picks_, pd.DataFrame(split_aux_s, columns=columns)], ignore_index=True)
