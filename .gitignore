@@ -107,7 +107,7 @@ venv.bak/
 # remove the db file
 *.db
 *.DS_Store
-
+*.pyc
 # local file to test stuff.
 playground.py
 

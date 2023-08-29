@@ -59,7 +59,7 @@ def load_ui_designers(ui_file):
     if not os.path.isfile(ui_path):
         raise FileNotFoundError("The file {} can't be found at the location {}".
                                 format(ui_file, UIS_PATH))
-    ui_class, _ = uic.loadUiType(ui_path, from_imports=True, import_from='isp.resources')
+    ui_class, _ = uic.loadUiType(ui_path, from_imports=True, import_from='loc_flow_isp.resources')
     return ui_class
 
 def load_preferences(pyqt_object, ui_name=None):
