@@ -1,8 +1,9 @@
 #from isp.DataProcessing.automag_tools import Indmag
-from isp.Utils import MseedUtil
+from loc_flow_isp.Utils.obspy_utils import MseedUtil
 from collections import ChainMap
 from obspy import read, Stream
-from isp.Utils import read_nll_performance
+from loc_flow_isp.Utils import read_nll_performance
+
 time_window_params ={"channels":["HHE, HHN, HHZ"], "max_epi_dist":300, "vp_tt":None, "vs_tt":None, "p_arrival_tolerance":4.0,
                          "s_arrival_tolerance": 4.0, "noise_pre_time": 15.0, "signal_pre_time": 1.0, "win_length": 10.0}
 

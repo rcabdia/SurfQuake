@@ -17,7 +17,7 @@ Compute radiated energy from spectral integration.
 """
 import logging
 import numpy as np
-from isp.DataProcessing.automag_statistics import OrderedAttribDict
+from loc_flow_isp.magnitude_tools.automag_statistics import OrderedAttribDict
 logger = logging.getLogger(__name__.split('.')[-1])
 
 class SpectralParameter(OrderedAttribDict):

@@ -3,7 +3,6 @@ import numpy as np
 from obspy.taup import TauPyModel
 from scipy.interpolate import interp1d
 from obspy.signal.invsim import cosine_taper as _cos_taper
-from obspy.core import Stream
 from scipy.signal import argrelmax
 from scipy.optimize import curve_fit, minimize, basinhopping
 import logging
@@ -12,7 +11,7 @@ from scipy.interpolate import griddata
 from scipy.signal._peak_finding_utils import PeakPropertyWarning
 import itertools
 import warnings
-from automag_statistics import SpectralParameter, StationParameters, SourceSpecOutput
+from loc_flow_isp.magnitude_tools.automag_statistics import SpectralParameter, StationParameters, SourceSpecOutput
 logger = logging.getLogger(__name__.split('.')[-1])
 
 class signal_preprocess_tools:
@@ -143,13 +142,12 @@ class signal_preprocess_tools:
                 coeff = cutoff_dist * (dist / cutoff_dist) ** exponent
             return coeff
 
+
         def __dofft(self, signal, delta, npts):
             """Compute the complex Fourier transform of a signal."""
 
             # TODO: needs to ask to Claudio, why multiply by delta the fft?
-            #fft = np.fft.rfft(signal, n=npts) * delta
-            fft = np.fft.rfft(signal, n=npts)
-            fft = fft/(len(fft)-1)
+            fft = np.fft.rfft(signal, n=npts) * delta
             fftfreq = np.fft.rfftfreq(npts, d=delta)
 
             return fft, fftfreq
