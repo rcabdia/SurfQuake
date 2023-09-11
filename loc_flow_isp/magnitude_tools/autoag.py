@@ -154,15 +154,15 @@ class Automag:
                 arrival_return.append(arrival)
         return arrival_return
 
-    def get_now_files(self, date, station):
+    def get_now_files(self, date):
 
-        selection = [".", station, "."]
+        selection = [".", ".", "."]
 
         _, self.files_path = MseedUtil.filter_project_keys(self.project, net=selection[0], station=selection[1],
                                                        channel=selection[2])
         start = date.split(".")
         start = UTCDateTime(year=int(start[1]), julday=int(start[0]), hour=00, minute=00, second=00)+3600
-        end = start+23*3600
+        end = start+(24*3600-1)
         self.files_path = MseedUtil.filter_time(list_files=self.files_path, starttime=start, endtime=end)
         print(self.files_path)
 
@@ -201,6 +201,10 @@ class Automag:
 
         self.dates=dates
 
+    def scan_from_origin(self, origin):
+
+        self.date = origin["time"]
+
     def _get_stations(self, arrivals):
         stations = []
         for pick in arrivals:
@@ -209,7 +213,7 @@ class Automag:
 
         return stations
 
-    def _get_info_in_arrivals(self, station, arrivals):
+    def _get_info_in_arrivals(self, station, arrivals, min_residual_threshold):
         data = {}
         geodetics = {}
         for arrival in arrivals:
@@ -233,16 +237,21 @@ class Automag:
         output = {}
         output[station] = []
         for key, value in data.items():
+
              residual_min = list(map(abs, data[key]["time_weight"]))
              residual_min = max(residual_min)
              residual_min_index = data[key]["time_weight"].index(residual_min)
-             output[station].append([key, data[key]["date"][residual_min_index]])
+             if data[key]["date"][residual_min_index] >= min_residual_threshold:
+                output[station].append([key, data[key]["date"][residual_min_index]])
 
         return output, geodetics
 
 
     def estimate_magnitudes(self, config):
 
+        # extract info from config:
+        magnitude_mw_statistics = {}
+        magnitude_ml_statistics = {}
         # extract info from config:
         gap_max = config['gap_max']
         overlap_max = config['overlap_max']
@@ -264,13 +273,19 @@ class Automag:
         pi_fc_min_max = config["pi_fc_min_max"]
         pi_bsd_min_max = config["pi_bsd_min_max"]
         max_freq_Er = config["max_freq_Er"]
+        min_residual_threshold = config["min_residual_threshold"]
+        scale = config["scale"]
+        max_win_duration = config["win_length"]
+        a = config["a_local_magnitude"]
+        b = config["b_local_magnitude"]
+        c = config["c_local_magnitude"]
         bound_config = {"Qo_min_max": config["Qo_min_max"], "t_star_min_max": config["t_star_min_max"],
                         "wave_type": config["wave_type"], "fc_min_max": config["fc_min_max"]}
         statistics_config = config.maps[7]
 
         for date in self.dates:
             events = self.dates[date]
-            self.get_now_files(date, ".")
+            self.get_now_files(date)
             self.make_stream()
             for event in events:
                 sspec_output = SourceSpecOutput()
@@ -295,12 +310,12 @@ class Automag:
                     st2 = self.st.select(station=station)
                     if st2.count() > 0:
                         inv_selected = self.inventory.select(station=station)
-                        pt = preprocess_tools(st2, pick_info, focal_parameters, geodetics, inv_selected)
+                        pt = preprocess_tools(st2, pick_info, focal_parameters, geodetics, inv_selected, scale)
                         pt.deconv_waveform(gap_max, overlap_max, rmsmin, clipping_sensitivity)
                         pt.st_deconv = pt.st_deconv.select(component="Z")
                         if pt.st_deconv.count() > 0 and pt.st_wood.count() > 0:
 
-                            self.ML.append(pt.magnitude_local())
+                            self.ML.append(pt.magnitude_local(a, b, c))
                             spectrum_dict = pt.compute_spectrum(geom_spread_model, geom_spread_n_exponent,
                                             geom_spread_cutoff_distance, rho, spectral_smooth_width_decades,
                                             spectral_sn_min, spectral_sn_freq_range)
@@ -327,9 +342,13 @@ class Automag:
                                         specnoise, freq_signal, freq_noise, full_period_signal, full_period_noise,
                                         chn.fc.value, vs, max_freq_Er, rho, chn.t_star.value, chn)
 
-                magnitude_statistics = compute_summary_statistics(statistics_config, sspec_output)
+                magnitude_mw_statistics = compute_summary_statistics(statistics_config, sspec_output)
                 ML_mean, ML_std = self.ML_statistics()
-                print("end")
+                magnitude_ml_statistics["ML_mean"] = ML_mean
+                magnitude_ml_statistics["ML_std"] = ML_std
+                print(magnitude_mw_statistics, ML_mean, ML_std)
+
+        return magnitude_mw_statistics, magnitude_ml_statistics
 
 
 
