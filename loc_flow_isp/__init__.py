@@ -12,9 +12,12 @@ model_dir = os.path.join(os.path.dirname(ROOT_DIR), "loc_flow_isp/loc_flow_tools
 realout = os.path.join(os.path.dirname(ROOT_DIR), "loc_flow_isp/loc_flow_tools", "out_data", "phase_sel_total.txt")
 nllinput = os.path.join(os.path.dirname(ROOT_DIR), "loc_flow_isp/loc_flow_tools", "location_output/obs", "nll_input.txt")
 location_output = os.path.join(os.path.dirname(ROOT_DIR), "loc_flow_isp/loc_flow_tools", "location_output")
+all_locations = os.path.join(os.path.dirname(ROOT_DIR), "loc_flow_isp/loc_flow_tools", "location_output", "all_locations")
 UIS_PATH = os.path.join(os.path.dirname(ROOT_DIR), 'loc_flow_isp/resources', 'designer_uis')
 TT_DB_PATH = os.path.join(os.path.dirname(ROOT_DIR), "loc_flow_isp/loc_flow_tools/tt_db", "mymodel.nd")
 MOMENT_TENSOR_OUTPUT = os.path.join(os.path.dirname(ROOT_DIR), "loc_flow_isp/moment_tensor_output")
+magnitudes_config = os.path.join(os.path.dirname(ROOT_DIR), "loc_flow_isp/magnitude_tools/MagnitudesConfig"
+                                                            "/automag_config")
 magnitudes = os.path.join(os.path.dirname(ROOT_DIR), "loc_flow_isp/magnitudes_output/magnitudes.txt")
 def create_logger():
 

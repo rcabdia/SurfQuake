@@ -1,6 +1,7 @@
 import math
 import os
 import pickle
+import re
 from multiprocessing import Pool
 from enum import unique, Enum
 from obspy import read_inventory
@@ -414,6 +415,18 @@ class MseedUtil:
 
         return project, data
 
+    @staticmethod
+    def search(project, event):
+        res = {}
+        for key in project.keys():
+            name_list = key.split('.')
+            net = name_list[0]
+            sta = name_list[1]
+            channel = name_list[2]
+            if re.search(event[0], net) and re.search(event[1], sta) and re.search(event[2], channel):
+                res[key] = project[key]
+
+        return res
 
     @classmethod
     def filter_time(cls, list_files, **kwargs):

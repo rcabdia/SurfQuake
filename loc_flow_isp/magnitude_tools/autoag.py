@@ -3,7 +3,7 @@ from collections import ChainMap
 import numpy as np
 from datetime import datetime
 from obspy import read, read_events, UTCDateTime, Stream
-from loc_flow_isp import location_output
+from loc_flow_isp import location_output, all_locations
 from loc_flow_isp.magnitude_tools.automag_processing_tools import ssp_inversion
 from loc_flow_isp.magnitude_tools.automag_statistics import compute_summary_statistics, SourceSpecOutput
 from loc_flow_isp.magnitude_tools.automag_tools import preprocess_tools
@@ -161,8 +161,8 @@ class Automag:
         _, self.files_path = MseedUtil.filter_project_keys(self.project, net=selection[0], station=selection[1],
                                                        channel=selection[2])
         start = date.split(".")
-        start = UTCDateTime(year=int(start[1]), julday=int(start[0]), hour=00, minute=00, second=00)+3600
-        end = start+(24*3600-1)
+        start = UTCDateTime(year=int(start[1]), julday=int(start[0]), hour=00, minute=00, second=00)+1
+        end = start+(24*3600-2)
         self.files_path = MseedUtil.filter_time(list_files=self.files_path, starttime=start, endtime=end)
         print(self.files_path)
 
@@ -181,7 +181,7 @@ class Automag:
     def scan_folder(self):
         obsfiles1 = []
         dates = {}
-        for top_dir, _, files in os.walk(location_output):
+        for top_dir, _, files in os.walk(all_locations):
 
             for file in files:
                 try:
@@ -282,9 +282,10 @@ class Automag:
         bound_config = {"Qo_min_max": config["Qo_min_max"], "t_star_min_max": config["t_star_min_max"],
                         "wave_type": config["wave_type"], "fc_min_max": config["fc_min_max"]}
         statistics_config = config.maps[7]
-
+        self.scan_folder()
         for date in self.dates:
             events = self.dates[date]
+            #events = list(set(events))
             self.get_now_files(date)
             self.make_stream()
             for event in events:

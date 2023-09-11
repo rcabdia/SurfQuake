@@ -1,7 +1,7 @@
 #Type parameters
 CONTROL 1 54321
-TRANS SIMPLE 42.00 1.00 -3.00
-GTFILES /Users/robertocabiecesdiaz/Documents/SurfQuake/loc_flow_isp/loc_flow_tools/location_output/model/layer /Users/robertocabiecesdiaz/Documents/SurfQuake/loc_flow_isp/loc_flow_tools/location_output/time/layer S
+TRANS SIMPLE 42.10 0.90 0.00
+GTFILES /Users/roberto/Documents/SurfQuake/loc_flow_isp/loc_flow_tools/location_output/model/layer /Users/roberto/Documents/SurfQuake/loc_flow_isp/loc_flow_tools/location_output/time/layer S
 GTMODE GRID2D ANGLES_YES
 GT_PLFD  1.0e-3  1
 GTSRCE ARBS LATLON 42.434492 1.533754 0.000 2.145

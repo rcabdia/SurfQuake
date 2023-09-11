@@ -1,7 +1,8 @@
 import os
 import pickle
+import pandas as pd
 from obspy.geodetics import gps2dist_azimuth, kilometers2degrees
-from loc_flow_isp import ROOT_DIR, model_dir, p_dir, station, ttime, nllinput, realout
+from loc_flow_isp import ROOT_DIR, model_dir, p_dir, station, ttime, nllinput, realout, magnitudes_config
 from loc_flow_isp.DataProcessing.metadata_manager import MetadataManager
 from loc_flow_isp.Exceptions.exceptions import parse_excepts
 from loc_flow_isp.Gui.Frames import BaseFrame
@@ -23,6 +24,7 @@ from loc_flow_isp.loc_flow_tools.tt_db.taup_tt import create_tt_db
 import numpy as np
 from loc_flow_isp.loc_flow_tools.utils import ConversionUtils
 from loc_flow_isp.Utils.time_utils import AsycTime
+from loc_flow_isp.magnitude_tools.autoag import Automag
 from loc_flow_isp.maps.plot_map import plot_real_map
 
 #from PyQt5.QtCore import pyqtSlot
@@ -83,6 +85,10 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         #self.plotmapBtn.clicked.connect(lambda: self.on_click_plot_map())
         self.stationsBtn.clicked.connect(lambda: self.on_click_select_metadata_file())
         self.actionData_Base.triggered.connect(lambda: self.open_data_base())
+
+        # Magnitude
+
+        self.mag_runBtn.clicked.connect(lambda: self.run_automag())
 
         # Dialog
 
@@ -481,7 +487,53 @@ class LocFlow(BaseFrame, UiLoc_Flow):
                                              self.grid_depth_bind.value, transform)
         self.info_message("Location complete. Check details.", std_out)
 
-    # def mag_runBtn(self):
-    #     # self.project
+
+    ####### Automag ########
+
+    def __modify_pred_config(self):
+
+        self.config_automag["max_epi_dist"] = self.mag_max_distDB.value()
+
+        if self.mag_max_distDB.value() < 700:
+            self.config_automag["scale"] = "Regional"
+        else:
+            self.config_automag["scale"] = "Teleseism"
+
+        self.config_automag["mag_vpweight"] = self.mag_vpweightDB.value()
+        self.config_automag["rho"] = self.automag_density_DB.value()
+        self.config_automag["automag_rpp"] = self.automag_rppDB.value()
+        self.config_automag["automag_rps"] = self.automag_rpsDB.value()
+
+        if self.r_power_nRB.isChecked():
+            self.config_automag["geom_spread_model"] = "r_power_n"
+        else:
+            self.config_automag["geom_spread_model"] = "boatwright"
+        self.config_automag["geom_spread_n_exponent"] = self.geom_spread_n_exponentDB.value()
+        self.config_automag["geom_spread_cutoff_distance"] = self.geom_spread_cutoff_distanceDB.value()
+        self.config_automag["a_local_magnitude"] = self.mag_aDB.value()
+        self.config_automag["b_local_magnitude"] = self.mag_bDB.value()
+        self.config_automag["c_local_magnitude"] = self.mag_cDB.value()
+        self.config_automag["win_length"] = self.win_lengthDB.value()
+
+    def __load_config_automag(self):
+        try:
+            self.config_automag = pd.read_pickle(magnitudes_config)
+            self.__modify_pred_config()
+        except:
+            md = MessageDialog(self)
+            md.set_error_message("Coundn't open magnitude config file")
+
+    def mag_runBtn(self):
+        self.__load_config_automag(magnitudes_config)
+
+    def run_automag(self):
+
+        self.__load_config_automag()
+        mg = Automag(self.project, self.inventory)
+        #mg.scan_from_origin(self.origin)
+        magnitude_mw_statistics, magnitude_ml_statistics = mg.estimate_magnitudes(self.config_automag)
+        self.print_automag_results(magnitude_mw_statistics, magnitude_ml_statistics)
+
+
 
 

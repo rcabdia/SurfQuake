@@ -1,8 +1,8 @@
 #Type parameters
 CONTROL 1 54321
-TRANS SIMPLE 42.00 1.00 0.0
-VGGRID 2 200 100 0.0 0.0 -3.00  1.00 1.00 1.00 SLOW_LEN
-VGOUT /Users/robertocabiecesdiaz/Documents/SurfQuake/loc_flow_isp/loc_flow_tools/location_output/model/layer
+TRANS SIMPLE 42.10 0.90 0.00
+VGGRID 2 80 50 0.0 0.0 -3.00  1.00 1.00 1.00 SLOW_LEN
+VGOUT /Users/roberto/Documents/SurfQuake/loc_flow_isp/loc_flow_tools/location_output/model/layer
 VGTYPE S
 LAYER   0.0  6.1 0.0    3.49  0.0  2.7 0.0
 LAYER  11.0  6.4 0.0    3.66  0.0  2.7 0.0
