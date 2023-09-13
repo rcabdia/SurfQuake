@@ -1,5 +1,0 @@
-CONTROL 1 54321
-TRANS SIMPLE 12 42 -1.0
-VGGRID 2 300 150  0.0 0.0 -1.0  1.0 1.0 1.0  SLOW_LEN
-VGOUT /home/sysop/Escritorio/REAL/NLL_test/model/layer
-VGTYPE P

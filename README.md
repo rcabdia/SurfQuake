@@ -1,43 +1,39 @@
-README
+<img src="loc_flow_isp/resources/logo/surfQuake.png" width="600">
 
-1.- Dowload and process seismic data (skip this)
+# SurfQuake
 
-2.- Pick P and S phases (skip this)
+Earthquake source parameters from P- or S-wave displacement spectra
 
-3.- Use REAL -> associate and locate events
+[![changelog-badge]][changelog-link]
+[![license-badge]][license-link]
+[![docs-badge]][docs-link]
 
-    cd demo/REAL
-    cd ttdb
-    sudo python taup_tt.py -> travel time table
-    cd ../
-    perl runREAL.pl
-    cd t_dist
-    awk -f pha_t-dist.awk -> travel time vs distance
-    
-4.- Use VELEST
-    
-    cd demo/VELEST
-    perl mergetogether_phase.pl - Use REAL output (phase info and locations)
-    perl convertformat.pl - real2velest conv.
-    
-    For next step is needed to prepare our own velocity model -> MODELNAME.mod (see instructions in velest manual)
-    
-    ../../bin/velest
-    perl convertoutput.pl
-    
-5.- Use NonLinLoc (velest 2 nonlinloc conversion is needed before)
+## Description
 
-    cd test
-    python velest2nll.py -> velest 2 nonlinloc conversion
-    
-    move test/output.txt to demo/NLL_test/obs folder
-    
-    cd demo/NLL_test/run
-    sh run_all
-    
-    Result are saved in /NLL_test/loc folder
-    
-[LOCFLOW-CookBook](https://github.com/Dal-mzhang/LOC-FLOW/blob/main/LOCFLOW-CookBook.pdf)
-    
-    
-   
+SurfQuake is an opensource software designed to run an automatic flow of tasks in seismic studies. From pick seismic phases to Moment Tensor Inversion
+
+See [Cabieces et al., (2023)] work in progress
+
+
+## Installation
+
+surfQuake to have anaconda installed. All the required dependencies will be
+downloaded and installed during the insttallation process.
+
+### Using Anaconda
+
+The following command will automatically create an [Anaconda] environment
+named `surfquake`. Go to the folder ./SurfQuake/install and type:
+
+    conda env create -f ./mac_installer/mac_environment.yml
+    conda env create -f ./linux_installer/linux_environment.yml
+
+*The environment is exactly the same as Integrated Seismic Program*
+
+Activate the environment with:
+
+    conda activate surfquake
+
+from within your environment.
+
+    python start_locflow.py

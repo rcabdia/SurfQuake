@@ -1,6 +1,0 @@
-#!/bin/bash
-../bin/Vel2Grid ./v2g_template_P.in
-../bin/Vel2Grid ./v2g_template_S.in
-../bin/Grid2Time ./g2t_template_P
-../bin/Grid2Time ./g2t_template_S
-../bin/NLLoc ./run_template
