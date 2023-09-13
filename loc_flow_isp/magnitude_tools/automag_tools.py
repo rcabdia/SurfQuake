@@ -249,7 +249,7 @@ class preprocess_tools:
             except Exception:
                 self.valid_stream = False
                 msg = '{}: unable to fill gaps: skipping trace'.format(traceid)
-                raise RuntimeError(msg)
+                #raise RuntimeError(msg)
 
     def deconv_waveform(self, gap_max, overlap_max, rmsmin, clipping_sensitivity, max_win_duration):
         self.st_deconv = Stream([])
@@ -401,7 +401,6 @@ class preprocess_tools:
         #print("Calculating Local Magnitude")
         ML_value = None
         try:
-
             coords = self.extract_coordinates_from_station_name(self.inventory, self.st_wood[0].stats.station)
             dist, _, _ = gps2dist_azimuth(coords.Latitude, coords.Longitude, self.event_info[1], self.event_info[2])
             dist = dist / 1000

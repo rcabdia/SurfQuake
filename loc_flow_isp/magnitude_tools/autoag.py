@@ -142,6 +142,7 @@ class Automag:
 
     def ML_statistics(self):
         MLs = np.array(self.ML)
+        MLs = MLs[MLs != None]
         ML_mean = MLs.mean()
         ML_deviation = MLs.std()
         #print("Local Magnitude", str(self.ML_mean)+str(self.ML_deviation))
@@ -303,47 +304,50 @@ class Automag:
                 event = cat[0]
                 arrivals = event["origins"][0]["arrivals"]
                 stations = self._get_stations(arrivals)
+                try:
+                    for station in stations:
 
-                for station in stations:
+                        events_picks, geodetics = self._get_info_in_arrivals(station, arrivals, min_residual_threshold)
+                        pick_info = events_picks[station]
+                        st2 = self.st.select(station=station)
+                        st2.merge()
+                        if st2.count() > 0:
+                            inv_selected = self.inventory.select(station=station)
+                            pt = preprocess_tools(st2, pick_info, focal_parameters, geodetics, inv_selected, scale)
+                            pt.deconv_waveform(gap_max, overlap_max, rmsmin, clipping_sensitivity, max_win_duration)
+                            pt.st_deconv = pt.st_deconv.select(component="Z")
+                            if pt.st_deconv.count() > 0 and pt.st_wood.count() > 0:
 
-                    events_picks, geodetics = self._get_info_in_arrivals(station, arrivals)
-                    pick_info = events_picks[station]
-                    st2 = self.st.select(station=station)
-                    if st2.count() > 0:
-                        inv_selected = self.inventory.select(station=station)
-                        pt = preprocess_tools(st2, pick_info, focal_parameters, geodetics, inv_selected, scale)
-                        pt.deconv_waveform(gap_max, overlap_max, rmsmin, clipping_sensitivity)
-                        pt.st_deconv = pt.st_deconv.select(component="Z")
-                        if pt.st_deconv.count() > 0 and pt.st_wood.count() > 0:
+                                self.ML.append(pt.magnitude_local(a, b, c))
+                                spectrum_dict = pt.compute_spectrum(geom_spread_model, geom_spread_n_exponent,
+                                                geom_spread_cutoff_distance, rho, spectral_smooth_width_decades,
+                                                spectral_sn_min, spectral_sn_freq_range)
 
-                            self.ML.append(pt.magnitude_local(a, b, c))
-                            spectrum_dict = pt.compute_spectrum(geom_spread_model, geom_spread_n_exponent,
-                                            geom_spread_cutoff_distance, rho, spectral_smooth_width_decades,
-                                            spectral_sn_min, spectral_sn_freq_range)
+                                if spectrum_dict is not None:
+                                    ssp = ssp_inversion(spectrum_dict, t_star_0_variability, invert_t_star_0, t_star_0,
+                                        focal_parameters, geodetics, inv_selected, bound_config, inv_algorithm, pi_misfit_max,
+                                                        pi_t_star_min_max, pi_fc_min_max, pi_bsd_min_max)
 
-                            if spectrum_dict is not None:
-                                ssp = ssp_inversion(spectrum_dict, t_star_0_variability, invert_t_star_0, t_star_0,
-                                    focal_parameters, geodetics, inv_selected, bound_config, inv_algorithm, pi_misfit_max,
-                                                    pi_t_star_min_max, pi_fc_min_max, pi_bsd_min_max)
+                                    magnitudes = ssp.run_estimate_all_traces()
+                                    for chn in magnitudes:
+                                        sspec_output.station_parameters[chn._id] = chn
+                                        # for now just for vertical component
+                                        for keyId, trace_dict in spectrum_dict.items():
+                                            spec = trace_dict["amp_signal_moment"]
+                                            specnoise = trace_dict["amp_signal_moment"]
+                                            freq_signal = trace_dict["freq_signal"]
+                                            freq_noise = trace_dict["freq_noise"]
+                                            full_period_signal = trace_dict["full_period_signal"]
+                                            full_period_noise = trace_dict["full_period_noise"]
+                                            vs = trace_dict["vs"]
+                                        # compute and implement energy
+                                        sspec_output.station_parameters[chn._id] = Energy.radiated_energy(chn._id, spec,
+                                            specnoise, freq_signal, freq_noise, full_period_signal, full_period_noise,
+                                            chn.fc.value, vs, max_freq_Er, rho, chn.t_star.value, chn)
 
-                                magnitudes = ssp.run_estimate_all_traces()
-                                for chn in magnitudes:
-                                    sspec_output.station_parameters[chn._id] = chn
-                                    # for now just for vertical component
-                                    for keyId, trace_dict in spectrum_dict.items():
-                                        spec = trace_dict["amp_signal_moment"]
-                                        specnoise = trace_dict["amp_signal_moment"]
-                                        freq_signal = trace_dict["freq_signal"]
-                                        freq_noise = trace_dict["freq_noise"]
-                                        full_period_signal = trace_dict["full_period_signal"]
-                                        full_period_noise = trace_dict["full_period_noise"]
-                                        vs = trace_dict["vs"]
-                                    # compute and implement energy
-                                    sspec_output.station_parameters[chn._id] = Energy.radiated_energy(chn._id, spec,
-                                        specnoise, freq_signal, freq_noise, full_period_signal, full_period_noise,
-                                        chn.fc.value, vs, max_freq_Er, rho, chn.t_star.value, chn)
-
-                magnitude_mw_statistics = compute_summary_statistics(statistics_config, sspec_output)
+                    magnitude_mw_statistics = compute_summary_statistics(statistics_config, sspec_output)
+                except:
+                    magnitude_mw_statistics = None
                 ML_mean, ML_std = self.ML_statistics()
                 magnitude_ml_statistics["ML_mean"] = ML_mean
                 magnitude_ml_statistics["ML_std"] = ML_std

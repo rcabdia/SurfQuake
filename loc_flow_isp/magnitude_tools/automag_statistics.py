@@ -209,13 +209,21 @@ class SourceSpecOutput(OrderedAttribDict):
         vals = np.array([x.Er.value for x in self.station_parameters.values()])
         if filter_outliers:
             outliers = self.outlier_array(key)
-            vals = vals[~outliers]
+            try:
+                vals = vals[~outliers]
+            except:
+                vals = vals
         return vals
     def value_array(self, key, filter_outliers=False):
         vals = np.array([x._params.get(key, np.nan) for x in self.station_parameters.values()])
         if filter_outliers:
             outliers = self.outlier_array(key)
-            vals = vals[~outliers]
+            #outliers = outliers.astype(np.int32)
+            #outliers = np.logical_not(outliers)
+            try:
+                vals = vals[~outliers]
+            except:
+                vals = vals
         return vals
 
     def error_array(self, key, filter_outliers=False):
@@ -225,7 +233,11 @@ class SourceSpecOutput(OrderedAttribDict):
         ])
         if filter_outliers:
             outliers = self.outlier_array(key)
-            errs = errs[~outliers]
+            try:
+                errs = errs[~outliers]
+            except:
+                errs[:] = np.nan
+                errs = errs.astype(float)
         else:
             errs[:] = np.nan
             errs = errs.astype(float)

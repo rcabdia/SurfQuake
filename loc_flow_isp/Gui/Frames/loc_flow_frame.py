@@ -532,7 +532,7 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         mg = Automag(self.project, self.inventory)
         #mg.scan_from_origin(self.origin)
         magnitude_mw_statistics, magnitude_ml_statistics = mg.estimate_magnitudes(self.config_automag)
-        self.print_automag_results(magnitude_mw_statistics, magnitude_ml_statistics)
+        #self.print_automag_results(magnitude_mw_statistics, magnitude_ml_statistics)
 
 
 
