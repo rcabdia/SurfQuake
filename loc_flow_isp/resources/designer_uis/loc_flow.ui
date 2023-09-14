@@ -28,7 +28,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>3</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_4">
        <attribute name="title">
@@ -1512,7 +1512,7 @@
                </property>
                <layout class="QGridLayout" name="gridLayout_18">
                 <item row="0" column="0">
-                 <widget class="QPlainTextEdit" name="automagnitudesText_2"/>
+                 <widget class="QPlainTextEdit" name="automagnitudesText"/>
                 </item>
                </layout>
               </widget>

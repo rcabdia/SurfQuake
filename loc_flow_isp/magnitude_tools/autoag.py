@@ -143,11 +143,18 @@ class Automag:
     def ML_statistics(self):
         MLs = np.array(self.ML)
         MLs = MLs[MLs != None]
-        ML_mean = MLs.mean()
+        MLs = self.reject_outliers(MLs)
+        #ML_mean = MLs.mean()
+        ML_median = np.median(MLs)
         ML_deviation = MLs.std()
         #print("Local Magnitude", str(self.ML_mean)+str(self.ML_deviation))
-        return ML_mean, ML_deviation
+        return ML_median, ML_deviation
 
+    def reject_outliers(self, data, m=2.):
+        d = np.abs(data - np.median(data))
+        mdev = np.median(d)
+        s = d / mdev if mdev else np.zeros(len(d))
+        return data[s < m]
     def get_arrival(self, arrivals, sta_name):
         arrival_return = []
         for arrival in arrivals:
@@ -249,7 +256,8 @@ class Automag:
 
 
     def estimate_magnitudes(self, config):
-
+        magnitude_mw_statistics_list = []
+        magnitude_ml_statistics_list = []
         # extract info from config:
         magnitude_mw_statistics = {}
         magnitude_ml_statistics = {}
@@ -304,9 +312,9 @@ class Automag:
                 event = cat[0]
                 arrivals = event["origins"][0]["arrivals"]
                 stations = self._get_stations(arrivals)
-                try:
-                    for station in stations:
 
+                for station in stations:
+                    try:
                         events_picks, geodetics = self._get_info_in_arrivals(station, arrivals, min_residual_threshold)
                         pick_info = events_picks[station]
                         st2 = self.st.select(station=station)
@@ -315,10 +323,10 @@ class Automag:
                             inv_selected = self.inventory.select(station=station)
                             pt = preprocess_tools(st2, pick_info, focal_parameters, geodetics, inv_selected, scale)
                             pt.deconv_waveform(gap_max, overlap_max, rmsmin, clipping_sensitivity, max_win_duration)
+                            self.ML.append(pt.magnitude_local(a, b, c))
                             pt.st_deconv = pt.st_deconv.select(component="Z")
-                            if pt.st_deconv.count() > 0 and pt.st_wood.count() > 0:
+                            if pt.st_deconv.count() > 0:
 
-                                self.ML.append(pt.magnitude_local(a, b, c))
                                 spectrum_dict = pt.compute_spectrum(geom_spread_model, geom_spread_n_exponent,
                                                 geom_spread_cutoff_distance, rho, spectral_smooth_width_decades,
                                                 spectral_sn_min, spectral_sn_freq_range)
@@ -344,16 +352,19 @@ class Automag:
                                         sspec_output.station_parameters[chn._id] = Energy.radiated_energy(chn._id, spec,
                                             specnoise, freq_signal, freq_noise, full_period_signal, full_period_noise,
                                             chn.fc.value, vs, max_freq_Er, rho, chn.t_star.value, chn)
+                    except:
+                        print("Coudn't estimate magnitude for station ", station)
 
-                    magnitude_mw_statistics = compute_summary_statistics(statistics_config, sspec_output)
-                except:
-                    magnitude_mw_statistics = None
+                magnitude_mw_statistics = compute_summary_statistics(statistics_config, sspec_output)
+                magnitude_mw_statistics_list.append(magnitude_mw_statistics)
                 ML_mean, ML_std = self.ML_statistics()
                 magnitude_ml_statistics["ML_mean"] = ML_mean
                 magnitude_ml_statistics["ML_std"] = ML_std
-                print(magnitude_mw_statistics, ML_mean, ML_std)
+                magnitude_ml_statistics_list.append(magnitude_ml_statistics)
+                #print(magnitude_mw_statistics, ML_mean, ML_std)
+                print(ML_mean, ML_std)
 
-        return magnitude_mw_statistics, magnitude_ml_statistics
+        return magnitude_mw_statistics_list, magnitude_ml_statistics_list
 
 
 

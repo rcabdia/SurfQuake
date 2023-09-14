@@ -530,10 +530,59 @@ class LocFlow(BaseFrame, UiLoc_Flow):
 
         self.__load_config_automag()
         mg = Automag(self.project, self.inventory)
-        #mg.scan_from_origin(self.origin)
-        magnitude_mw_statistics, magnitude_ml_statistics = mg.estimate_magnitudes(self.config_automag)
-        #self.print_automag_results(magnitude_mw_statistics, magnitude_ml_statistics)
+        magnitude_mw_statistics_list, magnitude_ml_statistics_list = mg.estimate_magnitudes(self.config_automag)
+        self.automagnitudesText.clear()
+        for magnitude_mw_statistics,magnitude_ml_statistics in zip(magnitude_mw_statistics_list, magnitude_ml_statistics_list):
+            self.print_automag_results(magnitude_mw_statistics, magnitude_ml_statistics)
 
+    def print_automag_results(self, magnitude_mw_statistics, magnitude_ml_statistics):
 
+        if magnitude_mw_statistics != None:
+            Mw = magnitude_mw_statistics.summary_spectral_parameters.Mw.weighted_mean.value
+            Mw_std = magnitude_mw_statistics.summary_spectral_parameters.Mw.weighted_mean.uncertainty
+
+            Mo = magnitude_mw_statistics.summary_spectral_parameters.Mo.mean.value
+            Mo_units = magnitude_mw_statistics.summary_spectral_parameters.Mo.units
+
+            fc = magnitude_mw_statistics.summary_spectral_parameters.fc.weighted_mean.value
+            fc_units = "Hz"
+
+            t_star = magnitude_mw_statistics.summary_spectral_parameters.t_star.weighted_mean.value
+            t_star_std = magnitude_mw_statistics.summary_spectral_parameters.t_star.weighted_mean.uncertainty
+            t_star_units = magnitude_mw_statistics.summary_spectral_parameters.t_star.units
+
+            source_radius = magnitude_mw_statistics.summary_spectral_parameters.radius.mean.value
+            radius_units = magnitude_mw_statistics.summary_spectral_parameters.radius.units
+
+            bsd = magnitude_mw_statistics.summary_spectral_parameters.bsd.mean.value
+            bsd_units = magnitude_mw_statistics.summary_spectral_parameters.bsd.units
+
+            Qo =  magnitude_mw_statistics.summary_spectral_parameters.Qo.mean.value
+            Qo_std = magnitude_mw_statistics.summary_spectral_parameters.Qo.mean.uncertainty
+            Qo_units = magnitude_mw_statistics.summary_spectral_parameters.Qo.units
+
+            Er = magnitude_mw_statistics.summary_spectral_parameters.Er.mean.value
+            Er_units = "jul"
+
+            self.automagnitudesText.appendPlainText("Moment Magnitude: " " Mw {Mw:.3f} "
+                                                    " std {std:.3f} ".format(Mw=Mw, std=Mw_std))
+
+            self.automagnitudesText.appendPlainText("Seismic Moment and Source radius: " " Mo {Mo:e} Nm"
+                                                    ", R {std:.3f} km".format(Mo=Mo, std=source_radius / 1000))
+
+            self.automagnitudesText.appendPlainText("Brune stress Drop: " "{bsd:.3f} MPa".format(bsd=bsd))
+
+            self.automagnitudesText.appendPlainText(
+                "Quality factor: " " Qo {Qo:.3f} " " Q_std {Qo_std:.3f} ".format(Qo=Qo, Qo_std=Qo_std))
+
+            self.automagnitudesText.appendPlainText(
+                "t_star: " "{t_star:.3f} s" " t_star_std {t_star_std:.3f} ".format(t_star=t_star,
+                                                                                   t_star_std=t_star_std))
+
+        if magnitude_ml_statistics != None:
+            ML = magnitude_ml_statistics["ML_mean"]
+            ML_std = magnitude_ml_statistics["ML_std"]
+            self.automagnitudesText.appendPlainText("Local Magnitude: " " ML {ML:.3f} "
+                                                    " ML_std {std:.3f} ".format(ML=ML, std=ML_std))
 
 

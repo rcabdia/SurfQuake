@@ -2,6 +2,7 @@ import warnings
 
 from obspy import UTCDateTime
 from obspy.geodetics import gps2dist_azimuth
+from obspy.signal.invsim import WOODANDERSON
 from obspy.taup import TauPyModel
 from scipy.signal import find_peaks
 from scipy.stats import gaussian_kde
@@ -260,21 +261,26 @@ class preprocess_tools:
         self.merge_stream(gap_max, overlap_max)
         self.check_signal_level(rmsmin=rmsmin)
         #this process is just to check that it is not clipped
-        self.check_clipping(clipping_sensitivity=clipping_sensitivity)
-        paz_wa = {'sensitivity': 2800, 'zeros': [0j], 'gain': 1,
-                  'poles': [-6.2832 - 4.7124j, -6.2832 + 4.7124j]}
+        #self.check_clipping(clipping_sensitivity=clipping_sensitivity) # Too problematic to test
+
+        # paz_wa = {'sensitivity': 2800, 'zeros': [0j], 'gain': 1,
+        #           'poles': [-6.2832 - 4.7124j, -6.2832 + 4.7124j]}
+
+        #paz_wa = {'poles': [-6.2832 + 4.7124j, -6.2832 - 4.7124j],
+        #                'zeros': [0 + 0j], 'gain': 1.0, 'sensitivity': 2080}
+
+        f1 = 0.05
+        f2 = 0.08
+        f3 = 0.35 * self.st[0].stats.sampling_rate
+        f4 = 0.40 * self.st[0].stats.sampling_rate
+        pre_filt = (f1, f2, f3, f4)
+        st_deconv = []
+        st_wood = []
 
         if self.valid_stream:
 
             self.st.detrend(type="simple")
             self.st.taper(type="blackman", max_percentage=0.05)
-            f1 = 0.05
-            f2 = 0.08
-            f3 = 0.35 * self.st[0].stats.sampling_rate
-            f4 = 0.40 * self.st[0].stats.sampling_rate
-            pre_filt = (f1, f2, f3, f4)
-            st_deconv = []
-            st_wood = []
 
             for tr in self.st:
 
@@ -293,13 +299,48 @@ class preprocess_tools:
                     resp = resp.response_stages[0]
                     paz_mine = {'sensitivity': resp.stage_gain * resp.normalization_factor, 'zeros': resp.zeros,
                                 'gain': resp.stage_gain, 'poles': resp.poles}
-                    tr_wood.simulate(paz_remove=paz_mine, paz_simulate=paz_wa, water_level=90)
+                    tr_wood.detrend(type="simple")
+                    tr_wood.taper(max_percentage=0.05)
+                    tr_wood.filter(type="bandpass", freqmin=f2, freqmax=f3,
+                                   zerophase=False, corners=4)
+                    tr_wood.detrend(type="simple")
+                    tr_wood.simulate(paz_simulate=WOODANDERSON, paz_remove=paz_mine, water_level=90)
+                    tr_wood.detrend(type="simple")
+                    tr_wood.taper(max_percentage=0.05)
+                    #tr_wood.simulate(paz_remove=paz_mine, paz_simulate=paz_wa, water_level=90)
                     st_wood.append(tr_wood)
                 except:
                     tr.data = np.array([])
 
-            self.st_deconv = Stream(traces=st_deconv)
-            self.st_wood = Stream(traces=st_wood)
+        # else:
+        #     self.st.detrend(type="simple")
+        #     self.st.taper(type="blackman", max_percentage=0.05)
+        #
+        #     for tr in self.st:
+        #         tr_wood = tr.copy()
+        #         try:
+        #             resp = self.inventory.get_response(tr.id, tr.stats.starttime)
+        #             resp = resp.response_stages[0]
+        #             paz_mine = {'sensitivity': resp.stage_gain * resp.normalization_factor, 'zeros': resp.zeros,
+        #                         'gain': resp.stage_gain, 'poles': resp.poles}
+        #             tr_wood.detrend(type="simple")
+        #             tr_wood.taper(max_percentage=0.05)
+        #             tr_wood.filter(type="bandpass", freqmin=f2, freqmax=f3,
+        #                            zerophase=False, corners=4)
+        #             tr_wood.detrend(type="simple")
+        #             tr_wood.simulate(paz_simulate=WOODANDERSON, paz_remove=paz_mine, water_level=90)
+        #             tr_wood.detrend(type="simple")
+        #             tr_wood.taper(max_percentage=0.05)
+        #             # tr_wood.simulate(paz_remove=paz_mine, paz_simulate=paz_wa, water_level=90)
+        #             st_wood.append(tr_wood)
+        #         except:
+        #             tr.data = np.array([])
+
+
+        self.st_deconv = Stream(traces=st_deconv)
+        self.st_wood = Stream(traces=st_wood)
+        #self.st_deconv.plot()
+        #self.st_wood.plot()
 
     def __cut_waveform(self, cutstream=True):
 
@@ -398,7 +439,18 @@ class preprocess_tools:
          return StationCoordinates.from_dict(coords)
     #
     def magnitude_local(self, a, b, c):
-        #print("Calculating Local Magnitude")
+
+        """
+        # LOCAL MAGNITUDE PARAMETERS --------
+        compute_local_magnitude = False
+        # Local magnitude parameters:
+        #   ml = log10(A) + a * log10(R/100) + b * (R-100) + c
+        # where A is the maximum W-A amplitude (in mm)
+        # and R is the hypocentral distance (in km)
+        # Default values (for California) are:
+        #   a = 1., b = 0.00301, c = 3.
+        """
+
         ML_value = None
         try:
             coords = self.extract_coordinates_from_station_name(self.inventory, self.st_wood[0].stats.station)
@@ -411,15 +463,16 @@ class preprocess_tools:
             tr_N = tr_N[0]
             if len(tr_N.data) > 0 and len(tr_E.data) > 0:
 
-                max_amplitude_N = np.max(tr_N.data) * 1e3  # convert to  mm --> nm
-                max_amplitude_E = np.max(tr_E.data) * 1e3  # convert to  mm --> nm
+                max_amplitude_N = np.max(np.abs(tr_N.data)) * 1e3  # convert to  nm --> mm
+                max_amplitude_E = np.max(np.abs(tr_E.data)) * 1e3  # convert to  nm --> mm
                 max_amplitude = max([max_amplitude_E, max_amplitude_N])
             else:
                 tr_Z = self.st_wood.select(component="Z")
                 tr_Z = tr_Z[0]
-                max_amplitude = np.max(tr_Z.data) * 1e3 # convert to  mm --> nm
+                max_amplitude = np.max(np.abs(tr_Z.data)) * 1e3 # convert to  nm --> mm
 
-            ML_value = np.log10(max_amplitude) + a * np.log10(dist) + b * dist + c
+            ML_value = np.log10(max_amplitude) + a * np.log10(dist) + b * (dist) + c
+            #ML_value = np.log10(max_amplitude) + a * np.log10(dist/100) + b * (dist-100) + c
 
         except:
             warnings.warn("Couldn't estimate local magnitude")
