@@ -315,17 +315,16 @@ class preprocess_tools:
                     tr.data = np.array([])
 
                 try:
-                    resp = self.inventory.get_response(tr.id, tr.stats.starttime)
-                    #paz_mine = resp.get_paz()
-                    resp = resp.response_stages[0]
-                    paz_mine = {'sensitivity': resp.stage_gain * resp.normalization_factor, 'zeros': resp.zeros,
-                                 'gain': resp.stage_gain, 'poles': resp.poles}
+                    # resp = self.inventory.get_response(tr.id, tr.stats.starttime)
+                    # #paz_mine = resp.get_paz()
+                    # resp = resp.response_stages[0]
+                    # paz_mine = {'sensitivity': resp.stage_gain * resp.normalization_factor, 'zeros': resp.zeros,
+                    #               'gain': resp.stage_gain, 'poles': resp.poles}
                     tr_wood.detrend(type="simple")
                     tr_wood.taper(max_percentage=0.05)
-                    tr_wood.filter(type="bandpass", freqmin=f2, freqmax=f3,
-                                   zerophase=False, corners=4)
-                    tr_wood.detrend(type="simple")
-                    tr_wood.simulate(paz_simulate=WOODANDERSON, paz_remove=paz_mine, water_level=10)
+                    tr_wood.remove_response(inventory=self.inventory, pre_filt=pre_filt, output="VEL", water_level=40)
+                    #tr_wood.simulate(paz_simulate=WOODANDERSON, paz_remove=paz_mine, water_level=10)
+                    tr_wood.simulate(paz_simulate=WOODANDERSON, water_level=10)
                     tr_wood.detrend(type="simple")
                     tr_wood.taper(max_percentage=0.05)
                     #tr_wood.simulate(paz_remove=paz_mine, paz_simulate=paz_wa, water_level=90)
@@ -483,8 +482,8 @@ class preprocess_tools:
                 tr_Z = tr_Z[0]
                 max_amplitude = np.max(np.abs(tr_Z.data)) * 1e3 # convert to  mm --> nm
 
-            ML_value = np.log10(max_amplitude) + a * np.log10(dist) + b * (dist) + c
-            #ML_value = np.log10(max_amplitude) + a * np.log10(dist/100) + b * (dist-100) + c
+            #ML_value = np.log10(max_amplitude) + a * np.log10(dist) + b * (dist) + c
+            ML_value = np.log10(max_amplitude) + a * np.log10(dist/100) + b * (dist-100) + c
 
         except:
             warnings.warn("Couldn't estimate local magnitude")
