@@ -1,8 +1,10 @@
 import warnings
-
+from obspy.signal.filter import envelope
 from obspy import UTCDateTime
 from obspy.geodetics import gps2dist_azimuth
 from obspy.signal.invsim import WOODANDERSON
+from obspy.signal.util import smooth
+from obspy.signal.trigger import trigger_onset
 from obspy.taup import TauPyModel
 from scipy.signal import find_peaks
 from scipy.stats import gaussian_kde
@@ -12,6 +14,12 @@ import numpy as np
 import logging
 from obspy.core import Stream
 logger = logging.getLogger(__name__.split('.')[-1])
+
+# paz_wa = {'sensitivity': 2800, 'zeros': [0j], 'gain': 1,
+#           'poles': [-6.2832 - 4.7124j, -6.2832 + 4.7124j]}
+
+# paz_wa = {'poles': [-6.2832 + 4.7124j, -6.2832 - 4.7124j],
+#                'zeros': [0 + 0j], 'gain': 1.0, 'sensitivity': 2080}
 
 class preprocess_tools:
 
@@ -252,6 +260,24 @@ class preprocess_tools:
                 msg = '{}: unable to fill gaps: skipping trace'.format(traceid)
                 #raise RuntimeError(msg)
 
+    def _get_cut_times(self, tr, pickP_time, noise_window_duration, signal_window_duration):
+        """Get trace cut times between P arrival and end of envelope coda."""
+        tr_env = tr.copy()
+        tr_env.data = envelope(tr_env.data)
+        tr_env.data = smooth(tr_env.data, 100)
+        tr_noise = tr_env.copy()
+        tr_signal = tr_env.copy()
+        tr_noise.trim(starttime=pickP_time-noise_window_duration, endtime=pickP_time,
+                      pad=True, fill_value=0)
+        tr_signal.trim(starttime=pickP_time, endtime=pickP_time+signal_window_duration,
+                       pad=True, fill_value=0)
+        ampmin = tr_noise.data.mean()
+        ampmax = tr_signal.data.mean()
+        trigger = trigger_onset(tr_env.data, ampmax, ampmin, max_len=9e99, max_len_delete=False)[0]
+        t1 = pickP_time + trigger[-1] * tr.stats.delta
+        t1 = min(t1, tr.stats.endtime)
+        return t1
+
     def deconv_waveform(self, gap_max, overlap_max, rmsmin, clipping_sensitivity, max_win_duration):
         self.st_deconv = Stream([])
         self.st_wood = Stream([])
@@ -262,12 +288,6 @@ class preprocess_tools:
         self.check_signal_level(rmsmin=rmsmin)
         #this process is just to check that it is not clipped
         #self.check_clipping(clipping_sensitivity=clipping_sensitivity) # Too problematic to test
-
-        # paz_wa = {'sensitivity': 2800, 'zeros': [0j], 'gain': 1,
-        #           'poles': [-6.2832 - 4.7124j, -6.2832 + 4.7124j]}
-
-        #paz_wa = {'poles': [-6.2832 + 4.7124j, -6.2832 - 4.7124j],
-        #                'zeros': [0 + 0j], 'gain': 1.0, 'sensitivity': 2080}
 
         f1 = 0.05
         f2 = 0.08
@@ -289,22 +309,23 @@ class preprocess_tools:
 
                 try:
                     tr_deconv.remove_response(inventory=self.inventory, pre_filt=pre_filt, output="DISP",
-                                              water_level=90)
+                                              water_level=60)
                     st_deconv.append(tr_deconv)
                 except:
                     tr.data = np.array([])
 
                 try:
                     resp = self.inventory.get_response(tr.id, tr.stats.starttime)
+                    #paz_mine = resp.get_paz()
                     resp = resp.response_stages[0]
                     paz_mine = {'sensitivity': resp.stage_gain * resp.normalization_factor, 'zeros': resp.zeros,
-                                'gain': resp.stage_gain, 'poles': resp.poles}
+                                 'gain': resp.stage_gain, 'poles': resp.poles}
                     tr_wood.detrend(type="simple")
                     tr_wood.taper(max_percentage=0.05)
                     tr_wood.filter(type="bandpass", freqmin=f2, freqmax=f3,
                                    zerophase=False, corners=4)
                     tr_wood.detrend(type="simple")
-                    tr_wood.simulate(paz_simulate=WOODANDERSON, paz_remove=paz_mine, water_level=90)
+                    tr_wood.simulate(paz_simulate=WOODANDERSON, paz_remove=paz_mine, water_level=10)
                     tr_wood.detrend(type="simple")
                     tr_wood.taper(max_percentage=0.05)
                     #tr_wood.simulate(paz_remove=paz_mine, paz_simulate=paz_wa, water_level=90)
@@ -312,35 +333,25 @@ class preprocess_tools:
                 except:
                     tr.data = np.array([])
 
-        # else:
-        #     self.st.detrend(type="simple")
-        #     self.st.taper(type="blackman", max_percentage=0.05)
-        #
-        #     for tr in self.st:
-        #         tr_wood = tr.copy()
-        #         try:
-        #             resp = self.inventory.get_response(tr.id, tr.stats.starttime)
-        #             resp = resp.response_stages[0]
-        #             paz_mine = {'sensitivity': resp.stage_gain * resp.normalization_factor, 'zeros': resp.zeros,
-        #                         'gain': resp.stage_gain, 'poles': resp.poles}
-        #             tr_wood.detrend(type="simple")
-        #             tr_wood.taper(max_percentage=0.05)
-        #             tr_wood.filter(type="bandpass", freqmin=f2, freqmax=f3,
-        #                            zerophase=False, corners=4)
-        #             tr_wood.detrend(type="simple")
-        #             tr_wood.simulate(paz_simulate=WOODANDERSON, paz_remove=paz_mine, water_level=90)
-        #             tr_wood.detrend(type="simple")
-        #             tr_wood.taper(max_percentage=0.05)
-        #             # tr_wood.simulate(paz_remove=paz_mine, paz_simulate=paz_wa, water_level=90)
-        #             st_wood.append(tr_wood)
-        #         except:
-        #             tr.data = np.array([])
-
-
         self.st_deconv = Stream(traces=st_deconv)
         self.st_wood = Stream(traces=st_wood)
-        #self.st_deconv.plot()
-        #self.st_wood.plot()
+
+    def __cut_wood_waveform(self, regional = True):
+
+            #st = self.st_wood.copy()
+            if regional:
+                self.st_wood.trim(starttime=self.pickP_time - 5, endtime=self.pickP_time + 60)
+                self.st_wood.detrend(type="simple")
+                self.st_wood.taper(max_percentage=0.05)
+
+            # max_t = []
+            # for tr in st:
+            #     t0 = self._get_cut_times(tr, self.pickP_time, self.noise_window_duration, self.signal_window_duration)
+            #     max_t.append(t0)
+            #
+            # window_duration = max(max_t)
+            # self.st_wood.trim(starttime=self.pickP_time - 5,
+            #                     endtime=self.pickP_time + window_duration)
 
     def __cut_waveform(self, cutstream=True):
 
@@ -411,7 +422,7 @@ class preprocess_tools:
 
             else:
                 start_diff = (self.pick_info[0][1] - 1300) - maxstart
-                end_diff = minend  - (self.pick_info[0][1] + 3600)
+                end_diff = minend - (self.pick_info[0][1] + 3600)
                 if start_diff > 0 and end_diff > 0:
                     self.st.trim(starttime=self.pick_info[0][1] - 1300, endtime=self.pick_info[0][1] + 3600)
                 else:
@@ -453,6 +464,7 @@ class preprocess_tools:
 
         ML_value = None
         try:
+            self.__cut_wood_waveform()
             coords = self.extract_coordinates_from_station_name(self.inventory, self.st_wood[0].stats.station)
             dist, _, _ = gps2dist_azimuth(coords.Latitude, coords.Longitude, self.event_info[1], self.event_info[2])
             dist = dist / 1000
@@ -463,13 +475,13 @@ class preprocess_tools:
             tr_N = tr_N[0]
             if len(tr_N.data) > 0 and len(tr_E.data) > 0:
 
-                max_amplitude_N = np.max(np.abs(tr_N.data)) * 1e3  # convert to  nm --> mm
-                max_amplitude_E = np.max(np.abs(tr_E.data)) * 1e3  # convert to  nm --> mm
+                max_amplitude_N = np.max(np.abs(tr_N.data)) * 1e3  # convert to  mm --> nm
+                max_amplitude_E = np.max(np.abs(tr_E.data)) * 1e3  # convert to  mm --> nm
                 max_amplitude = max([max_amplitude_E, max_amplitude_N])
             else:
                 tr_Z = self.st_wood.select(component="Z")
                 tr_Z = tr_Z[0]
-                max_amplitude = np.max(np.abs(tr_Z.data)) * 1e3 # convert to  nm --> mm
+                max_amplitude = np.max(np.abs(tr_Z.data)) * 1e3 # convert to  mm --> nm
 
             ML_value = np.log10(max_amplitude) + a * np.log10(dist) + b * (dist) + c
             #ML_value = np.log10(max_amplitude) + a * np.log10(dist/100) + b * (dist-100) + c
