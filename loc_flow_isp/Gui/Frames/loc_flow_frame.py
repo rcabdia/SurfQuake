@@ -538,7 +538,7 @@ class LocFlow(BaseFrame, UiLoc_Flow):
     def print_automag_results(self, magnitude_mw_statistics, magnitude_ml_statistics, focal_parameters):
         self.automagnitudesText.appendPlainText("#####################################################")
         self.automagnitudesText.appendPlainText(focal_parameters[0].strftime(format="%m/%d/%Y, %H:%M:%S")+ "    "+str(focal_parameters[1])+
-            "    "+ str(focal_parameters[2])+"    "+ str(focal_parameters[3]))
+            "º    "+ str(focal_parameters[2])+"º    "+ str(focal_parameters[3])+" km")
         if magnitude_mw_statistics != None:
             Mw = magnitude_mw_statistics.summary_spectral_parameters.Mw.weighted_mean.value
             Mw_std = magnitude_mw_statistics.summary_spectral_parameters.Mw.weighted_mean.uncertainty
@@ -581,10 +581,16 @@ class LocFlow(BaseFrame, UiLoc_Flow):
                 "t_star: " "{t_star:.3f} s" " t_star_std {t_star_std:.3f} ".format(t_star=t_star,
                                                                                    t_star_std=t_star_std))
 
+        else:
+            self.automagnitudesText.appendPlainText("Mw cannot be estimated")
+
         if magnitude_ml_statistics != None:
             ML = magnitude_ml_statistics["ML_mean"]
             ML_std = magnitude_ml_statistics["ML_std"]
             self.automagnitudesText.appendPlainText("Local Magnitude: " " ML {ML:.3f} "
                                                     " ML_std {std:.3f} ".format(ML=ML, std=ML_std))
+
+        else:
+            self.automagnitudesText.appendPlainText("ML cannot be estimated")
 
 
