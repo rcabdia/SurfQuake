@@ -2,7 +2,7 @@ import os
 import pickle
 import pandas as pd
 from obspy.geodetics import gps2dist_azimuth, kilometers2degrees
-from loc_flow_isp import ROOT_DIR, model_dir, p_dir, station, ttime, nllinput, realout, magnitudes_config
+from loc_flow_isp import ROOT_DIR, model_dir, p_dir, station, ttime, nllinput, realout, magnitudes_config, magnitudes
 from loc_flow_isp.DataProcessing.metadata_manager import MetadataManager
 from loc_flow_isp.Exceptions.exceptions import parse_excepts
 from loc_flow_isp.Gui.Frames import BaseFrame
@@ -527,18 +527,28 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         self.__load_config_automag(magnitudes_config)
 
     def run_automag(self):
-
+        self.automagnitudesText.clear()
+        self.Date_Id = []
+        self.Mw = []
+        self.Mw_std = []
+        self.ML = []
+        self.ML_std = []
         self.__load_config_automag()
         mg = Automag(self.project, self.inventory)
-        magnitude_mw_statistics_list, magnitude_ml_statistics_list, focal_parameters_list = mg.estimate_magnitudes(self.config_automag)
-        self.automagnitudesText.clear()
-        for magnitude_mw_statistics,magnitude_ml_statistics, focal_parameters in zip(magnitude_mw_statistics_list, magnitude_ml_statistics_list, focal_parameters_list):
+        magnitude_mw_statistics_list, magnitude_ml_statistics_list, focal_parameters_list = (
+            mg.estimate_magnitudes(self.config_automag))
+        for magnitude_mw_statistics, magnitude_ml_statistics, focal_parameters in zip(magnitude_mw_statistics_list,
+                                                            magnitude_ml_statistics_list, focal_parameters_list):
             self.print_automag_results(magnitude_mw_statistics, magnitude_ml_statistics, focal_parameters)
 
+        self.save_magnitudes()
     def print_automag_results(self, magnitude_mw_statistics, magnitude_ml_statistics, focal_parameters):
         self.automagnitudesText.appendPlainText("#####################################################")
         self.automagnitudesText.appendPlainText(focal_parameters[0].strftime(format="%m/%d/%Y, %H:%M:%S")+ "    "+str(focal_parameters[1])+
             "º    "+ str(focal_parameters[2])+"º    "+ str(focal_parameters[3])+" km")
+
+        self.Date_Id.append(focal_parameters[0].strftime(format="%Y%m%d%H%M%S"))
+
         if magnitude_mw_statistics != None:
             Mw = magnitude_mw_statistics.summary_spectral_parameters.Mw.weighted_mean.value
             Mw_std = magnitude_mw_statistics.summary_spectral_parameters.Mw.weighted_mean.uncertainty
@@ -566,6 +576,9 @@ class LocFlow(BaseFrame, UiLoc_Flow):
             Er = magnitude_mw_statistics.summary_spectral_parameters.Er.mean.value
             Er_units = "jul"
 
+            self.Mw.append("{:.2f}".format(Mw))
+            self.Mw_std.append("{:.2f}".format(Mw_std))
+
             self.automagnitudesText.appendPlainText("Moment Magnitude: " " Mw {Mw:.3f} "
                                                     " std {std:.3f} ".format(Mw=Mw, std=Mw_std))
 
@@ -583,14 +596,23 @@ class LocFlow(BaseFrame, UiLoc_Flow):
 
         else:
             self.automagnitudesText.appendPlainText("Mw cannot be estimated")
+            self.Mw.append("None")
+            self.Mw_std.append("None")
 
         if magnitude_ml_statistics != None:
-            ML = magnitude_ml_statistics["ML_mean"]
-            ML_std = magnitude_ml_statistics["ML_std"]
+            ML = magnitude_ml_statistics[0]
+            ML_std = magnitude_ml_statistics[1]
+            self.ML.append("{:.2f}".format(ML))
+            self.ML_std.append("{:.2f}".format(ML_std))
             self.automagnitudesText.appendPlainText("Local Magnitude: " " ML {ML:.3f} "
                                                     " ML_std {std:.3f} ".format(ML=ML, std=ML_std))
 
         else:
             self.automagnitudesText.appendPlainText("ML cannot be estimated")
+            self.ML.append("None")
+            self.ML_std.append("None")
 
-
+    def save_magnitudes(self):
+        magnitudes_dict = {'id': self.Date_Id, 'Mw': self.Mw, 'Mw_error': self.Mw_std,'ML': self.ML, 'ML_error': self.ML_std}
+        df_magnitudes = pd.DataFrame.from_dict(magnitudes_dict)
+        df_magnitudes.to_csv(magnitudes, sep=";", index=False)

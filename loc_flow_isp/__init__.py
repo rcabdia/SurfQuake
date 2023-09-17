@@ -18,7 +18,7 @@ TT_DB_PATH = os.path.join(os.path.dirname(ROOT_DIR), "loc_flow_isp/loc_flow_tool
 MOMENT_TENSOR_OUTPUT = os.path.join(os.path.dirname(ROOT_DIR), "loc_flow_isp/moment_tensor_output")
 magnitudes_config = os.path.join(os.path.dirname(ROOT_DIR), "loc_flow_isp/magnitude_tools/MagnitudesConfig"
                                                             "/automag_config")
-magnitudes = os.path.join(os.path.dirname(ROOT_DIR), "loc_flow_isp/magnitudes_output/magnitudes.txt")
+magnitudes = os.path.join(os.path.dirname(ROOT_DIR), "loc_flow_isp/magnitudes_output/magnitudes_output.txt")
 def create_logger():
 
     # create logger.

@@ -299,9 +299,8 @@ class Automag:
             self.get_now_files(date)
             self.make_stream()
             for event in events:
-
+                self.ML = []
                 sspec_output = SourceSpecOutput()
-
                 cat = read_nll_performance.read_nlloc_hyp_ISP(event)
                 focal_parameters = [cat[0].origins[0]["time"], cat[0].origins[0]["latitude"],
                                     cat[0].origins[0]["longitude"],
@@ -364,11 +363,11 @@ class Automag:
                 magnitude_mw_statistics_list.append(magnitude_mw_statistics)
                 try:
                     ML_mean, ML_std = self.ML_statistics()
-                    magnitude_ml_statistics["ML_mean"] = ML_mean
-                    magnitude_ml_statistics["ML_std"] = ML_std
+                    #magnitude_ml_statistics["ML_mean"] = ML_mean
+                    #magnitude_ml_statistics["ML_std"] = ML_std
                 except:
                     magnitude_ml_statistics = None
-                magnitude_ml_statistics_list.append(magnitude_ml_statistics)
+                magnitude_ml_statistics_list.append([ML_mean, ML_std])
                 focal_parameters_list.append(focal_parameters)
 
         return magnitude_mw_statistics_list, magnitude_ml_statistics_list, focal_parameters_list
