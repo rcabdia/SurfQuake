@@ -1,4 +1,5 @@
 import warnings
+from copy import deepcopy
 from obspy.signal.filter import envelope
 from obspy import UTCDateTime
 from obspy.geodetics import gps2dist_azimuth
@@ -308,8 +309,15 @@ class preprocess_tools:
                 tr_wood = tr.copy()
 
                 try:
+                    # remove the mean...
+                    tr_deconv.detrend(type='constant')
+                    # ...and the linear trend
+                    tr_deconv.detrend(type='linear')
+                    tr_wood.taper(max_percentage=0.05)
                     tr_deconv.remove_response(inventory=self.inventory, pre_filt=pre_filt, output="DISP",
                                               water_level=60)
+                    tr_deconv.detrend(type='simple')
+                    tr_wood.taper(max_percentage=0.05)
                     st_deconv.append(tr_deconv)
                 except:
                     tr.data = np.array([])
@@ -320,15 +328,34 @@ class preprocess_tools:
                     # resp = resp.response_stages[0]
                     # paz_mine = {'sensitivity': resp.stage_gain * resp.normalization_factor, 'zeros': resp.zeros,
                     #               'gain': resp.stage_gain, 'poles': resp.poles}
-                    tr_wood.detrend(type="simple")
+
+                    instrument = tr_wood.stats.channel[1]
+                    if instrument == "N": #Instrument is an accelerometer
+                        output = "ACC"
+                    elif instrument == "H" or instrument == "L":
+                        output = "VEL" #Instrument is a seismometer
+                    # remove the mean...
+                    tr_wood.detrend(type='constant')
+                    # ...and the linear trend
+                    tr_wood.detrend(type='linear')
                     tr_wood.taper(max_percentage=0.05)
-                    tr_wood.remove_response(inventory=self.inventory, pre_filt=pre_filt, output="VEL", water_level=40)
-                    #tr_wood.simulate(paz_simulate=WOODANDERSON, paz_remove=paz_mine, water_level=10)
-                    tr_wood.simulate(paz_simulate=WOODANDERSON, water_level=10)
-                    tr_wood.detrend(type="simple")
-                    tr_wood.taper(max_percentage=0.05)
-                    #tr_wood.simulate(paz_remove=paz_mine, paz_simulate=paz_wa, water_level=90)
-                    st_wood.append(tr_wood)
+
+                    if output == 'ACC':
+                        WA_double_int = deepcopy(WOODANDERSON)
+                        # we remove a zero to add an integration step
+                        WA_double_int['zeros'].pop()
+                        tr_wood.remove_response(inventory=self.inventory, pre_filt=pre_filt, output=output,
+                                                water_level=40)
+                        tr_wood.simulate(paz_simulate=WA_double_int, water_level=10)
+                    else:
+                        tr_wood.remove_response(inventory=self.inventory, pre_filt=pre_filt, output=output,
+                                                water_level=40)
+                        #tr_wood.simulate(paz_simulate=WOODANDERSON, paz_remove=paz_mine, water_level=10)
+                        tr_wood.simulate(paz_simulate=WOODANDERSON, water_level=10)
+                        tr_wood.detrend(type="simple")
+                        tr_wood.taper(max_percentage=0.05)
+                        #tr_wood.simulate(paz_remove=paz_mine, paz_simulate=paz_wa, water_level=90)
+                        st_wood.append(tr_wood)
                 except:
                     tr.data = np.array([])
 

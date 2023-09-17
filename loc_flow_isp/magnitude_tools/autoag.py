@@ -258,6 +258,7 @@ class Automag:
     def estimate_magnitudes(self, config):
         magnitude_mw_statistics_list = []
         magnitude_ml_statistics_list = []
+        focal_parameters_list = []
         # extract info from config:
         magnitude_mw_statistics = {}
         magnitude_ml_statistics = {}
@@ -361,10 +362,9 @@ class Automag:
                 magnitude_ml_statistics["ML_mean"] = ML_mean
                 magnitude_ml_statistics["ML_std"] = ML_std
                 magnitude_ml_statistics_list.append(magnitude_ml_statistics)
-                #print(magnitude_mw_statistics, ML_mean, ML_std)
-                print(ML_mean, ML_std)
+                focal_parameters_list.append(focal_parameters)
 
-        return magnitude_mw_statistics_list, magnitude_ml_statistics_list
+        return magnitude_mw_statistics_list, magnitude_ml_statistics_list, focal_parameters_list
 
 
 

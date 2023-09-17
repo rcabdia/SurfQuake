@@ -530,13 +530,15 @@ class LocFlow(BaseFrame, UiLoc_Flow):
 
         self.__load_config_automag()
         mg = Automag(self.project, self.inventory)
-        magnitude_mw_statistics_list, magnitude_ml_statistics_list = mg.estimate_magnitudes(self.config_automag)
+        magnitude_mw_statistics_list, magnitude_ml_statistics_list, focal_parameters_list = mg.estimate_magnitudes(self.config_automag)
         self.automagnitudesText.clear()
-        for magnitude_mw_statistics,magnitude_ml_statistics in zip(magnitude_mw_statistics_list, magnitude_ml_statistics_list):
-            self.print_automag_results(magnitude_mw_statistics, magnitude_ml_statistics)
+        for magnitude_mw_statistics,magnitude_ml_statistics, focal_parameters in zip(magnitude_mw_statistics_list, magnitude_ml_statistics_list, focal_parameters_list):
+            self.print_automag_results(magnitude_mw_statistics, magnitude_ml_statistics, focal_parameters)
 
-    def print_automag_results(self, magnitude_mw_statistics, magnitude_ml_statistics):
-
+    def print_automag_results(self, magnitude_mw_statistics, magnitude_ml_statistics, focal_parameters):
+        self.automagnitudesText.appendPlainText("#####################################################")
+        self.automagnitudesText.appendPlainText(focal_parameters[0].strftime(format="%m/%d/%Y, %H:%M:%S")+ "    "+str(focal_parameters[1])+
+            "    "+ str(focal_parameters[2])+"    "+ str(focal_parameters[3]))
         if magnitude_mw_statistics != None:
             Mw = magnitude_mw_statistics.summary_spectral_parameters.Mw.weighted_mean.value
             Mw_std = magnitude_mw_statistics.summary_spectral_parameters.Mw.weighted_mean.uncertainty
