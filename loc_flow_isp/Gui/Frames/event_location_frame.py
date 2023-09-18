@@ -1,5 +1,5 @@
 import math
-from PyQt5 import QtWidgets, QtGui, QtCore, Qt
+from PyQt5 import QtWidgets, QtGui, QtCore
 from loc_flow_isp.Gui.Frames import BaseFrame
 from loc_flow_isp.Gui.Frames.qt_components import MessageDialog
 from loc_flow_isp.Gui.Frames.uis_frames import UiEventLocationFrame
@@ -11,7 +11,7 @@ from loc_flow_isp.Utils import ObspyUtil
 from obspy.core.event import Origin
 from obspy.imaging.beachball import beach
 from loc_flow_isp import location_output, MOMENT_TENSOR_OUTPUT, ROOT_DIR, magnitudes
-from loc_flow_isp.mti import read_log
+from loc_flow_isp.sq_isola_tools import read_log
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 from PIL import Image
 import numpy as np
