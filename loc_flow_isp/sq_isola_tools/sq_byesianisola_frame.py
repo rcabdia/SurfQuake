@@ -1,18 +1,17 @@
-from isp import ROOT_DIR
-from isp.DataProcessing import SeismogramDataAdvanced
-from isp.DataProcessing.metadata_manager import MetadataManager
-from isp.Exceptions import InvalidFile
-from isp.Gui import pw, pyc
-from isp.Gui.Frames import BaseFrame, MessageDialog, UiMomentTensor, MatplotlibFrame
-from isp.Gui.Frames.crustal_model_parameters_frame import CrustalModelParametersFrame
-from isp.Gui.Frames.parameters import ParametersSettings
-from isp.Gui.Frames.stations_info import StationsInfo
-from isp.Gui.Utils.pyqt_utils import BindPyqtObject, add_save_load, convert_qdatetime_utcdatetime
-from isp.Utils import MseedUtil, ObspyUtil, AsycTime
-from isp.earthquakeAnalisysis.stations_map import StationsMap
-from isp.mti.mti_utilities import MTIManager
-from isp.mti.class_isola_new import *
-from isp.Gui.Frames.help_frame import HelpDoc
+from loc_flow_isp import ROOT_DIR
+from loc_flow_isp.DataProcessing import SeismogramDataAdvanced
+from loc_flow_isp.DataProcessing.metadata_manager import MetadataManager
+from loc_flow_isp.Exceptions import InvalidFile
+from loc_flow_isp.Gui import pw, pyc
+from loc_flow_isp.Gui.Frames import BaseFrame, MessageDialog, UiMomentTensor, MatplotlibFrame
+from loc_flow_isp.Gui.Frames.crustal_model_parameters_frame import CrustalModelParametersFrame
+from loc_flow_isp.Gui.Frames.parameters import ParametersSettings
+from loc_flow_isp.Gui.Frames.stations_info import StationsInfo
+from loc_flow_isp.Gui.Utils.pyqt_utils import BindPyqtObject, add_save_load, convert_qdatetime_utcdatetime
+from loc_flow_isp.Utils import MseedUtil, ObspyUtil, AsycTime
+from loc_flow_isp.earthquakeAnalisysis.stations_map import StationsMap
+from loc_flow_isp.sq_isola_tools.mti_utilities import MTIManager
+from loc_flow_isp.sq_isola_tools.class_isola_sq import *
 import pandas as pd
 from sys import platform
 

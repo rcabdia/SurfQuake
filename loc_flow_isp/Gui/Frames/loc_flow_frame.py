@@ -67,7 +67,6 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         self.phasenetBtn.clicked.connect(self.run_phasenet)
         self.realBtn.clicked.connect(self.run_real)
         self.plot_grid_stationsBtn.clicked.connect(self.plot_real_grid)
-        self.realCatlogBtn.clicked.connect(self.plot_previewCatalog)
 
         # NonLinLoc
         self.grid_latitude_bind = BindPyqtObject(self.gridlatSB)
@@ -83,7 +82,7 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         self.grdtimeBtn.clicked.connect(lambda: self.on_click_run_grid_to_time())
         self.runlocBtn.clicked.connect(lambda: self.on_click_run_loc())
         #self.plotmapBtn.clicked.connect(lambda: self.on_click_plot_map())
-        self.stationsBtn.clicked.connect(lambda: self.on_click_select_metadata_file())
+        #self.stationsBtn.clicked.connect(lambda: self.on_click_select_metadata_file())
         self.actionData_Base.triggered.connect(lambda: self.open_data_base())
 
         # Magnitude
@@ -275,7 +274,7 @@ class LocFlow(BaseFrame, UiLoc_Flow):
             if not path:
                 return
 
-            file_to_store = open(os.path.join(path,self.nameForm.text()), "wb")
+            file_to_store = open(os.path.join(path, self.nameForm.text()), "wb")
             pickle.dump(self.project, file_to_store)
 
             md = MessageDialog(self)
@@ -447,15 +446,18 @@ class LocFlow(BaseFrame, UiLoc_Flow):
             md = MessageDialog(self)
             md.set_info_message("Association Done")
 
-    def on_click_select_metadata_file(self):
-        selected = pw.QFileDialog.getOpenFileName(self, "Select metadata/stations coordinates file")
-        if isinstance(selected[0], str) and os.path.isfile(selected[0]):
-            self.stationsPath.setText(selected[0])
-            self.set_dataless_dir(self.stationsPath.text())
+    # def on_click_select_metadata_file(self):
+    #     selected = pw.QFileDialog.getOpenFileName(self, "Select metadata/stations coordinates file")
+    #     if isinstance(selected[0], str) and os.path.isfile(selected[0]):
+    #         self.stationsPath.setText(selected[0])
+    #         self.set_dataless_dir(self.stationsPath.text())
 
-    def set_dataless_dir(self, dir_path):
-        self.__dataless_dir = dir_path
-        self.nll_manager.set_dataless_dir(dir_path)
+    #def set_dataless_dir(self, dir_path):
+    #    self.__dataless_dir = dir_path
+    #    self.nll_manager.set_dataless_dir(dir_path)
+
+    def set_dataless_dir(self):
+        self.nll_manager.set_dataless(self.metadata_path_bind.value)
     @parse_excepts(lambda self, msg: self.subprocess_feedback(msg))
     def on_click_run_vel_to_grid(self):
         self.nll_manager.vel_to_grid(self.grid_latitude_bind.value, self.grid_longitude_bind.value,
