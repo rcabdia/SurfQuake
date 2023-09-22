@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-import BayesISOLA
+from loc_flow_isp.sq_isola_tools import BayesISOLA
 
 inputs = BayesISOLA.load_data(
 	outdir = 'output/example_2_fdsnws'
