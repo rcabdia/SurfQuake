@@ -5,7 +5,7 @@ from obspy.geodetics.base import gps2dist_azimuth
 
 class MTIManager:
 
-    def __init__(self, st, inv, lat0, lon0, min_dist, max_dist):
+    def __init__(self, st, inv, lat0, lon0, min_dist, max_dist, input_path):
         """
         Manage MTI files for run isola class program.
         st: stream of seismograms
@@ -17,6 +17,7 @@ class MTIManager:
         self.lon = lon0
         self.min_dist = min_dist
         self.max_dist = max_dist
+        self.input_path = input_path
 
     @staticmethod
     def __validate_file(file_path):
@@ -91,10 +92,10 @@ class MTIManager:
 
         df = pd.DataFrame(data, columns=['item'])
         #print(df)
-        outstations_path = os.path.join(self.get_stations_dir, "stations.txt")
+        outstations_path = os.path.join(self.input_path, "stations.txt")
         #print(outstations_path)
         df.to_csv(outstations_path, header=False, index=False)
-        return self.stream , deltas, outstations_path
+        return self.stream, deltas, outstations_path
 
 
     def sort_stream(self, dist1):
@@ -106,11 +107,10 @@ class MTIManager:
             stream.append(st2)
 
         # Sort by Distance
-
         stream_sorted = [x for _, x in sorted(zip(dist1, stream))]
+        # Bayesian isola require ZNE order
         # reverse from E N Z --> Z N E
         # reverse from 1 2 Z --> Z 2 1
-
         for stream_sort in stream_sorted:
             stream_sorted_order.append(stream_sort.reverse())
 

@@ -179,6 +179,8 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
             min_dep = math.inf
             min_orig = datetime.max
             max_orig = datetime.min
+            min_mag = -math.inf
+            max_mag = math.inf
 
             for event in events:
                 if event.latitude > max_lat: max_lat = event.latitude
@@ -187,6 +189,8 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
                 if event.longitude < min_lon: min_lon = event.longitude
                 if event.depth > max_dep: max_dep = event.depth
                 if event.depth < min_dep: min_dep = event.depth
+                if event.ml > max_mag: max_mag = event.ml
+                if event.ml < min_mag: min_mag = event.ml
                 if event.origin_time < min_orig: min_orig = event.origin_time
                 if event.origin_time > max_orig: max_orig = event.origin_time
 
@@ -196,9 +200,8 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
             self.minLon.setValue(math.floor(min_lon))
             self.maxDepth.setValue(math.ceil(max_dep))
             self.minDepth.setValue(math.floor(min_dep))
-            # TODO magnitude
-            # self.maxMag.setValue(max_mag)
-            # self.minMag.setValue(min_mag)
+            self.maxMag.setValue(max_mag)
+            self.minMag.setValue(min_mag)
             self.maxOrig.setDateTime(max_orig + timedelta(seconds=1))
             self.minOrig.setDateTime(min_orig - timedelta(seconds=1))
 
@@ -368,12 +371,16 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
         lat = EventLocationModel.latitude.between(self.minLat.value(), self.maxLat.value())
         lon = EventLocationModel.longitude.between(self.minLon.value(), self.maxLon.value())
         depth = EventLocationModel.depth.between(self.minDepth.value(), self.maxDepth.value())
-        # TODO: mag filter
+        mag = EventLocationModel.ml.between(self.minMag.value(), self.maxMag.value())
         minOrig = self.minOrig.dateTime().toPyDateTime()
         maxOrig = self.maxOrig.dateTime().toPyDateTime()
         time = EventLocationModel.origin_time.between(minOrig, maxOrig)
-        self.model.setFilter(lat, lon, depth, time)
+        self.model.setFilter(lat, lon, depth, mag, time)
         self.model.revertAll()
+
+    def get_entities(self):
+        return self.model.getEntities()
+
 
     def _showAll(self):
         self.model.setFilter()

@@ -618,3 +618,9 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         magnitudes_dict = {'id': self.Date_Id, 'Mw': self.Mw, 'Mw_error': self.Mw_std,'ML': self.ML, 'ML_error': self.ML_std}
         df_magnitudes = pd.DataFrame.from_dict(magnitudes_dict)
         df_magnitudes.to_csv(magnitudes, sep=";", index=False)
+
+    ########## Moment Tensor Inversion #######################
+
+    def get_db(self):
+        db = EventLocationFrame.get_entities()
+        return db

@@ -12,6 +12,7 @@ if __name__ == "__main__":
 
 	inputs = BayesISOLA.load_data(outdir = outdir)
 	inputs.read_event_info(event_info_dir)
+	#inputs.set_event_info(lat = , lon=, depth=,mag =, t = ,)
 	inputs.set_source_time_function('triangle', 2.0)
 	inputs.read_network_coordinates('input/example_2_SAC/network.stn')
 	inputs.read_crust('input/example_2_SAC/crustal.dat')
