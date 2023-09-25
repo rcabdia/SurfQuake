@@ -381,6 +381,8 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
     def get_entities(self):
         return self.model.getEntities()
 
+    def get_model(self):
+        return EventLocationModel
 
     def _showAll(self):
         self.model.setFilter()

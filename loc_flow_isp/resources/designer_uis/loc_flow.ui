@@ -1554,6 +1554,9 @@
              <layout class="QGridLayout" name="gridLayout_22">
               <item row="1" column="3">
                <widget class="QDoubleSpinBox" name="depthSearchStepMTIDB">
+                <property name="decimals">
+                 <number>1</number>
+                </property>
                 <property name="maximum">
                  <double>1000.000000000000000</double>
                 </property>
@@ -1567,6 +1570,9 @@
               </item>
               <item row="1" column="1">
                <widget class="QDoubleSpinBox" name="HorizontalSeachStepMTIDB">
+                <property name="decimals">
+                 <number>1</number>
+                </property>
                 <property name="maximum">
                  <double>1000.000000000000000</double>
                 </property>
@@ -1624,7 +1630,7 @@
                </widget>
               </item>
               <item row="1" column="6" alignment="Qt::AlignHCenter">
-               <widget class="QCheckBox" name="checkBox_3">
+               <widget class="QCheckBox" name="savePlotsCB">
                 <property name="text">
                  <string>Save Plots</string>
                 </property>
@@ -1694,6 +1700,9 @@
               </item>
               <item row="0" column="3">
                <widget class="QDoubleSpinBox" name="depthUncertainityMTIDB">
+                <property name="decimals">
+                 <number>1</number>
+                </property>
                 <property name="maximum">
                  <double>15000.000000000000000</double>
                 </property>
@@ -1717,7 +1726,7 @@
                </widget>
               </item>
               <item row="1" column="4" alignment="Qt::AlignHCenter">
-               <widget class="QCheckBox" name="checkBox_2">
+               <widget class="QCheckBox" name="deviatoricCB">
                 <property name="text">
                  <string>Deviatoric</string>
                 </property>
@@ -1727,12 +1736,32 @@
                </widget>
               </item>
               <item row="1" column="5" alignment="Qt::AlignHCenter">
-               <widget class="QCheckBox" name="checkBox">
+               <widget class="QCheckBox" name="covarianceCB">
                 <property name="text">
                  <string>Cross Covariance</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="2">
+               <widget class="QLabel" name="label_31">
+                <property name="text">
+                 <string>Time Uncertainity (s)</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="3">
+               <widget class="QDoubleSpinBox" name="timeUncertainityMTIDB">
+                <property name="decimals">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <double>11.000000000000000</double>
+                </property>
+                <property name="value">
+                 <double>1.000000000000000</double>
                 </property>
                </widget>
               </item>

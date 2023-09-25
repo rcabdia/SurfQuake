@@ -40,11 +40,10 @@ model.addJoinArguments(EventLocationModel.moment_tensor, isouter=True)
 
 ## filter by query ###
 
-mag = EventLocationModel.ml.between(1, 4)
-model.setFilter( mag)
+mag = EventLocationModel.ml.between(2, 4)
+model.setFilter(mag)
 model.revertAll()
 
-model.revertAll()
 entities = model.getEntities()
 
 lat = []

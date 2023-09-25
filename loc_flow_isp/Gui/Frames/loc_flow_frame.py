@@ -634,11 +634,24 @@ class LocFlow(BaseFrame, UiLoc_Flow):
     ########## Moment Tensor Inversion #######################
 
     def get_db(self):
-        db = EventLocationFrame.get_entities()
+        db = self.db_frame.get_entities()
         return db
+
+    def get_model(self):
+        model = self.db_frame.get_model()
+        return model
+
+    def get_inversion_parameters(self):
+        parameters = {'working_directory':self.mti_working_path.text(),'output_directory': self.MTI_output_path.text(),
+                      'location_unc': self.HorizontalLocUncertainityMTIDB.value(), 'time_unc': self.timeUncertainityMTIDB.value(),
+                      'depth_unc': self.depthUncertainityMTIDB.value(), 'deviatoric': self.deviatoricCB.isChecked(),
+                      'covariance': self.covarianceCB.isChecked(), 'plot_save': self.savePlotsCB.isChecked(),
+                      'rupture_velocity': self.ruptureVelMTIDB.value(), 'source_type': self.sourceTypeCB.currentText()}
+        return parameters
 
     def run_mti(self):
         macroMTI = self.parameters.getParameters()
-        sq_bayesian = bayesian_isola_db(metadata=self.inventory, project=self.project, parameters=self.parameters,
+        parametersGUI = self.get_inversion_parameters()
+        sq_bayesian = bayesian_isola_db(model = self.get_model(),entities=self.get_db(), metadata=self.inventory, project=self.project, parameters=parametersGUI,
                                         macro=macroMTI)
         sq_bayesian.get_info()
