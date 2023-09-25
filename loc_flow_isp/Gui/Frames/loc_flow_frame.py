@@ -19,6 +19,7 @@ from loc_flow_isp.loc_flow_tools.location_output.run_nll import NllManager
 from loc_flow_isp.loc_flow_tools.phasenet.phasenet_handler import PhasenetUtils as Util
 from loc_flow_isp.loc_flow_tools.phasenet.phasenet_handler import PhasenetISP
 from loc_flow_isp.Gui.Frames.event_location_frame import EventLocationFrame
+from loc_flow_isp.Gui.Frames.parameters import ParametersSettings
 from obspy.core.inventory.inventory import Inventory
 from loc_flow_isp.loc_flow_tools.tt_db.taup_tt import create_tt_db
 import numpy as np
@@ -26,8 +27,7 @@ from loc_flow_isp.loc_flow_tools.utils import ConversionUtils
 from loc_flow_isp.Utils.time_utils import AsycTime
 from loc_flow_isp.magnitude_tools.autoag import Automag
 from loc_flow_isp.maps.plot_map import plot_real_map
-
-#from PyQt5.QtCore import pyqtSlot
+from loc_flow_isp.sq_isola_tools.sq_bayesian_isola import bayesian_isola_db
 
 pw = QtWidgets
 pqg = QtGui
@@ -48,6 +48,7 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         self.h_range = None
         self.inventory = None
         self.project = None
+        self.parameters = ParametersSettings()
         ####### Metadata ##########
         self.metadata_path_bind = BindPyqtObject(self.datalessPathForm, self.onChange_metadata_path)
         self.loadMetaBtn.clicked.connect(lambda: self.on_click_select_file(self.metadata_path_bind))
@@ -89,6 +90,16 @@ class LocFlow(BaseFrame, UiLoc_Flow):
 
         self.mag_runBtn.clicked.connect(lambda: self.run_automag())
 
+        # MTI
+        self.mti_path_bind = BindPyqtObject(self.mti_working_path, self.onChange_root_path)
+        self.workingDirectoryMTIBtn.clicked.connect(lambda: self.on_click_select_directory(self.mti_path_bind))
+
+        self.mti_output_path_bind = BindPyqtObject(self.MTI_output_path, self.onChange_root_path)
+        self.outputDirectoryMTIBtn.clicked.connect(lambda: self.on_click_select_directory(self.mti_output_path_bind))
+
+        self.macroMITBtn.clicked.connect(lambda: self.open_parameters_settings())
+
+        self.runInversionMTIBtn.clicked.connect(lambda: self.run_mti())
         # Dialog
 
         self.progress_dialog = pw.QProgressDialog(self)
@@ -102,7 +113,8 @@ class LocFlow(BaseFrame, UiLoc_Flow):
     # @pyc.Slot()
     # def _increase_progress(self):
     #      self.progressbar.setValue(self.progressbar.value() + 1)
-
+    def open_parameters_settings(self):
+        self.parameters.show()
     def open_data_base(self):
         if self.db_frame is None:
             self.db_frame = EventLocationFrame()
@@ -624,3 +636,9 @@ class LocFlow(BaseFrame, UiLoc_Flow):
     def get_db(self):
         db = EventLocationFrame.get_entities()
         return db
+
+    def run_mti(self):
+        macroMTI = self.parameters.getParameters()
+        sq_bayesian = bayesian_isola_db(metadata=self.inventory, project=self.project, parameters=self.parameters,
+                                        macro=macroMTI)
+        sq_bayesian.get_info()

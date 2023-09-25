@@ -2,7 +2,7 @@
 from loc_flow_isp.Gui.Utils.pyqt_utils import load_ui_designers
 
 # Add the new UiFrame to the imports at Frames.__init__
-#UiMainFrame = load_ui_designers("MainFrame.ui")
-#UiHelp = load_ui_designers("help.ui")
 UiLoc_Flow = load_ui_designers("loc_flow.ui")
 UiEventLocationFrame = load_ui_designers("EventLocationFrame.ui")
+UiParametersFrame = load_ui_designers("parameters.ui")
+UiAdditionalParameters = load_ui_designers("additionalParameters.ui")

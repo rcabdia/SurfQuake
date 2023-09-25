@@ -3,6 +3,7 @@ import os
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 BINARIES = os.path.join(os.path.dirname(ROOT_DIR), "loc_flow_isp/binaries")
+MACROS_PATH = os.path.join(ROOT_DIR, 'macros')
 p_dir = os.path.join(os.path.dirname(ROOT_DIR), "loc_flow_isp/data", "picks")
 original_p_dir = os.path.join(os.path.dirname(ROOT_DIR), "loc_flow_isp/data", "original_picks")
 station = os.path.join(os.path.dirname(ROOT_DIR), "loc_flow_isp/data", "station", "station.dat")
