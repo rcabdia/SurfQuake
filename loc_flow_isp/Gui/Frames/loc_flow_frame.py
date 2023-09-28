@@ -115,16 +115,11 @@ class LocFlow(BaseFrame, UiLoc_Flow):
     #      self.progressbar.setValue(self.progressbar.value() + 1)
     def open_parameters_settings(self):
         self.parameters.show()
+
     def open_data_base(self):
         if self.db_frame is None:
             self.db_frame = EventLocationFrame()
         self.db_frame.show()
-
-    @property
-    def nll_manager(self):
-        if not self.__nll_manager:
-            self.__nll_manager = NllManager(self.__pick_output_path, self.__dataless_dir)
-        return self.__nll_manager
 
     def info_message(self, msg, detailed_message=None):
         md = MessageDialog(self)
@@ -467,6 +462,12 @@ class LocFlow(BaseFrame, UiLoc_Flow):
     #def set_dataless_dir(self, dir_path):
     #    self.__dataless_dir = dir_path
     #    self.nll_manager.set_dataless_dir(dir_path)
+
+    @property
+    def nll_manager(self):
+        if not self.__nll_manager:
+            self.__nll_manager = NllManager(self.__pick_output_path, self.__dataless_dir)
+        return self.__nll_manager
 
     def set_dataless_dir(self):
         self.nll_manager.set_dataless(self.metadata_path_bind.value)
