@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
-
+import os
 #import psycopg2 as pg
 from math import sin,cos,radians
 from pyproj import Geod
@@ -166,7 +166,7 @@ def create_station_index(self):
 	for i in range(self.nr):
 		self.stations_index['_'.join([stats[i]['network'], stats[i]['code'], stats[i]['location'], stats[i]['channelcode']])] = stats[i]
 
-def write_stations(self, filename='green/station.dat'):
+def write_stations(self, working_path):
 	"""
 	Write file with carthesian coordinates of stations. The file is necessary for Axitra code.
 	
@@ -175,6 +175,7 @@ def write_stations(self, filename='green/station.dat'):
 	:param filename: name (with path) to created file
 	:type filename: string, optional
 	"""
+	filename = os.path.join(working_path, "station.dat")
 	for model in self.models:
 		if model:
 			f = filename[0:filename.rfind('.')] + '-' + model + filename[filename.rfind('.'):]

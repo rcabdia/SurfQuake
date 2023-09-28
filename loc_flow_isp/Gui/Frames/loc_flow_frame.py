@@ -92,13 +92,12 @@ class LocFlow(BaseFrame, UiLoc_Flow):
 
         # MTI
         self.mti_path_bind = BindPyqtObject(self.mti_working_path, self.onChange_root_path)
-        self.workingDirectoryMTIBtn.clicked.connect(lambda: self.on_click_select_directory(self.mti_path_bind))
-
+        self.earth_model_bind = BindPyqtObject(self.earth_model_path, self.onChange_root_path)
+        self.workingDirectoryMTIBtn.clicked.connect(lambda: self.on_click_select_directory(self.earth_model_bind))
+        self.earthModelMTIBtn.clicked.connect(lambda: self.on_click_select_directory(self.mti_path_bind))
         self.mti_output_path_bind = BindPyqtObject(self.MTI_output_path, self.onChange_root_path)
         self.outputDirectoryMTIBtn.clicked.connect(lambda: self.on_click_select_directory(self.mti_output_path_bind))
-
         self.macroMITBtn.clicked.connect(lambda: self.open_parameters_settings())
-
         self.runInversionMTIBtn.clicked.connect(lambda: self.run_mti())
         # Dialog
 
@@ -644,18 +643,20 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         return model
 
     def get_inversion_parameters(self):
-        # TODO NEEDS TO INCLUDE: Path to the crust model and min and max distances and
+        # TODO NEEDS TO INCLUDE: Min and Max distances and
         #  checkbox for defaults processing
         parameters = {'working_directory':self.mti_working_path.text(), 'output_directory': self.MTI_output_path.text(),
-                      'location_unc': self.HorizontalLocUncertainityMTIDB.value(), 'time_unc': self.timeUncertainityMTIDB.value(),
-                      'depth_unc': self.depthUncertainityMTIDB.value(), 'deviatoric': self.deviatoricCB.isChecked(),
-                      'covariance': self.covarianceCB.isChecked(), 'plot_save': self.savePlotsCB.isChecked(),
-                      'rupture_velocity': self.ruptureVelMTIDB.value(), 'source_type': self.sourceTypeCB.currentText()}
+                      'earth_model': self.earth_model_path.text(), 'location_unc': self.HorizontalLocUncertainityMTIDB.value(),
+                      'time_unc': self.timeUncertainityMTIDB.value(), 'depth_unc': self.depthUncertainityMTIDB.value(),
+                      'deviatoric': self.deviatoricCB.isChecked(), 'covariance': self.covarianceCB.isChecked(),
+                      'plot_save': self.savePlotsCB.isChecked(), 'rupture_velocity': self.ruptureVelMTIDB.value(),
+                      'source_type': self.sourceTypeCB.currentText(), 'min_dist':self.minDistMTIDB.value(),
+                      'max_dist':self.maxDistMTIDB.value()}
         return parameters
 
     def run_mti(self):
         macroMTI = self.parameters.getParameters()
         parametersGUI = self.get_inversion_parameters()
-        sq_bayesian = bayesian_isola_db(model = self.get_model(),entities=self.get_db(), metadata=self.inventory, project=self.project, parameters=parametersGUI,
-                                        macro=macroMTI)
+        sq_bayesian = bayesian_isola_db(model = self.get_model(),entities=self.get_db(), metadata=self.inventory,
+                                        project=self.project, parameters=parametersGUI, macro=macroMTI)
         sq_bayesian.get_info()

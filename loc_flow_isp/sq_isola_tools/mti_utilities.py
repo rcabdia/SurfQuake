@@ -1,6 +1,8 @@
 import os
 import pandas as pd
 from obspy.geodetics.base import gps2dist_azimuth
+import numpy as np
+from loc_flow_isp import green_path
 
 
 class MTIManager:
@@ -76,11 +78,11 @@ class MTIManager:
                         keydict = dict(zip(file_list, dist1))
                         file_list.sort(key=keydict.get)
                 # do not filter by distance
-                else:
-                    file_list.append(item)
-                    dist1.append(dist)
-                    keydict = dict(zip(file_list, dist1))
-                    file_list.sort(key=keydict.get)
+                #else:
+                    # file_list.append(item)
+                    # dist1.append(dist)
+                    # keydict = dict(zip(file_list, dist1))
+                    # file_list.sort(key=keydict.get)
 
         self.stations_index = ind
         self.stream = self.sort_stream(dist1)
@@ -110,9 +112,14 @@ class MTIManager:
         stream_sorted = [x for _, x in sorted(zip(dist1, stream))]
         # Bayesian isola require ZNE order
         # reverse from E N Z --> Z N E
-        # reverse from 1 2 Z --> Z 2 1
+        # reverse from 1 2 Z --> Z 1 2
+
+        # TODO REVERSE DEPENDS ON THE NAMING BUT ALWAYS OUTPUT MUST BE IN THE ORDER ZNE
         for stream_sort in stream_sorted:
-            stream_sorted_order.append(stream_sort.reverse())
+            if "1" and "2" in stream_sort:
+                stream_sorted_order.append(sorted(stream_sort, key=lambda x: (x.isnumeric(),int(x) if x.isnumeric() else x)))
+            else:
+                stream_sorted_order.append(stream_sort.reverse())
 
         return stream_sorted_order
 
@@ -125,6 +132,38 @@ class MTIManager:
             deltas.append(delta_unique)
 
         return deltas
+
+
+    def prepare_working_directory(self):
+        # check that exists otherwise remove it
+        if not os.path.exists(self.input_path):
+            os.makedirs(self.input_path)
+        # gather all files
+        allfiles = os.listdir(green_path)
+        # iterate on all files to move them to destination folder
+        for f in allfiles:
+            src_path = os.path.join(green_path, f)
+            dst_path = os.path.join(self.input_path, f)
+            os.rename(src_path, dst_path)
+
+    @staticmethod
+    def earthquake_duration(distance, magnitude):
+        # expression of strong motion duration from Trifunac-Brandy
+        # for vertical component
+
+        # A new definition of strong motion duration and comparison with other definitionns
+        # Structural Eng. / Earthquake Eng. April 1989
+
+        a = -124.5
+        b = 120.7
+        c = 0.019
+        d = 0.08641
+        e = 4.352
+        S = 1
+
+        D = a + b * np.exp(c * magnitude) + distance * d + e * S
+
+        return D
 
     def default_processing(self, paths, start, end):
         pass
