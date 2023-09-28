@@ -11,7 +11,7 @@ import numpy as np
 import math
 import scipy.signal
 import pywt  # this should be added on requirements.txt if is a necessary package
-from isp.seismogramInspector.entropy import spectral_entropy
+from loc_flow_isp.seismogramInspector.entropy import spectral_entropy
 import copy
 from obspy.signal.trigger import classic_sta_lta
 import obspy.signal

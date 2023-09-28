@@ -125,3 +125,22 @@ class MTIManager:
             deltas.append(delta_unique)
 
         return deltas
+
+    def default_processing(self, paths, start, end):
+        pass
+        # start = UTCDateTime("2018-08-21T00:20:00.0")
+        # end = UTCDateTime("2018-08-21T00:35:00.0")
+        # o_time = "2018-08-21 00:28:57"  # '%Y-%m-%d %H:%M:%S'
+        # st.trim(starttime=start, endtime=end)
+        # f1 = 0.01
+        # f2 = 0.02
+        # f3 = 0.35 * st[0].stats.sampling_rate
+        # f4 = 0.40 * st[0].stats.sampling_rate
+        # pre_filt = (f1, f2, f3, f4)
+        # st.detrend(type='constant')
+        # # ...and the linear trend
+        # st.detrend(type='linear')
+        # st.taper(max_percentage=0.05)
+        # st.remove_response(inventory=inv, pre_filt=pre_filt, output="VEL", water_level=60)
+        # st.detrend(type='linear')
+        # st.taper(max_percentage=0.05)

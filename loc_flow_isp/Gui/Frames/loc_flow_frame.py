@@ -639,11 +639,14 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         return db
 
     def get_model(self):
+        # returns the database
         model = self.db_frame.get_model()
         return model
 
     def get_inversion_parameters(self):
-        parameters = {'working_directory':self.mti_working_path.text(),'output_directory': self.MTI_output_path.text(),
+        # TODO NEEDS TO INCLUDE: Path to the crust model and min and max distances and
+        #  checkbox for defaults processing
+        parameters = {'working_directory':self.mti_working_path.text(), 'output_directory': self.MTI_output_path.text(),
                       'location_unc': self.HorizontalLocUncertainityMTIDB.value(), 'time_unc': self.timeUncertainityMTIDB.value(),
                       'depth_unc': self.depthUncertainityMTIDB.value(), 'deviatoric': self.deviatoricCB.isChecked(),
                       'covariance': self.covarianceCB.isChecked(), 'plot_save': self.savePlotsCB.isChecked(),

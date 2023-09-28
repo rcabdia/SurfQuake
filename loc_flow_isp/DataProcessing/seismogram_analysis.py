@@ -196,7 +196,7 @@ class SeismogramDataAdvanced:
                 tr = wavelet_denoise(tr, dwt = parameters[j][1], threshold=parameters[j][2])
 
             if parameters[j][0] == 'resample':
-                tr.resample(sampling_rate=parameters[j][1],window='hanning',no_filter=parameters[j][2])
+                tr.resample(sampling_rate=parameters[j][1],window='hanning', no_filter=parameters[j][2])
 
             if parameters[j][0] == 'fill gaps':
                 st = Stream(tr)
