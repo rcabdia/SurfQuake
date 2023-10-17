@@ -1,0 +1,22 @@
+# Required input file for moment tensor inversion
+
+List of earthuqakes with following information:
+
+Date Horigin time Latitude Longitude Depth[km] list_of_stations_and channels mti_parameters
+01/02/2022 02:07:59.433 42.5414 1.4505 5.75
+
+
+# list_of_stations_and channels
+stations_and channels = ["string_name_of_station": list_of_channels]
+*Could be nice that accepts wildcards in the list of channels
+
+# example of stations_and channels
+stations_and channels = ["MAHO": [HHZ, HHN, HHE] "WAIT": [HHN] "EVO": *]
+
+# structure of mti_parameters
+mti_parameters = {'earth_model': string_path_to_earth_model, 'location_unc': float, 'time_unc': float, 'deviatoric': Boolean, 'depth_unc': float, 'covariance', Boolean, 'rupture_velocity': float, 'source_type': string, 'min_dist': float, 'max_dist': float}
+
+# example of mti_parameters
+mti_parameters = {'earth_model': /Users/roberto/Documents/earthmodel/Iberia.txt, 'location_unc': 0.5, 'time_unc': 1, 'deviatoric': True, 'depth_unc': 2, 'covariance', True, 'rupture_velocity': 2000, 'source_type': "Triangle", 'min_dist': 5, 'max_dist': 250}
+
+* The idea is that the user give a JSON file with a list of earthquakes with its specific list_of_stations_and channels and mti_parameters per earthquake

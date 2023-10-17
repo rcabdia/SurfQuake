@@ -1,0 +1,39 @@
+To add Google Analytics to your GitHub Pages website, follow these steps:
+
+Sign in to your Google Analytics account or create a new one at https://analytics.google.com/.
+Once signed in, click on the "Admin" tab at the bottom left corner of the page.
+In the "Property" column, click on the drop-down menu and select the website you want to add Google Analytics to.
+Under the "Property" column, click on "Tracking Info" and then "Tracking Code".
+In the "Tracking Code" section, you will see a block of JavaScript code. Copy this code.
+Now, let's add the Google Analytics tracking code to your GitHub Pages website:
+
+Go to your GitHub repository where your GitHub Pages website is hosted.
+In the repository, navigate to the folder where your website's HTML files are located.
+Open the HTML file(s) where you want to add Google Analytics (e.g., index.html).
+Paste the Google Analytics tracking code just before the closing </head> tag.
+Here's an example of how the code should look in your HTML file:
+
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Your other HTML code here -->
+  
+  <!-- Paste the Google Analytics tracking code here -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=YOUR_TRACKING_ID"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+  
+    gtag('config', 'YOUR_TRACKING_ID');
+  </script>
+</head>
+<body>
+  <!-- Your HTML body content here -->
+</body>
+</html>
+Replace YOUR_TRACKING_ID in the code with the Tracking ID provided in your Google Analytics account (e.g., UA-XXXXXXXXX-X).
+
+Save the changes to your HTML file(s) and commit them to your GitHub repository.
+Wait for a few hours, and then visit your website. Google Analytics should start tracking your website's traffic and provide data in your Google Analytics account.
+Note: If you are using a static site generator like Jekyll, you may need to add the Google Analytics tracking code to a specific file or configuration file according to your site's setup. Refer to the documentation of your static site generator for more details.

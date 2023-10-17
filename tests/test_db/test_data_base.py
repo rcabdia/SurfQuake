@@ -1,9 +1,7 @@
 import unittest
-
 from obspy import UTCDateTime
 from obspy.core.event import Origin, OriginUncertainty, OriginQuality
-
-from isp.db import db
+from loc_flow_isp.db import db
 
 
 class MyTestCase(unittest.TestCase):
@@ -37,7 +35,7 @@ class MyTestCase(unittest.TestCase):
         return origin
 
     def test_event_location_creation(self):
-        from isp.db.models import EventLocationModel
+        from loc_flow_isp.db.models import EventLocationModel
 
         entity = EventLocationModel.find_by_id('1')
         self.assertIsNone(entity)
