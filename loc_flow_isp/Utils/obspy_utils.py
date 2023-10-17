@@ -16,7 +16,7 @@ from loc_flow_isp.Exceptions.exceptions import InvalidFile
 from loc_flow_isp.Structures.structures import TracerStats
 from typing import List
 from loc_flow_isp.Utils.nllOrgErrors import computeOriginErrors
-
+from loc_flow_isp.Utils import read_nll_performance
 
 @unique
 class Filters(Enum):
@@ -244,8 +244,34 @@ class ObspyUtil:
             elif min_end_time - end_time > 0:  # trim only end time.
                 st.trim(endtime=end_time)
 
+    # @staticmethod
+    # def reads_hyp_to_origin(hyp_file_path: str) -> Origin:
+    #     """
+    #     Reads an hyp file and returns the Obspy Origin.
+    #     :param hyp_file_path: The file path to the .hyp file
+    #     :return: An Obspy Origin
+    #     """
+    #
+    #     if os.path.isfile(hyp_file_path):
+    #         cat = read_events(hyp_file_path)
+    #         event = cat[0]
+    #         origin = event.origins[0]
+    #         modified_origin_90 = computeOriginErrors(origin)
+    #         origin.depth_errors["uncertainty"]=modified_origin_90['depth_errors'].uncertainty
+    #         origin.origin_uncertainty.max_horizontal_uncertainty = modified_origin_90['origin_uncertainty'].max_horizontal_uncertainty
+    #         origin.origin_uncertainty.min_horizontal_uncertainty = modified_origin_90[
+    #             'origin_uncertainty'].min_horizontal_uncertainty
+    #         origin.origin_uncertainty.azimuth_max_horizontal_uncertainty = modified_origin_90['origin_uncertainty'].azimuth_max_horizontal_uncertainty
+    #
+    #     return origin
+
+
     @staticmethod
     def reads_hyp_to_origin(hyp_file_path: str) -> Origin:
+
+        import warnings
+        warnings.filterwarnings("ignore")
+
         """
         Reads an hyp file and returns the Obspy Origin.
         :param hyp_file_path: The file path to the .hyp file
@@ -253,11 +279,11 @@ class ObspyUtil:
         """
 
         if os.path.isfile(hyp_file_path):
-            cat = read_events(hyp_file_path)
+            cat = read_nll_performance.read_nlloc_hyp_ISP(hyp_file_path)
             event = cat[0]
             origin = event.origins[0]
             modified_origin_90 = computeOriginErrors(origin)
-            origin.depth_errors["uncertainty"]=modified_origin_90['depth_errors'].uncertainty
+            origin.depth_errors["uncertainty"] = modified_origin_90['depth_errors'].uncertainty
             origin.origin_uncertainty.max_horizontal_uncertainty = modified_origin_90['origin_uncertainty'].max_horizontal_uncertainty
             origin.origin_uncertainty.min_horizontal_uncertainty = modified_origin_90[
                 'origin_uncertainty'].min_horizontal_uncertainty
@@ -273,8 +299,8 @@ class ObspyUtil:
         :return: list Pick info
         """
         if os.path.isfile(hyp_file_path):
-            Origin = read_nlloc_hyp(hyp_file_path)
-            return Origin.events[0].picks
+            cat = read_nll_performance.read_nlloc_hyp_ISP(hyp_file_path)
+            return cat[0]["origins"][0]["arrivals"]
 
 
     @staticmethod
