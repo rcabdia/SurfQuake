@@ -1,3 +1,5 @@
+import os
+
 from obspy import UTCDateTime, Stream
 from loc_flow_isp.DataProcessing import SeismogramDataAdvanced
 from loc_flow_isp.Gui.Frames.qt_components import MessageDialog
@@ -47,6 +49,7 @@ class bayesian_isola_db:
         station_filter = '|'.join(stations_list)
         max_time = max(pick_times)
         return station_filter, max_time
+
     def get_info(self):
         for j in self.entities:
             event_info = self.model.find_by(id=j[0].id, get_first=True)
@@ -87,26 +90,35 @@ class bayesian_isola_db:
         inputs = BayesISOLA.load_data(outdir=self.parameters['output_directory'])
         inputs.set_event_info(lat=event_info.latitude, lon=event_info.longitude, depth=(event_info.depth/1000),
         mag=event_info.mw, t=UTCDateTime(event_info.origin_time))
-        inputs.set_source_time_function('triangle', 2.0)
+        # Sets the source time function for calculating elementary seismograms inside green folder type, working_directory, t0=0, t1=0
+        inputs.set_source_time_function('triangle', self.parameters['working_directory'], t0=2.0, t1=0.5)
 
         # Create data structure self.stations
         inputs.read_network_coordinates(stations_isola_path)  # changed stn['useN'] = stn['useE'] = stn['useZ'] = False to True
-
-        inputs.read_crust(self.parameters['earth_model'])
+        # edit self.stations_index / #modified original stn['useN'] = stn['useE'] = stn['useZ'] = False to True
+        inputs.read_network_coordinates(os.path.join(self.parameters['working_directory'], "stations.txt"))
+        # read crustal file and writes in green folder
+        inputs.read_crust(self.parameters['earth_model'], output=os.path.join(self.parameters['working_directory'],
+                            "crustal.dat"))  # read_crust(source, output='green/crustal.dat')
+        # writes station.dat in working folder from self.stations
         inputs.write_stations(self.parameters['working_directory'])
+
         inputs.data_raw = st
         # TODO needs to set to False waveforms that have not passed the checks
         inputs.create_station_index()
         inputs.data_deltas = deltas
-        grid = BayesISOLA.grid(inputs, location_unc=3000, depth_unc=3000, time_unc=1, step_x=200, step_z=200,
-                               max_points=500, circle_shape=True, rupture_velocity=1000)
-        data = BayesISOLA.process_data(inputs, grid, threads=8, use_precalculated_Green="auto", fmax=0.05, fmin=0.80,
-                                       correct_data=False)
+
+        grid = BayesISOLA.grid(inputs, self.parameters['working_directory'], location_unc=3000, depth_unc=3000,
+                time_unc=1, step_x=200, step_z=200, max_points=500, circle_shape=True, rupture_velocity=1000)
+
+        data = BayesISOLA.process_data(inputs, self.parameters['working_directory'], grid, threads=4, use_precalculated_Green=True,
+                                       fmax=0.04, fmin=0.08, correct_data=False)
+
         cova = BayesISOLA.covariance_matrix(data)
         cova.covariance_matrix_noise(crosscovariance=True, save_non_inverted=True)
         #
-        solution = BayesISOLA.resolve_MT(data, cova, deviatoric=False)
-        # # deviatoric=True: force isotropic component to be zero
+        solution = BayesISOLA.resolve_MT(data, cova, self.parameters['working_directory'], deviatoric=False, from_axistra=True)
+        # deviatoric=True: force isotropic component to be zero
         #
-        plot = BayesISOLA.plot(solution)
+        plot = BayesISOLA.plot(solution, self.parameters['working_directory'], from_axistra=True)
         plot.html_log(h1='Example_Test')

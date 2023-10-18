@@ -41,17 +41,23 @@ class plot:
 	from loc_flow_isp.sq_isola_tools.BayesISOLA._plot_data import plot_seismo, plot_covariance_function, plot_noise, plot_spectra, plot_seismo_backend_1, plot_seismo_backend_2
 	from loc_flow_isp.sq_isola_tools.BayesISOLA._html import html_log
 
-	def __init__(self, solution, maps=True, slices=True, maps_sum=True, MT=True, uncertainty=400, seismo=False, seismo_sharey=True, seismo_cova=True, noise=True, spectra=True, stations=True, covariance_matrix=True, covariance_function=False):
-		self.MT   = solution
+	def __init__(self, solution, working_directory, from_axistra=True, maps=True, slices=True, maps_sum=True, MT=True, uncertainty=400, seismo=False,
+				 seismo_sharey=True, seismo_cova=True, noise=True, spectra=True, stations=True, covariance_matrix=True,
+				 covariance_function=False):
+		self.MT = solution
+		self.working_directory = working_directory
+		self.from_axistra = from_axistra
 		self.grid = solution.g
 		self.data = solution.d
-		self.inp  = solution.d.d
+		self.inp = solution.d.d
 		self.cova = solution.cova
 		self.outdir = self.inp.outdir
 		self.log = self.inp.log
 		self.logtext = self.inp.logtext
 		self.movie_writer = 'mencoder' # None for default
-		self.plots = {'MT': None, 'uncertainty':None, 'stations':None, 'seismo':None, 'seismo_cova':None, 'seismo_sharey':None, 'spectra':None, 'noise':None, 'covariance_function':None, 'covariance_matrix':None, 'maps':None, 'slices':None, 'maps_sum':None}
+		self.plots = {'MT': None, 'uncertainty':None, 'stations':None, 'seismo':None, 'seismo_cova':None,
+					  'seismo_sharey':None, 'spectra':None, 'noise':None, 'covariance_function':None,
+					  'covariance_matrix':None, 'maps':None, 'slices':None, 'maps_sum':None}
 
 		if maps:
 			self.plot_maps()

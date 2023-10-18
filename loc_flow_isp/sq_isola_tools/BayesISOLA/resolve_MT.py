@@ -41,16 +41,18 @@ class resolve_MT:
 	from loc_flow_isp.sq_isola_tools.BayesISOLA._print import print_solution, print_fault_planes
 	from loc_flow_isp.sq_isola_tools.BayesISOLA._save import save_seismo
 
-	def __init__(self, data, cova, deviatoric=False, decompose=True, run_inversion=True, find_best_grid_point=True, save_seismo=False, VR_of_components=False, print_solution=True, print_fault_planes=True):
+	def __init__(self, data, cova, working_directory, deviatoric=False, decompose=True, run_inversion=True, find_best_grid_point=True,
+				 save_seismo=False, VR_of_components=False, print_solution=True, print_fault_planes=True, from_axistra=True):
 		self.log = data.log
 		self.d = data
 		self.inp = data.d
 		self.cova = cova
+		self.working_directory = working_directory
 		self.g = data.grid
 		self.grid = data.grid.grid
 		self.threads = data.threads
 		self.event = data.d.event
-		
+		self.from_axistra = from_axistra
 		self.deviatoric = deviatoric
 		self.decompose = decompose
 		self.mt_decomp = []

@@ -31,9 +31,11 @@ def write_Greens_parameters(self):
 	"""
 	for model in self.d.models:
 		if model:
-			f = 'green/grdat' + '-' + model + '.hed'
+			#f = 'green/grdat' + '-' + model + '.hed'
+			f = os.path.join(self.working_directory, 'grdat') + '-' + model + '.hed'
 		else:
-			f = 'green/grdat.hed'
+			#f = 'green/grdat.hed'
+			f = os.path.join(self.working_directory, 'grdat.hed')
 		grdat = open(f, 'w')
 		grdat.write("&input\nnc=99\nnfreq={freq:d}\ntl={tl:1.2f}\naw=0.5\nnr={nr:d}\nns=1\nxl={xl:1.1f}\nikmax=100000\nuconv=0.1E-06\nfref=1.\n/end\n".format(freq=self.freq,tl=self.tl,nr=self.d.models[model], xl=self.xl)) # 'nc' is probably ignored in the current version of gr_xyz???
 		grdat.close()
@@ -44,7 +46,8 @@ def verify_Greens_parameters(self):
 	If it agrees, return True, otherwise returns False, print error description, and writes it into log.
 	"""
 	try:
-		grdat = open('green/grdat.hed', 'r')
+		#grdat = open('green/grdat.hed', 'r')
+		grdat = open(os.path.join(self.working_directory, 'grdat.hed'), 'r')
 	except:
 		readable = False
 	else:
@@ -63,16 +66,22 @@ def verify_Greens_headers(self):
 	Checked whether elementary-seismogram-metadata files (created when the Green's functions were calculated) agree with curent grid points positions.
 	Used to verify whether pre-calculated Green's functions were calculated on the same grid as used now.
 	"""
-	md5_crustal = hashlib.md5(open('green/crustal.dat', 'rb').read()).hexdigest()
-	md5_station = hashlib.md5(open('green/station.dat', 'rb').read()).hexdigest()
-	txt_soutype = open('green/soutype.dat').read().strip().replace('\n', '_')
+	path_crustal = os.path.join(self.working_directory, 'crustal.dat')
+	path_stations = os.path.join(self.working_directory, 'station.dat')
+	sourcetype = os.path.join(self.working_directory, 'soutype.dat')
+	elemse_path = os.path.join(self.working_directory, 'elemse')
+	md5_crustal = hashlib.md5(open(path_crustal, 'rb').read()).hexdigest()
+	md5_station = hashlib.md5(open(path_stations, 'rb').read()).hexdigest()
+	txt_soutype = open(sourcetype).read().strip().replace('\n', '_')
+
+
 	problem = False
 	desc = ''
 	for g in range(len(self.grid.grid)):
 		gp = self.grid.grid[g]
 		point_id = str(g).zfill(4)
 		try:
-			meta  = open('green/elemse'+point_id+'.txt', 'r')
+			meta  = open(elemse_path+point_id+'.txt', 'r')
 			lines = meta.readlines()
 			meta.close()
 		except:
@@ -135,7 +144,7 @@ def calculate_Green(self):
 	for model in self.d.models:
 		if self.threads > 1: # parallel
 			pool = mp.Pool(processes=self.threads)
-			results = [pool.apply_async(Axitra_wrapper, args=(i, model, grid[i]['x'], grid[i]['y'], grid[i]['z'], self.npts_exp, self.elemse_start_origin, logfile)) for i in range(len(grid))]
+			results = [pool.apply_async(Axitra_wrapper, args=(i, model, grid[i]['x'], grid[i]['y'], grid[i]['z'], self.npts_exp, self.elemse_start_origin, self.working_directory, logfile)) for i in range(len(grid))]
 			output = [p.get() for p in results]
 			for i in range (len(grid)):
 				if output[i] == False:
@@ -144,7 +153,8 @@ def calculate_Green(self):
 		else: # serial
 			for i in range (len(grid)):
 				gp = grid[i]
-				Axitra_wrapper(i, model, gp['x'], gp['y'], gp['z'], self.npts_exp, self.elemse_start_origin, logfile)
+				Axitra_wrapper(i, model, gp['x'], gp['y'], gp['z'], self.npts_exp, self.elemse_start_origin,
+							   self.working_directory, logfile)
 
 def use_elemse_from_files(self, path):
 	"""

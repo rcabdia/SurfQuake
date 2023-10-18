@@ -24,7 +24,10 @@ def align_yaxis(ax1, ax2, v1=0, v2=0):
 	miny, maxy = ax2.get_ylim()
 	ax2.set_ylim(miny+dy, maxy+dy)
 
-def plot_seismo(self, outfile='$outdir/seismo.png', comp_order='ZNE', cholesky=False, obs_style='k', obs_width=3, synt_style='r', synt_width=2, add_file=None, add_file_style='k:', add_file_width=2, add_file2=None, add_file2_style='b-', add_file2_width=2, plot_stations=None, plot_components=None, sharey=False):
+def plot_seismo(self, outfile='$outdir/seismo.png', comp_order='ZNE', cholesky=False, obs_style='k', obs_width=3,
+				synt_style='r', synt_width=2, add_file=None, add_file_style='k:', add_file_width=2, add_file2=None,
+				add_file2_style='b-', add_file2_width=2, plot_stations=None, plot_components=None, sharey=False):
+
 	"""
 	Plots the fit between observed and simulated seismogram.
 	
@@ -58,10 +61,14 @@ def plot_seismo(self, outfile='$outdir/seismo.png', comp_order='ZNE', cholesky=F
 	data = self.data.data_shifts[self.MT.centroid['shift_idx']]
 	npts = self.data.npts_slice
 	samprate = self.data.samprate
-	if self.MT.centroid['path']:
-		elemse = read_elemse_from_files(self.inp.nr, self.MT.centroid['path'], self.inp.stations, self.inp.event['t'], self.data.samprate, self.data.npts_elemse, self.data.invert_displacement)
+
+	if self.from_axistra:
+		point = self.working_directory + "/elemse" + self.MT.centroid['id'] + '.dat'
+		elemse = read_elemse(self.inp.nr, self.data.npts_elemse, point, self.inp.stations, self.data.invert_displacement)
 	else:
-		elemse = read_elemse(self.inp.nr, self.data.npts_elemse, 'green/elemse'+self.MT.centroid['id']+'.dat', self.inp.stations, self.data.invert_displacement)
+		elemse = read_elemse_from_files(self.inp.nr, self.data.npts_elemse, self.MT.centroid['path'], self.inp.stations, self.inp.event['t'],
+										self.data.samprate, self.data.npts_elemse, self.data.invert_displacement)
+
 	#if not no_filter:
 	for r in range(self.inp.nr):
 		for e in range(6):
