@@ -355,7 +355,7 @@ def add_white_noise(tr, SNR_dB):
     return tr
 
 def get_rms_times(tr: Trace, p_arrival_time: UTCDateTime, win_length, magnitude = None, distance = None,
-                  freqmin=0.5, freqmax=8, win_threshold = 30)->float:
+                  freqmin=0.5, freqmax=8, win_threshold=30)->float:
 
     """
     Get trace cut times between P arrival and end of envelope coda plus earthquake duration

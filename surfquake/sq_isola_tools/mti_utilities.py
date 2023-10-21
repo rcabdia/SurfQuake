@@ -1,15 +1,16 @@
 import os
 import shutil
+from obspy.taup import TauPyModel
 
 import pandas as pd
-from obspy.geodetics.base import gps2dist_azimuth
+from obspy.geodetics.base import gps2dist_azimuth, kilometer2degrees
 
 from surfquake.seismogramInspector.signal_processing_advanced import get_rms_times
 
 
 class MTIManager:
 
-    def __init__(self, st, inv, lat0, lon0, min_dist, max_dist, input_path, working_directory):
+    def __init__(self, st, inv, lat0, lon0, depth, o_time, min_dist, max_dist, input_path, working_directory):
         """
         Manage MTI files for run isola class program.
         st: stream of seismograms
@@ -19,10 +20,13 @@ class MTIManager:
         self.__inv = inv
         self.lat = lat0
         self.lon = lon0
+        self.depth = depth
         self.min_dist = min_dist
         self.max_dist = max_dist
         self.input_path = input_path
         self.working_directory = working_directory
+        self.o_time = o_time
+        self.model = TauPyModel(model="iasp91")
         self.check_rms = {}
 
     @staticmethod
@@ -101,23 +105,37 @@ class MTIManager:
         df.to_csv(outstations_path, header=False, index=False)
         return self.stream, deltas
 
-    def get_traces_participation(self, p_arrival_time, win_length, threshold =4):
+    def get_traces_participation(self, p_arrival_time, win_length, threshold=4, magnitude=None, distance=None):
 
         """
         Find which traces from self.stream are above RMS Threshold
         """
-        # TODO INCLUDES MAGNITUDE AND DISTANCE
+
         for st in self.stream:
             for tr in st:
 
                 try:
-                    rms = get_rms_times(tr, p_arrival_time, win_length, freqmin=0.5, freqmax=8, win_threshold=30)
-                    if rms >= threshold:
-                        self.check_rms[tr.stats.network+"_" + tr.stats.station + "_" + tr.stats.channel] = True
+                    if p_arrival_time !=None:
+                        pass
                     else:
-                        self.check_rms[tr.stats.network + "_" + tr.stats.station + "_" + tr.stats.channel] = False
+
+                        coords = self.__inv.get_coordinates(tr.id)
+                        lat = coords['latitude']
+                        lon = coords['longitude']
+                        [dist, _, _] = gps2dist_azimuth(self.lat, self.lon, lat, lon, a=6378137.0, f=0.0033528106647474805)
+                        distance_degrees = kilometer2degrees(dist*1E-3)
+                        arrivals = self.model.get_travel_times(source_depth_in_km=self.depth,
+                                                               distance_in_degree=distance_degrees)
+                        p_arrival_time = self.o_time+arrivals[0].time
+
+                    rms = get_rms_times(tr, p_arrival_time, win_length, freqmin=0.5, freqmax=8, win_threshold=30,
+                                        magnitude=magnitude, distance=distance)
+                    if rms >= threshold:
+                        self.check_rms[tr.stats.network+"_" + tr.stats.station + "__" + tr.stats.channel] = True
+                    else:
+                        self.check_rms[tr.stats.network + "_" + tr.stats.station + "__" + tr.stats.channel] = False
                 except:
-                    self.check_rms[tr.stats.network + "_" + tr.stats.station + "_" + tr.stats.channel] = False
+                    self.check_rms[tr.stats.network + "_" + tr.stats.station + "__" + tr.stats.channel] = False
 
 
     def filter_mti_inputTraces(self, stations, stations_list):
@@ -125,33 +143,35 @@ class MTIManager:
         # stations is a list
         # statiosn_list is a dictionary of dictionaries
         for key in self.check_rms.keys():
+
             if self.check_rms[key]:
+
                 stations_list = self.__find_in_stations_list(stations_list, key)
-                stations = self.__find_in_stations(stations, key)
+                #stations = self.__find_in_stations(stations, key) #not necessary, it is doone automatically
+
 
         return stations, stations_list
 
-    @staticmethod
-    def __find_in_stations_list(stations_list, key):
-        network, code, channelcode = key.split("_")
-        for index_dict in stations_list:
-            if index_dict["channelcode"][0:2] == channelcode and index_dict["code"] == code and index_dict["network"] == network:
-                if channelcode[-1] == "Z" or channelcode[-1] == 3:
-                    index_dict["useZ"] = True
-                elif channelcode[-1] == "N" or channelcode[-1] == "Y" or channelcode[-1] == 1:
-                    index_dict["useN"] = True
-                elif channelcode[-1] == "E" or channelcode[-1] == "X" or channelcode[-1] == 2:
-                    index_dict["useE"] = True
-
+    def __find_in_stations_list(self, stations_list, key_check):
+        #stations_list is a dictionary with dictionaries inside
+        key_search = 'use' + key_check[-1]
+        key_check_find = key_check[0:-1]
+        if key_check_find in stations_list.keys():
+            stations_list[key_check_find][key_search] = self.check_rms[key_check]
         return stations_list
 
-    @staticmethod
-    def __find_in_stations(stations, key_check):
-        key_search = 'use' + key_check[-1]
-        key_check = key_check[0:-1]
-        for key in stations.keys():
-            if key == key_check:
-                stations[key_check][key_check] = True
+    def __find_in_stations(self, stations, key):
+        # stations is a list of dictionaries
+        network, code, loc, channelcode = key.split("_")
+        for iter, index_dict in enumerate(stations):
+            if index_dict["channelcode"] == channelcode[0:2] and index_dict["code"] == code and index_dict["network"] == network:
+                if channelcode[-1] == "Z" or channelcode[-1] == 3:
+                    stations[iter]["useZ"] = self.check_rms[key]
+                elif channelcode[-1] == "N" or channelcode[-1] == "Y" or channelcode[-1] == 1:
+                    stations[iter]["useN"] = self.check_rms[key]
+                elif channelcode[-1] == "E" or channelcode[-1] == "X" or channelcode[-1] == 2:
+                    stations[iter]["useN"] = self.check_rms[key]
+
         return stations
 
     def sort_stream(self, dist1):
