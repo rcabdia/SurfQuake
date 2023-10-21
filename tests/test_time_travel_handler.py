@@ -1,6 +1,6 @@
 import unittest
 
-from loc_flow_isp.loc_flow_tools.internal import TimeTravelHandler
+from surfquake.loc_flow_tools.internal import TimeTravelHandler
 
 
 class TestTimeTravelHandler(unittest.TestCase):

@@ -1,4 +1,4 @@
-from loc_flow_isp.Utils import obspy_utils
+from surfquake.Utils import obspy_utils
 
 
 if __name__ == "__main__":

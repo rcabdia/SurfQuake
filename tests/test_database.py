@@ -3,16 +3,16 @@ import unittest
 from datetime import datetime
 from obspy import UTCDateTime
 from obspy.core.event import Origin
-from loc_flow_isp.Structures.structures import Search
-from loc_flow_isp.Utils import ObspyUtil
-from loc_flow_isp.db import db
-#from loc_flow_isp.earthquakeAnalisysis import PickerManager
+from surfquake.Structures.structures import Search
+from surfquake.Utils import ObspyUtil
+from surfquake.db import db
+#from surfquake.earthquakeAnalisysis import PickerManager
 
 dir_path = os.path.dirname(os.path.abspath(__file__))
 db.set_db_url("sqlite:///{}/isp_test.db".format(dir_path))
 db.start()
 
-from loc_flow_isp.db.models import FirstPolarityModel, MomentTensorModel, EventArrayModel, PhaseInfoModel,\
+from surfquake.db.models import FirstPolarityModel, MomentTensorModel, EventArrayModel, PhaseInfoModel,\
     EventLocationModel, ArrayAnalysisModel
 
 

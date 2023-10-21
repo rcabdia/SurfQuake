@@ -1,12 +1,12 @@
 import os
-from loc_flow_isp.db import db
+from surfquake.db import db
 
 
 dir_path = '/Users/roberto/Documents/SurfQuake'
 db.set_db_url("sqlite:///{}/isp_test.db".format(dir_path))
 db.start()
-from loc_flow_isp.Gui.Models.sql_alchemy_model import SQLAlchemyModel
-from loc_flow_isp.db.models import EventLocationModel, FirstPolarityModel, MomentTensorModel, PhaseInfoModel
+from surfquake.Gui.Models.sql_alchemy_model import SQLAlchemyModel
+from surfquake.db.models import EventLocationModel, FirstPolarityModel, MomentTensorModel, PhaseInfoModel
 el_columns = [getattr(EventLocationModel, c)
                       for c in EventLocationModel.__table__.columns.keys()[1:]]
 

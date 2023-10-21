@@ -1,6 +1,6 @@
 import unittest
 
-from loc_flow_isp.loc_flow_tools.internal import PhaseLocation, EventLocation
+from surfquake.loc_flow_tools.internal import PhaseLocation, EventLocation
 
 
 class TestStructs(unittest.TestCase):

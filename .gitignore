@@ -112,22 +112,27 @@ venv.bak/
 playground.py
 
 # local files
-loc_flow_isp/*app.log
-loc_flow_isp/Gui/__pycache__/
-loc_flow_isp/Utils/__pycache__/
-loc_flow_isp/loc_flow_tools/__pycache__/
+surfquake/*app.log
+surfquake/data/picks
+surfquake/data/original_picks
+surfquake/data/station
+surfquake/Gui/__pycache__/
+surfquake/Utils/__pycache__/
+surfquake/loc_flow_tools/__pycache__/
 # ignore files inside folders
-loc_flow_isp/loc_flow_tools/location_output/loc/*last
-loc_flow_isp/loc_flow_tools/location_output/loc/*location
+surfquake/loc_flow_tools/location_output/loc/*last
+surfquake/loc_flow_tools/location_output/loc/*location
 
-loc_flow_isp/loc_flow_tools/location_output/model/*hdr
-loc_flow_isp/loc_flow_tools/location_output/model/*buf
+surfquake/loc_flow_tools/location_output/all_locations
+surfquake/loc_flow_tools/location_output/loc
+surfquake/loc_flow_tools/location_output/model/*hdr
+surfquake/loc_flow_tools/location_output/model/*buf
 
-loc_flow_isp/loc_flow_tools/location_output/model3D/*hdr
-loc_flow_isp/loc_flow_tools/location_output/model3D/*buf
+surfquake/loc_flow_tools/location_output/model3D/*hdr
+surfquake/loc_flow_tools/location_output/model3D/*buf
 
-loc_flow_isp/loc_flow_tools/location_output/stations/stations.txt
-loc_flow_isp/loc_flow_tools/location_output/obs/nll_input.txt
+surfquake/loc_flow_tools/location_output/stations/stations.txt
+surfquake/loc_flow_tools/location_output/obs/nll_input.txt
 
-loc_flow_isp/loc_flow_tools/location_output/time/*hdr
-loc_flow_isp/loc_flow_tools/location_output/time/*buf
+surfquake/loc_flow_tools/location_output/time/*hdr
+surfquake/loc_flow_tools/location_output/time/*buf

@@ -1,11 +1,11 @@
-from loc_flow_isp.Utils import read_nll_performance
+from surfquake.Utils import read_nll_performance
 import warnings
 warnings.filterwarnings("ignore")
 event_file = ""
-cat = read_nll_performance.read_nlloc_hyp_ISP('/Users/roberto/Documents/SurfQuake/loc_flow_isp/loc_flow_tools/'
+cat = read_nll_performance.read_nlloc_hyp_ISP('/surfquake/loc_flow_tools/'
                                               'location_output/loc/last.hyp')
 
-# Origin = read_nll_performance.read_nlloc_hyp_ISP('/Users/roberto/Documents/SurfQuake/loc_flow_isp/loc_flow_tools/'
+# Origin = read_nll_performance.read_nlloc_hyp_ISP('/Users/roberto/Documents/SurfQuake/surfquake/loc_flow_tools/'
 #                                               'location_output/loc/last.hyp')
 # picks = Origin.events[0].picks
 

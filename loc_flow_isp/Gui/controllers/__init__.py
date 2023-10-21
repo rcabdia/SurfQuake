@@ -1,1 +1,0 @@
-from loc_flow_isp.Gui.controllers.window_controller import Controller
