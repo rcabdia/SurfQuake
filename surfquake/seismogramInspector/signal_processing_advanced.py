@@ -11,9 +11,11 @@ import numpy as np
 import math
 import scipy.signal
 import pywt  # this should be added on requirements.txt if is a necessary package
+from obspy import UTCDateTime, Trace
+
 from surfquake.seismogramInspector.entropy import spectral_entropy
 import copy
-from obspy.signal.trigger import classic_sta_lta
+from obspy.signal.trigger import classic_sta_lta, trigger_onset
 import obspy.signal
 
 try:
@@ -352,7 +354,88 @@ def add_white_noise(tr, SNR_dB):
     tr.data = tr.data+ n
     return tr
 
+def get_rms_times(tr: Trace, p_arrival_time: UTCDateTime, win_length, magnitude = None, distance = None,
+                  freqmin=0.5, freqmax=8, win_threshold = 30)->float:
 
+    """
+    Get trace cut times between P arrival and end of envelope coda plus earthquake duration
+    """
+
+    tr_env = tr.copy()
+    # remove the mean...
+    tr_env.detrend(type='constant')
+    # ...and the linear trend...
+    tr_env.detrend(type='linear')
+    # ...filter
+    tr_env.taper(max_percentage=0.05)
+    tr_env.filter(type='bandpass', freqmin=freqmin, freqmax=freqmax)
+    tr_env.data = envelope(tr_env.data, tr_env.stats.sampling_rate)
+    # smooth
+    tr_env.filter(type='lowpass', freq=0.15)
+
+    # Skip traces which do not have arrivals
+    win_length_noise = win_length/3
+    t1 = p_arrival_time - win_length_noise
+    t2 = p_arrival_time + win_length
+    #tr_env.plot()
+    tr_noise = tr_env.copy()
+    tr_signal = tr_env.copy()
+    tr_noise.trim(starttime=t1, endtime=p_arrival_time,
+                  pad=False, fill_value=0)
+    tr_signal.trim(starttime=p_arrival_time, endtime=t2,
+                   pad=False, fill_value=0)
+
+    ampmin = tr_noise.data.mean()*1.5
+    ampmax = tr_signal.data.mean()
+
+    trigger = trigger_onset(tr_env.data, ampmax, ampmin, max_len=9e99, max_len_delete=False)[0]
+    t0 = p_arrival_time
+    t1 = t0 + trigger[-1] * tr.stats.delta # seconds
+    t_threshold = t0 + win_threshold
+    t1 = min(t1, tr.stats.endtime, t_threshold)
+
+    if magnitude != None and distance != None:
+        t_duration = duration(magnitude, distance, component="vertical", S=1)
+        t3 = t0 + t_duration
+        t1 = min(t1, t3)
+
+    tr_signal.trim(starttime=p_arrival_time, endtime=t1, pad=False, fill_value=0)
+
+    return compute_snr(tr_noise, tr_signal)
+
+
+def compute_snr(trace_noise, trace_signal):
+
+    rmsnoise = np.sqrt(np.power(trace_noise.data, 2).sum())
+    rmsSignal = np.sqrt(np.power(trace_signal.data, 2).sum())
+    sn_ratio = rmsSignal / rmsnoise
+
+    return sn_ratio
+
+def duration(magnitude, distance, component ="vertical", S=1):
+    # Trifunac and  Brady 1987
+    # A new definition of strong motion duration and comparison with other definitions
+    # N.A. THEOFANOPULOS AND M. WATABE 1989
+    # S = 0, 1, 2 hard, intermediate and soft
+    # distance in km
+    if component == "vertical":
+        a = -124.5
+        b = 120.7
+        c = 0.019
+        d = 0.08641
+        e = 4.352
+
+    if component == "horizontal":
+        a = 2.201
+        b = 0.02489
+        c = 0.860
+        d = 0.05335
+        e = 2.883
+
+    D = a + b * np.exp(c * magnitude) + distance * d + e * S
+    t = 0.05 * D + D # seconds
+
+    return t
 def __whiten_aux(data_f, data_f_whiten, index, half_width, avarage_window_width, half_width_pos):
     for j in index:
         den = np.sum(np.abs(data_f[j:j + 2 * half_width])) / avarage_window_width
@@ -439,41 +522,6 @@ def whiten(tr, freq_width=0.05, taper_edge=True):
 
     return tr
 
-
-# def whiten_old(tr, freqmin, freqmax):
-#     nsamp = tr.stats.sampling_rate
-#
-#     n = len(tr.data)
-#     if n == 1:
-#         return tr
-#     else:
-#         frange = float(freqmax) - float(freqmin)
-#         nsmo = int(np.fix(min(0.01, 0.5 * (frange)) * float(n) / nsamp))
-#         f = np.arange(n) * nsamp / (n - 1.)
-#         JJ = ((f > float(freqmin)) & (f < float(freqmax))).nonzero()[0]
-#
-#         # signal FFT
-#         FFTs = np.fft.fft(tr.data)
-#         FFTsW = np.zeros(n) + 1j * np.zeros(n)
-#
-#         # Apodization to the left with cos^2 (to smooth the discontinuities)
-#         smo1 = (np.cos(np.linspace(np.pi / 2, np.pi, nsmo + 1)) ** 2)
-#         FFTsW[JJ[0]:JJ[0] + nsmo + 1] = smo1 * np.exp(1j * np.angle(FFTs[JJ[0]:JJ[0] + nsmo + 1]))
-#
-#         # boxcar
-#         FFTsW[JJ[0] + nsmo + 1:JJ[-1] - nsmo] = np.ones(len(JJ) - 2 * (nsmo + 1)) \
-#                                                 * np.exp(1j * np.angle(FFTs[JJ[0] + nsmo + 1:JJ[-1] - nsmo]))
-#
-#         # Apodization to the right with cos^2 (to smooth the discontinuities)
-#         smo2 = (np.cos(np.linspace(0, np.pi / 2, nsmo + 1)) ** 2)
-#         espo = np.exp(1j * np.angle(FFTs[JJ[-1] - nsmo:JJ[-1] + 1]))
-#         FFTsW[JJ[-1] - nsmo:JJ[-1] + 1] = smo2 * espo
-#
-#         whitedata = 2. * np.fft.ifft(FFTsW).real
-#
-#         tr.data = np.require(whitedata, dtype="float32")
-#
-#         return tr
 
 
 # Functions Noise Processing

@@ -1,13 +1,15 @@
 import os
+import shutil
+
 import pandas as pd
 from obspy.geodetics.base import gps2dist_azimuth
-import numpy as np
-from surfquake import green_path
+
+from surfquake.seismogramInspector.signal_processing_advanced import get_rms_times
 
 
 class MTIManager:
 
-    def __init__(self, st, inv, lat0, lon0, min_dist, max_dist, input_path):
+    def __init__(self, st, inv, lat0, lon0, min_dist, max_dist, input_path, working_directory):
         """
         Manage MTI files for run isola class program.
         st: stream of seismograms
@@ -20,6 +22,8 @@ class MTIManager:
         self.min_dist = min_dist
         self.max_dist = max_dist
         self.input_path = input_path
+        self.working_directory = working_directory
+        self.check_rms = {}
 
     @staticmethod
     def __validate_file(file_path):
@@ -78,11 +82,11 @@ class MTIManager:
                         keydict = dict(zip(file_list, dist1))
                         file_list.sort(key=keydict.get)
                 # do not filter by distance
-                #else:
-                    # file_list.append(item)
-                    # dist1.append(dist)
-                    # keydict = dict(zip(file_list, dist1))
-                    # file_list.sort(key=keydict.get)
+                else:
+                    file_list.append(item)
+                    dist1.append(dist)
+                    keydict = dict(zip(file_list, dist1))
+                    file_list.sort(key=keydict.get)
 
         self.stations_index = ind
         self.stream = self.sort_stream(dist1)
@@ -93,12 +97,62 @@ class MTIManager:
         data = {'item': file_list}
 
         df = pd.DataFrame(data, columns=['item'])
-        #print(df)
-        outstations_path = os.path.join(self.input_path, "stations.txt")
-        #print(outstations_path)
+        outstations_path = os.path.join(self.working_directory, "stations.txt")
         df.to_csv(outstations_path, header=False, index=False)
-        return self.stream, deltas, outstations_path
+        return self.stream, deltas
 
+    def get_traces_participation(self, p_arrival_time, win_length, threshold =4):
+
+        """
+        Find which traces from self.stream are above RMS Threshold
+        """
+        # TODO INCLUDES MAGNITUDE AND DISTANCE
+        for st in self.stream:
+            for tr in st:
+
+                try:
+                    rms = get_rms_times(tr, p_arrival_time, win_length, freqmin=0.5, freqmax=8, win_threshold=30)
+                    if rms >= threshold:
+                        self.check_rms[tr.stats.network+"_" + tr.stats.station + "_" + tr.stats.channel] = True
+                    else:
+                        self.check_rms[tr.stats.network + "_" + tr.stats.station + "_" + tr.stats.channel] = False
+                except:
+                    self.check_rms[tr.stats.network + "_" + tr.stats.station + "_" + tr.stats.channel] = False
+
+
+    def filter_mti_inputTraces(self, stations, stations_list):
+        # guess that starts everything inside stations and stations_list to False
+        # stations is a list
+        # statiosn_list is a dictionary of dictionaries
+        for key in self.check_rms.keys():
+            if self.check_rms[key]:
+                stations_list = self.__find_in_stations_list(stations_list, key)
+                stations = self.__find_in_stations(stations, key)
+
+        return stations, stations_list
+
+    @staticmethod
+    def __find_in_stations_list(stations_list, key):
+        network, code, channelcode = key.split("_")
+        for index_dict in stations_list:
+            if index_dict["channelcode"][0:2] == channelcode and index_dict["code"] == code and index_dict["network"] == network:
+                if channelcode[-1] == "Z" or channelcode[-1] == 3:
+                    index_dict["useZ"] = True
+                elif channelcode[-1] == "N" or channelcode[-1] == "Y" or channelcode[-1] == 1:
+                    index_dict["useN"] = True
+                elif channelcode[-1] == "E" or channelcode[-1] == "X" or channelcode[-1] == 2:
+                    index_dict["useE"] = True
+
+        return stations_list
+
+    @staticmethod
+    def __find_in_stations(stations, key_check):
+        key_search = 'use' + key_check[-1]
+        key_check = key_check[0:-1]
+        for key in stations.keys():
+            if key == key_check:
+                stations[key_check][key_check] = True
+        return stations
 
     def sort_stream(self, dist1):
         stream = []
@@ -117,7 +171,7 @@ class MTIManager:
         # TODO REVERSE DEPENDS ON THE NAMING BUT ALWAYS OUTPUT MUST BE IN THE ORDER ZNE
         for stream_sort in stream_sorted:
             if "1" and "2" in stream_sort:
-                stream_sorted_order.append(sorted(stream_sort, key=lambda x: (x.isnumeric(),int(x) if x.isnumeric() else x)))
+                stream_sorted_order.append(sorted(stream_sort, key=lambda x: (x.isnumeric(), int(x) if x.isnumeric() else x)))
             else:
                 stream_sorted_order.append(stream_sort.reverse())
 
@@ -133,8 +187,18 @@ class MTIManager:
 
         return deltas
 
+    @staticmethod
+    def move_files2workdir(src_dir, dest_dir):
 
-    def prepare_working_directory(self):
+        # getting all the files in the source directory
+        files = os.listdir(src_dir)
+
+        for fname in files:
+            # copying the files to the
+            # destination directory
+            shutil.copy2(os.path.join(src_dir, fname), dest_dir)
+
+    def prepare_working_directory(self, green_path):
         # check that exists otherwise remove it
         if not os.path.exists(self.input_path):
             os.makedirs(self.input_path)
@@ -146,24 +210,6 @@ class MTIManager:
             dst_path = os.path.join(self.input_path, f)
             os.rename(src_path, dst_path)
 
-    @staticmethod
-    def earthquake_duration(distance, magnitude):
-        # expression of strong motion duration from Trifunac-Brandy
-        # for vertical component
-
-        # A new definition of strong motion duration and comparison with other definitionns
-        # Structural Eng. / Earthquake Eng. April 1989
-
-        a = -124.5
-        b = 120.7
-        c = 0.019
-        d = 0.08641
-        e = 4.352
-        S = 1
-
-        D = a + b * np.exp(c * magnitude) + distance * d + e * S
-
-        return D
 
     def default_processing(self, paths, start, end):
         pass

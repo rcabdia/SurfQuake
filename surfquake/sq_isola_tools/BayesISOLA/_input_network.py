@@ -144,7 +144,7 @@ def read_network_coordinates(self, filename, network='', location='', channelcod
 		stn['az'] = az
 		stn['dist'] = dist
 		#stn['useN'] = stn['useE'] = stn['useZ'] = False
-		stn['useN'] = stn['useE'] = stn['useZ'] = True
+		stn['useN'] = stn['useE'] = stn['useZ'] = False
 		stn['accelerograph'] = False
 		stn['weightN'] = stn['weightE'] = stn['weightZ'] = 1.
 		if dist > min_distance and dist < max_distance:
