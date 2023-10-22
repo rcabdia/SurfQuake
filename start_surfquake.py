@@ -6,7 +6,7 @@ if __name__ == '__main__':
 
     # Initializa DB
     dir_path = os.path.dirname(os.path.abspath(__file__))
-    db.set_db_url("sqlite:///{}/isp_test.db".format(dir_path))
+    db.set_db_url("sqlite:///{}/surfquake.db".format(dir_path))
     db.start()
 
     from surfquake.Gui import start_locflow, except_hook

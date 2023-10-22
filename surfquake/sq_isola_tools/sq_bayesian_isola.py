@@ -50,8 +50,8 @@ class bayesian_isola_db:
         return station_filter, max_time
 
     def run_inversion(self):
-        for j in self.entities:
-            event_info = self.model.find_by(id=j[0].id, get_first=True)
+        for (i, entity) in enumerate(self.entities):
+            event_info = self.model.find_by(id=entity[0].id, get_first=True)
             phase_info = event_info.phase_info
             origin_time = event_info.origin_time
             print(event_info)
@@ -59,7 +59,7 @@ class bayesian_isola_db:
             station_filter, max_time = self.get_stations_list(phase_info)
             files_path = self.get_now_files(origin_time, max_time, station_filter)
             self.process_data(files_path, origin_time, max_time, event_info.mw)
-            self.invert(event_info)
+            self.invert(event_info, i)
 
     def filter_error_message(self, msg):
         md = MessageDialog(self)
@@ -82,12 +82,7 @@ class bayesian_isola_db:
         #self.st.plot(outfile = "/Users/roberto/Desktop/stream.png", size=(800, 600))
 
 
-    def invert(self, event_info):
-
-        # TODO: IMPORTANT NOW IS OVERWRITING THE OUTPUTDIRECTORY WITH THE SAME MTI SOLUTION.
-        # IT IS NEEDED    TO MAKE A TREE DIRECTORY FROM self.parameters['output_directory'] to save all solutions,
-        # one forder per solution. Then read_log will need a scan method to get the solutions and
-        # attach it to the database
+    def invert(self, event_info,num):
 
         mt = MTIManager(self.st, self.metadata, event_info.latitude, event_info.longitude,
             event_info.depth, UTCDateTime(event_info.origin_time), self.parameters["min_dist"]*1000,
@@ -95,8 +90,10 @@ class bayesian_isola_db:
 
         #mt.prepare_working_directory()
         [st, deltas, stations_isola_path] = mt.get_stations_index()
+        ID_folder = event_info.origin_time.strftime("%m/%d/%Y")+"_"+str(num)
+        outputdir = os.path.join(self.parameters['output_directory'], ID_folder)
+        inputs = BayesISOLA.load_data(outdir=outputdir)
 
-        inputs = BayesISOLA.load_data(outdir=self.parameters['output_directory'])
         inputs.set_event_info(lat=event_info.latitude, lon=event_info.longitude, depth=(event_info.depth/1000),
         mag=event_info.mw, t=UTCDateTime(event_info.origin_time))
 
@@ -132,7 +129,7 @@ class bayesian_isola_db:
 
 
         data = BayesISOLA.process_data(inputs, self.parameters['working_directory'], grid, threads=self.cpuCount,
-                use_precalculated_Green=True, fmax=self.parameters["fmax"], fmin=self.parameters["fmin"],
+                use_precalculated_Green=False, fmax=self.parameters["fmax"], fmin=self.parameters["fmin"],
                                        correct_data=False)
 
         cova = BayesISOLA.covariance_matrix(data)

@@ -543,6 +543,9 @@ class LocFlow(BaseFrame, UiLoc_Flow):
     def run_automag(self):
         self.automagnitudesText.clear()
         self.Date_Id = []
+        self.lats = []
+        self.longs = []
+        self.depths = []
         self.Mw = []
         self.Mw_std = []
         self.ML = []
@@ -561,7 +564,11 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         self.automagnitudesText.appendPlainText(focal_parameters[0].strftime(format="%m/%d/%Y, %H:%M:%S")+ "    "+str(focal_parameters[1])+
             "º    "+ str(focal_parameters[2])+"º    "+ str(focal_parameters[3])+" km")
 
-        self.Date_Id.append(focal_parameters[0].strftime(format="%Y%m%d%H%M%S"))
+        #self.Date_Id.append(focal_parameters[0].strftime(format="%Y%m%d%H%M%S"))
+        self.Date_Id.append(focal_parameters[0].strftime('%m/%d/%Y, %H:%M:%S.%f'))
+        self.lats.append(focal_parameters[1])
+        self.longs.append(focal_parameters[2])
+        self.depths.append(focal_parameters[3])
 
         if magnitude_mw_statistics != None:
             Mw = magnitude_mw_statistics.summary_spectral_parameters.Mw.weighted_mean.value
@@ -627,7 +634,8 @@ class LocFlow(BaseFrame, UiLoc_Flow):
             self.ML_std.append("None")
 
     def save_magnitudes(self):
-        magnitudes_dict = {'id': self.Date_Id, 'Mw': self.Mw, 'Mw_error': self.Mw_std,'ML': self.ML, 'ML_error': self.ML_std}
+        magnitudes_dict = {'date_id': self.Date_Id, 'lats': self.lats, 'longs': self.longs, 'depths': self.depths,
+        'Mw': self.Mw, 'Mw_error': self.Mw_std,'ML': self.ML, 'ML_error': self.ML_std}
         df_magnitudes = pd.DataFrame.from_dict(magnitudes_dict)
         df_magnitudes.to_csv(magnitudes, sep=";", index=False)
 

@@ -1,12 +1,13 @@
-import os
+import pandas as pd
 from surfquake.db import db
-
 
 dir_path = '/Users/roberto/Documents/SurfQuake'
 db.set_db_url("sqlite:///{}/surfquake.db".format(dir_path))
 db.start()
 from surfquake.Gui.Models.sql_alchemy_model import SQLAlchemyModel
 from surfquake.db.models import EventLocationModel, FirstPolarityModel, MomentTensorModel, PhaseInfoModel
+df = pd.read_csv("/Users/roberto/Documents/SurfQuake/surfquake/magnitudes_output/magnitudes_output.txt")
+print(df)
 el_columns = [getattr(EventLocationModel, c)
                       for c in EventLocationModel.__table__.columns.keys()[1:]]
 
@@ -34,49 +35,7 @@ col_names = ['Origin Time', 'Transformation', 'RMS',
 
 entities = [EventLocationModel, FirstPolarityModel, MomentTensorModel]
 model = SQLAlchemyModel(entities, columns, col_names)
-model.addJoinArguments(EventLocationModel.first_polarity, isouter=True)
-model.addJoinArguments(EventLocationModel.moment_tensor, isouter=True)
-
-
-## filter by query ###
-
-mag = EventLocationModel.ml.between(2, 4)
-model.setFilter(mag)
-model.revertAll()
-
-entities = model.getEntities()
-
-lat = []
-lon = []
-depth = []
-mag = []
-for j in entities:
-     lat.append(j[0].latitude)
-     lon.append(j[0].longitude)
-     depth.append(j[0].depth)
-     event_info = EventLocationModel.find_by(id=j[0].id, get_first=True)
-     phase_info = event_info.phase_info # A list with phase picking info
-     sta = phase_info[0].station_code
-
-
-
-
-
-#col_names = ['id', 'event_info_id', 'station_code', 'phase', 'time']
-
-
-###### model phases ########
-# columns = [*pi_columns]
-# entity_pi = PhaseInfoModel.find_by(event_info_id='20220202143717', get_first=True)
-
-
-######
-
-
-# for j in entities:
-#     lat.append(j[0].latitude)
-#     lon.append(j[0].longitude)
-#     depth.append(j[0].depth)
-
-for j in entities:
-    print(j[0].id)
+filters = [EventLocationModel.latitude >= 15., EventLocationModel.longitude < 10]
+entities = EventLocationModel.find_by_filter(filters=filters)
+#event_model = EventLocationModel.find_by(latitude=origin.latitude, longitude=origin.longitude,
+#                                                 depth=origin.depth, origin_time=origin.time.datetime)
