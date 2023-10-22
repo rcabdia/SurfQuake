@@ -10,7 +10,7 @@ from surfquake.seismogramInspector.signal_processing_advanced import get_rms_tim
 
 class MTIManager:
 
-    def __init__(self, st, inv, lat0, lon0, depth, o_time, min_dist, max_dist, input_path, working_directory):
+    def __init__(self, st, inv, lat0, lon0, depth, o_time, min_dist, max_dist, working_directory):
         """
         Manage MTI files for run isola class program.
         st: stream of seismograms
@@ -23,7 +23,6 @@ class MTIManager:
         self.depth = depth
         self.min_dist = min_dist
         self.max_dist = max_dist
-        self.input_path = input_path
         self.working_directory = working_directory
         self.o_time = o_time
         self.model = TauPyModel(model="iasp91")
@@ -218,18 +217,17 @@ class MTIManager:
             # destination directory
             shutil.copy2(os.path.join(src_dir, fname), dest_dir)
 
-    def prepare_working_directory(self, green_path):
-        # check that exists otherwise remove it
-        if not os.path.exists(self.input_path):
-            os.makedirs(self.input_path)
-        # gather all files
-        allfiles = os.listdir(green_path)
-        # iterate on all files to move them to destination folder
-        for f in allfiles:
-            src_path = os.path.join(green_path, f)
-            dst_path = os.path.join(self.input_path, f)
-            os.rename(src_path, dst_path)
-
+    # def prepare_working_directory(self, green_path):
+    #     # check that exists otherwise remove it
+    #     if not os.path.exists(self.input_path):
+    #         os.makedirs(self.input_path)
+    #     # gather all files
+    #     allfiles = os.listdir(green_path)
+    #     # iterate on all files to move them to destination folder
+    #     for f in allfiles:
+    #         src_path = os.path.join(green_path, f)
+    #         dst_path = os.path.join(self.input_path, f)
+    #         os.rename(src_path, dst_path)
 
     def default_processing(self, paths, start, end):
         pass

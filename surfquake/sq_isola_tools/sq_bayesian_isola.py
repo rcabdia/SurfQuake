@@ -1,5 +1,4 @@
 import os
-
 from obspy import UTCDateTime, Stream
 from surfquake.DataProcessing import SeismogramDataAdvanced
 from surfquake.Gui.Frames.qt_components import MessageDialog
@@ -25,6 +24,7 @@ class bayesian_isola_db:
         self.project = project
         self.parameters = parameters
         self.macro = macro
+        self.cpuCount = os.cpu_count() - 1
 
     def get_now_files(self, date, pick_time, stations_list):
         date = UTCDateTime(date)
@@ -39,8 +39,7 @@ class bayesian_isola_db:
         return files_path
 
     def get_stations_list(self, phase_info):
-        # TODO NEEDS TO FILTER PROJECT BASED minimum and maximum distance
-        #  #needs distances in phase data_base
+
         pick_times = []
         stations_list = []
         for phase in phase_info:
@@ -50,7 +49,7 @@ class bayesian_isola_db:
         max_time = max(pick_times)
         return station_filter, max_time
 
-    def get_info(self):
+    def run_inversion(self):
         for j in self.entities:
             event_info = self.model.find_by(id=j[0].id, get_first=True)
             phase_info = event_info.phase_info
@@ -60,7 +59,7 @@ class bayesian_isola_db:
             station_filter, max_time = self.get_stations_list(phase_info)
             files_path = self.get_now_files(origin_time, max_time, station_filter)
             self.process_data(files_path, origin_time, max_time, event_info.mw)
-            #self.invert()
+            self.invert(event_info)
 
     def filter_error_message(self, msg):
         md = MessageDialog(self)
@@ -82,42 +81,66 @@ class bayesian_isola_db:
         #self.stream_frame = MatplotlibFrame(self.st, type='normal')
         #self.st.plot(outfile = "/Users/roberto/Desktop/stream.png", size=(800, 600))
 
+
     def invert(self, event_info):
+
+        # TODO: IMPORTANT NOW IS OVERWRITING THE OUTPUTDIRECTORY WITH THE SAME MTI SOLUTION.
+        # IT IS NEEDED    TO MAKE A TREE DIRECTORY FROM self.parameters['output_directory'] to save all solutions,
+        # one forder per solution. Then read_log will need a scan method to get the solutions and
+        # attach it to the database
+
         mt = MTIManager(self.st, self.metadata, event_info.latitude, event_info.longitude,
-                        self.parameters["min_dist"]*1000, self.parameters["max_dist"]*1000, self.parameters['working_directory'])
-        mt.prepare_working_directory()
+            event_info.depth, UTCDateTime(event_info.origin_time), self.parameters["min_dist"]*1000,
+                        self.parameters["max_dist"]*1000, self.parameters['working_directory'])
+
+        #mt.prepare_working_directory()
         [st, deltas, stations_isola_path] = mt.get_stations_index()
+
         inputs = BayesISOLA.load_data(outdir=self.parameters['output_directory'])
         inputs.set_event_info(lat=event_info.latitude, lon=event_info.longitude, depth=(event_info.depth/1000),
         mag=event_info.mw, t=UTCDateTime(event_info.origin_time))
+
         # Sets the source time function for calculating elementary seismograms inside green folder type, working_directory, t0=0, t1=0
         inputs.set_source_time_function('triangle', self.parameters['working_directory'], t0=2.0, t1=0.5)
 
         # Create data structure self.stations
-        inputs.read_network_coordinates(stations_isola_path)  # changed stn['useN'] = stn['useE'] = stn['useZ'] = False to True
-        # edit self.stations_index / #modified original stn['useN'] = stn['useE'] = stn['useZ'] = False to True
+        inputs.read_network_coordinates(stations_isola_path)  # stn['useN'] = stn['useE'] = stn['useZ'] = False
+
+        # edit self.stations_index
         inputs.read_network_coordinates(os.path.join(self.parameters['working_directory'], "stations.txt"))
+
+        stations = inputs.stations
+        stations_index = inputs.stations_index
+
+        # NEW FILTER STATIONS PARTICIPATION BY RMS THRESHOLD
+        mt.get_traces_participation(None, 60, 5, magnitude=None, distance=None)
+        inputs.stations, inputs.stations_index = mt.filter_mti_inputTraces(stations, stations_index)
+
         # read crustal file and writes in green folder
         inputs.read_crust(self.parameters['earth_model'], output=os.path.join(self.parameters['working_directory'],
                             "crustal.dat"))  # read_crust(source, output='green/crustal.dat')
+
         # writes station.dat in working folder from self.stations
         inputs.write_stations(self.parameters['working_directory'])
 
         inputs.data_raw = st
-        # TODO needs to set to False waveforms that have not passed the checks
         inputs.create_station_index()
         inputs.data_deltas = deltas
 
         grid = BayesISOLA.grid(inputs, self.parameters['working_directory'], location_unc=3000, depth_unc=3000,
                 time_unc=1, step_x=200, step_z=200, max_points=500, circle_shape=True, rupture_velocity=1000)
 
-        data = BayesISOLA.process_data(inputs, self.parameters['working_directory'], grid, threads=4, use_precalculated_Green=True,
-                                       fmax=0.04, fmin=0.08, correct_data=False)
+
+        data = BayesISOLA.process_data(inputs, self.parameters['working_directory'], grid, threads=self.cpuCount,
+                use_precalculated_Green=True, fmax=self.parameters["fmax"], fmin=self.parameters["fmin"],
+                                       correct_data=False)
 
         cova = BayesISOLA.covariance_matrix(data)
         cova.covariance_matrix_noise(crosscovariance=True, save_non_inverted=True)
         #
-        solution = BayesISOLA.resolve_MT(data, cova, self.parameters['working_directory'], deviatoric=False, from_axistra=True)
+        solution = BayesISOLA.resolve_MT(data, cova, self.parameters['working_directory'], deviatoric=False,
+                                         from_axistra=True)
+
         # deviatoric=True: force isotropic component to be zero
         #
         plot = BayesISOLA.plot(solution, self.parameters['working_directory'], from_axistra=True)

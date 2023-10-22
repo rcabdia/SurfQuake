@@ -28,7 +28,7 @@
     <item>
      <widget class="QTabWidget" name="IsolaWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>4</number>
       </property>
       <widget class="QWidget" name="tab_4">
        <attribute name="title">
@@ -1807,6 +1807,45 @@
                 </property>
                 <property name="maximum">
                  <double>1000.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="5">
+               <widget class="QDoubleSpinBox" name="freq_minMTI">
+                <property name="prefix">
+                 <string>freq min </string>
+                </property>
+                <property name="suffix">
+                 <string> Hz</string>
+                </property>
+                <property name="decimals">
+                 <number>3</number>
+                </property>
+                <property name="value">
+                 <double>0.040000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="6">
+               <widget class="QDoubleSpinBox" name="freq_maxMTI">
+                <property name="prefix">
+                 <string>freq max </string>
+                </property>
+                <property name="suffix">
+                 <string> Hz</string>
+                </property>
+                <property name="decimals">
+                 <number>3</number>
+                </property>
+                <property name="value">
+                 <double>0.080000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="4" alignment="Qt::AlignHCenter">
+               <widget class="QLabel" name="label_32">
+                <property name="text">
+                 <string>Inversion Freqs</string>
                 </property>
                </widget>
               </item>
