@@ -3,6 +3,7 @@ from obspy import UTCDateTime, Stream
 from surfquake.DataProcessing import SeismogramDataAdvanced
 from surfquake.Gui.Frames.qt_components import MessageDialog
 from surfquake.Utils.obspy_utils import MseedUtil
+from surfquake.seismogramInspector.signal_processing_advanced import duration
 from surfquake.sq_isola_tools import BayesISOLA
 from surfquake.sq_isola_tools.mti_utilities import MTIManager
 
@@ -18,6 +19,7 @@ class bayesian_isola_db:
         project dict: information of seismogram data files available
         parameters: dictionary containing database entities and all GUI parameters
         """
+
         self.model = model
         self.entities = entities
         self.metadata = metadata
@@ -43,44 +45,84 @@ class bayesian_isola_db:
         pick_times = []
         stations_list = []
         for phase in phase_info:
-            stations_list.append(phase.station_code)
-            pick_times.append(phase.time)
+            if phase.time_weight >= 0.9 and abs(phase.time_residual) <= 3.5:
+                stations_list.append(phase.station_code)
+                pick_times.append(phase.time)
         station_filter = '|'.join(stations_list)
         max_time = max(pick_times)
         return station_filter, max_time
 
     def run_inversion(self):
         for (i, entity) in enumerate(self.entities):
-            event_info = self.model.find_by(id=entity[0].id, get_first=True)
+
+            event_info = self.model.find_by(latitude=entity[0].latitude, longitude=entity[0].longitude,
+                        depth=entity[0].depth, origin_time=entity[0].origin_time)
             phase_info = event_info.phase_info
             origin_time = event_info.origin_time
             print(event_info)
             #print(phase_info)
             station_filter, max_time = self.get_stations_list(phase_info)
             files_path = self.get_now_files(origin_time, max_time, station_filter)
+
+            # TODO: TAKE CARE WITH TYPE OF MAGNITUDE
             self.process_data(files_path, origin_time, max_time, event_info.mw)
+            try:
+                self.process_data(files_path, origin_time, entity[0].transformation, str(i), pick_time = max_time,
+                                  magnitude =event_info.mw, save_stream_plot=True)
+            except:
+                self.process_data(files_path, origin_time, entity[0].transformation, str(i))
+
             self.invert(event_info, i)
 
     def filter_error_message(self, msg):
         md = MessageDialog(self)
         md.set_info_message(msg)
 
-    def process_data(self, files_path, date, pick_time, magnitude):
+    def process_data(self, files_path, date, transform, ID_folder,  **kwargs):
 
-        D = MTIManager.earthquake_duration(self.parameters["max_dist"], magnitude)
-        date = UTCDateTime(date) - 0.5*(self.parameters["max_dist"]/3.5 + 0.25*(D + 1))
-        pick_time = UTCDateTime(pick_time) + (self.parameters["max_dist"]/3.5) + 0.25*(D + 1)
+        pick_time = kwargs.pop('pick_time', None)
+        magnitude = kwargs.pop('magnitude', None)
+        save_stream_plot = kwargs.pop('save_stream_plot', True)
+        if pick_time is not None:
+            pick_time = UTCDateTime(pick_time)
         all_traces = []
+        delta_min = pick_time-date
+
+        if delta_min < 240:
+
+            start_time = date - (240/3)
+            end_time = pick_time + 240
+
+        else:
+
+            if pick_time != None and magnitude != None:
+
+                D = duration(self.parameters["max_dist"], magnitude)
+                delta_time = (self.parameters["max_dist"] / 3.5) + D
+                start_time = date - (delta_time/3)
+                end_time = pick_time + delta_time
+            else:
+                if transform== "SIMPLE":
+                    delta_time = 8*60
+                    start_time = date - (delta_time / 3)
+                    end_time = pick_time + delta_time
+                else:
+                    delta_time = 1300
+                    start_time = date - (delta_time / 3)
+                    end_time = pick_time + delta_time
+
         for file in files_path:
             sd = SeismogramDataAdvanced(file)
-            tr = sd.get_waveform_advanced(self.macro, self.metadata, start_time=date, end_time=pick_time)
-            if len(tr.data)>0:
+            tr = sd.get_waveform_advanced(self.macro, self.metadata, start_time=start_time, end_time=end_time)
+            if len(tr.data) > 0:
                 all_traces.append(tr)
 
         self.st = Stream(traces=all_traces)
-        #self.stream_frame = MatplotlibFrame(self.st, type='normal')
-        #self.st.plot(outfile = "/Users/roberto/Desktop/stream.png", size=(800, 600))
+        self.st.merge()
 
+        if save_stream_plot:
+            outputdir = os.path.join(self.parameters['output_directory'], ID_folder, "stream_raw.png")
+            self.st.plot(outfile=outputdir, size=(800, 600))
 
     def invert(self, event_info,num):
 

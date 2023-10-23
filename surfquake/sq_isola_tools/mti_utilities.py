@@ -198,7 +198,7 @@ class MTIManager:
 
     def get_deltas(self):
         deltas = []
-        n =len(self.stream)
+        n = len(self.stream)
         for j in range(n):
             stream_unique = self.stream[j]
             delta_unique = stream_unique[0].stats.delta
