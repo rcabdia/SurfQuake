@@ -223,9 +223,8 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
 
     def _update_magnitudes(self, magnitudes_dict):
 
-        #event_model = EventLocationModel.find_by(id=magnitudes_dict["id"])
         event_model = EventLocationModel.find_by(latitude=magnitudes_dict["lats"], longitude=magnitudes_dict["longs"],
-                                                depth=magnitudes_dict["depths"], origin_time=magnitudes_dict["time"])
+                                                depth=magnitudes_dict["depths"], origin_time=magnitudes_dict["date_id"])
         if event_model:
             event_model.mw = magnitudes_dict["mw"]
             event_model.mw_error = magnitudes_dict["mw_error"]
@@ -235,11 +234,11 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
 
     def update_magnitudes(self):
         df = pd.read_csv(magnitudes, sep=";")
+        date_format = "%m/%d/%Y, %H:%M:%S.%f"
         for i in range(len(df)):
             data = {}
             info = df.loc[i]
-            #data["id"] = str(int(info.id))
-            data["date_id"] = datetime.strptime(info.date_id, '%m/%d/%Y %H:%M:%S.%f')
+            data["date_id"] = datetime.strptime(info.date_id, date_format)
             data["lats"] = info.lats
             data["longs"] = info.longs
             data["depths"] = info.depths*1E3
