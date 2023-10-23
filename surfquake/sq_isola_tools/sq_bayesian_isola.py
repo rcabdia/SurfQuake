@@ -65,10 +65,9 @@ class bayesian_isola_db:
             files_path = self.get_now_files(origin_time, max_time, station_filter)
 
             # TODO: TAKE CARE WITH TYPE OF MAGNITUDE
-            self.process_data(files_path, origin_time, max_time, event_info.mw)
             try:
-                self.process_data(files_path, origin_time, entity[0].transformation, str(i), pick_time = max_time,
-                                  magnitude =event_info.mw, save_stream_plot=True)
+                self.process_data(files_path, origin_time, entity[0].transformation, str(i), pick_time=max_time,
+                                  magnitude=event_info.mw, save_stream_plot=True)
             except:
                 self.process_data(files_path, origin_time, entity[0].transformation, str(i))
 
@@ -80,36 +79,33 @@ class bayesian_isola_db:
 
     def process_data(self, files_path, date, transform, ID_folder,  **kwargs):
 
+        all_traces = []
+        date = UTCDateTime(date)
         pick_time = kwargs.pop('pick_time', None)
         magnitude = kwargs.pop('magnitude', None)
         save_stream_plot = kwargs.pop('save_stream_plot', True)
+
         if pick_time is not None:
             pick_time = UTCDateTime(pick_time)
-        all_traces = []
-        delta_min = pick_time-date
-
-        if delta_min < 240:
-
-            start_time = date - (240/3)
-            end_time = pick_time + 240
-
+            delta_min = pick_time - date
+            if delta_min <= 240:
+                start_time = date - (240/3)
+                end_time = pick_time + 240
+            else:
+                if pick_time != None and magnitude != None:
+                    D = duration(self.parameters["max_dist"], magnitude)
+                    delta_time = (self.parameters["max_dist"] / 3.5) + D
+                    start_time = date - (delta_time/3)
+                    end_time = pick_time + delta_time
         else:
-
-            if pick_time != None and magnitude != None:
-
-                D = duration(self.parameters["max_dist"], magnitude)
-                delta_time = (self.parameters["max_dist"] / 3.5) + D
-                start_time = date - (delta_time/3)
+            if transform == "SIMPLE":
+                delta_time = 8*60
+                start_time = date - (delta_time / 3)
                 end_time = pick_time + delta_time
             else:
-                if transform== "SIMPLE":
-                    delta_time = 8*60
-                    start_time = date - (delta_time / 3)
-                    end_time = pick_time + delta_time
-                else:
-                    delta_time = 1300
-                    start_time = date - (delta_time / 3)
-                    end_time = pick_time + delta_time
+                delta_time = 1300
+                start_time = date - (delta_time / 3)
+                end_time = pick_time + delta_time
 
         for file in files_path:
             sd = SeismogramDataAdvanced(file)
