@@ -111,8 +111,8 @@ class bayesian_isola_db:
             pick_time = UTCDateTime(pick_time)
             delta_min = pick_time - date
             if delta_min <= 240:
-                start_time = date - (delta_min/3)
-                end_time = pick_time + 3*delta_min
+                start_time = date - 8*60
+                end_time = pick_time + 8*80
             else:
                 if pick_time != None and magnitude != None:
                     D = duration(self.parameters["max_dist"], magnitude)
@@ -189,7 +189,7 @@ class bayesian_isola_db:
 
 
         data = BayesISOLA.process_data(inputs, self.working_directory_local, grid, threads=self.cpuCount,
-                use_precalculated_Green=True, fmax=self.parameters["fmax"], fmin=self.parameters["fmin"],
+                use_precalculated_Green=False, fmax=self.parameters["fmax"], fmin=self.parameters["fmin"],
                                        correct_data=False)
 
         cova = BayesISOLA.covariance_matrix(data)

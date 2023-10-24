@@ -61,6 +61,7 @@ def trim_filter_data(self, noise_slice=True, noise_starttime=None, noise_length=
 			noise_endtime = noise_starttime + noise_length
 		DECIMATE = int(round(self.max_samprate / self.samprate))
 
+	print("Noise Window", noise_starttime, noise_endtime)
 	for st in self.d.data_raw:
 		stats = st[0].stats
 		#fmax = self.d.stations_index['_'.join([stats.network, stats.station, stats.location, stats.channel[0:2]])]['fmax']
