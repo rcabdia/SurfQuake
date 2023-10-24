@@ -1,10 +1,8 @@
 import os
 import shutil
 from obspy.taup import TauPyModel
-
 import pandas as pd
 from obspy.geodetics.base import gps2dist_azimuth, kilometer2degrees
-
 from surfquake.seismogramInspector.signal_processing_advanced import get_rms_times
 
 
@@ -50,7 +48,6 @@ class MTIManager:
         self.__validate_dir(stations_dir)
         return stations_dir
 
-
     def get_stations_index(self):
 
         ind = []
@@ -67,25 +64,21 @@ class MTIManager:
                 pass
             else:
                 [dist, _, _] = gps2dist_azimuth(self.lat, self.lon, lat, lon, a=6378137.0, f=0.0033528106647474805)
-                ind.append(station)
+
                 item = '{net}:{station}::{channel}    {lat}    {lon}'.format(net=net,
                         station=station, channel=channel[0:2], lat=lat, lon=lon)
 
             # filter by distance
-                if self.min_dist and self.max_dist > 0:
+                if self.min_dist < self.max_dist and self.min_dist <= dist and dist <= self.max_dist:
                     # do the distance filter
-                    if dist >= self.min_dist:
-                        file_list.append(item)
-                        dist1.append(dist)
-                        keydict = dict(zip(file_list, dist1))
-                        file_list.sort(key=keydict.get)
-                    if dist <= self.max_dist:
-                        file_list.append(item)
-                        dist1.append(dist)
-                        keydict = dict(zip(file_list, dist1))
-                        file_list.sort(key=keydict.get)
-                # do not filter by distance
+                    ind.append(station)
+                    file_list.append(item)
+                    dist1.append(dist)
+                    keydict = dict(zip(file_list, dist1))
+                    file_list.sort(key=keydict.get)
                 else:
+                    # do not filter by distance
+                    ind.append(station)
                     file_list.append(item)
                     dist1.append(dist)
                     keydict = dict(zip(file_list, dist1))
@@ -94,9 +87,7 @@ class MTIManager:
         self.stations_index = ind
         self.stream = self.sort_stream(dist1)
 
-
         deltas = self.get_deltas()
-
         data = {'item': file_list}
 
         df = pd.DataFrame(data, columns=['item'])

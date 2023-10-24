@@ -91,7 +91,6 @@ def load_preferences(pyqt_object, ui_name=None):
                             item.setText(value)
                         elif isinstance(item, pw.QDateTimeEdit):
                             set_qdatetime(value, item)
-
         user_preferences.endGroup()
     except:
         print("Couldn't load preferences")

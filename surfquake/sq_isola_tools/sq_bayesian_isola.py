@@ -1,5 +1,7 @@
+import gc
 import os
 from obspy import UTCDateTime, Stream
+from surfquake import green_path
 from surfquake.DataProcessing import SeismogramDataAdvanced
 from surfquake.Gui.Frames.qt_components import MessageDialog
 from surfquake.Utils.obspy_utils import MseedUtil
@@ -45,13 +47,19 @@ class bayesian_isola_db:
 
         pick_times = []
         stations_list = []
+        distances = []
+
         for phase in phase_info:
             if phase.time_weight >= 0.9 and abs(phase.time_residual) <= 3.5:
                 stations_list.append(phase.station_code)
                 pick_times.append(phase.time)
+                distances.append(phase.distance_km)
+
         station_filter = '|'.join(stations_list)
         max_time = max(pick_times)
-        return station_filter, max_time
+        max_distance = max(distances)
+
+        return station_filter, max_time, max_distance
 
     def run_inversion(self):
 
@@ -59,17 +67,19 @@ class bayesian_isola_db:
             os.makedirs(self.parameters['output_directory'])
 
         for (i, entity) in enumerate(self.entities):
+            self.st = []
             if not os.path.exists(os.path.join(self.parameters['output_directory'], str(i))):
                 os.makedirs(os.path.join(self.parameters['output_directory'], str(i)))
-
-            self.working_directory_local = os.path.join(self.parameters['output_directory'], str(i))
+            # TODO: COULD BE POSSIBLE TO ADD THE POSSIBILITY
+            #  TO SAVE THIS DIRECTORY INSIDE CORRESPONDING OUTPUT FOR LATER ANALYSIS
+            self.output_directory_local = os.path.join(self.parameters['output_directory'], str(i))
+            self.working_directory_local = self.parameters['working_directory']
             event_info = self.model.find_by(latitude=entity[0].latitude, longitude=entity[0].longitude,
                         depth=entity[0].depth, origin_time=entity[0].origin_time)
             phase_info = event_info.phase_info
             origin_time = event_info.origin_time
             print(event_info)
-            #print(phase_info)
-            station_filter, max_time = self.get_stations_list(phase_info)
+            station_filter, max_time, max_distance = self.get_stations_list(phase_info)
             files_path = self.get_now_files(origin_time, max_time, station_filter)
 
             # TODO: TAKE CARE WITH TYPE OF MAGNITUDE
@@ -79,7 +89,7 @@ class bayesian_isola_db:
             except:
                 self.process_data(files_path, origin_time, entity[0].transformation)
 
-            self.invert(event_info, i)
+            self.invert(event_info)
 
     def filter_error_message(self, msg):
         md = MessageDialog(self)
@@ -89,7 +99,11 @@ class bayesian_isola_db:
 
         all_traces = []
         date = UTCDateTime(date)
+        start_time = date
+        end_time = date + 240
+
         pick_time = kwargs.pop('pick_time', None)
+        max_distance = kwargs.pop('max_distance', None)
         magnitude = kwargs.pop('magnitude', None)
         save_stream_plot = kwargs.pop('save_stream_plot', True)
 
@@ -97,8 +111,8 @@ class bayesian_isola_db:
             pick_time = UTCDateTime(pick_time)
             delta_min = pick_time - date
             if delta_min <= 240:
-                start_time = date - (240/3)
-                end_time = pick_time + 240
+                start_time = date - (delta_min/3)
+                end_time = pick_time + 3*delta_min
             else:
                 if pick_time != None and magnitude != None:
                     D = duration(self.parameters["max_dist"], magnitude)
@@ -106,7 +120,7 @@ class bayesian_isola_db:
                     start_time = date - (delta_time/3)
                     end_time = pick_time + delta_time
         else:
-            if transform == "SIMPLE":
+            if transform == "SIMPLE" and max_distance <= 600:
                 delta_time = 8*60
                 start_time = date - (delta_time / 3)
                 end_time = date + delta_time
@@ -125,22 +139,21 @@ class bayesian_isola_db:
         self.st.merge()
 
         if save_stream_plot:
-            outputdir = os.path.join(self.working_directory_local, "stream_raw.png")
+            outputdir = os.path.join(self.output_directory_local, "stream_raw.png")
             self.st.plot(outfile=outputdir, size=(800, 600))
 
-    def invert(self, event_info,num):
+    def invert(self, event_info):
 
         mt = MTIManager(self.st, self.metadata, event_info.latitude, event_info.longitude,
             event_info.depth, UTCDateTime(event_info.origin_time), self.parameters["min_dist"]*1000,
-                        self.parameters["max_dist"]*1000, self.parameters['working_directory'])
+                        self.parameters["max_dist"]*1000, self.working_directory_local)
 
         # TODO: Move binaries depending on your OS SYSTEM to the working Directory
-        #MTIManager.move_files2workdir(green_folder, working_directory)
-        [st, deltas, stations_isola_path] = mt.get_stations_index()
-        ID_folder = event_info.origin_time.strftime("%m/%d/%Y")+"_"+str(num)
-        outputdir = os.path.join(self.parameters['output_directory'], ID_folder)
-        inputs = BayesISOLA.load_data(outdir=outputdir)
+        # TODO : It is needed to remove this folder before another inversion
+        MTIManager.move_files2workdir(green_path, self.working_directory_local)
+        [st, deltas] = mt.get_stations_index()
 
+        inputs = BayesISOLA.load_data(outdir=self.output_directory_local)
         inputs.set_event_info(lat=event_info.latitude, lon=event_info.longitude, depth=(event_info.depth/1000),
         mag=event_info.mw, t=UTCDateTime(event_info.origin_time))
 
@@ -148,10 +161,10 @@ class bayesian_isola_db:
         inputs.set_source_time_function('triangle', self.working_directory_local, t0=2.0, t1=0.5)
 
         # Create data structure self.stations
-        inputs.read_network_coordinates(stations_isola_path)  # stn['useN'] = stn['useE'] = stn['useZ'] = False
+        inputs.read_network_coordinates(os.path.join(self.working_directory_local, "stations.txt"))
 
         # edit self.stations_index
-        inputs.read_network_coordinates(os.path.join(self.working_directory_local, "stations.txt"))
+        inputs.read_network_coordinates(filename=os.path.join(self.working_directory_local, "stations.txt"))
 
         stations = inputs.stations
         stations_index = inputs.stations_index
@@ -176,16 +189,25 @@ class bayesian_isola_db:
 
 
         data = BayesISOLA.process_data(inputs, self.working_directory_local, grid, threads=self.cpuCount,
-                use_precalculated_Green=False, fmax=self.parameters["fmax"], fmin=self.parameters["fmin"],
+                use_precalculated_Green=True, fmax=self.parameters["fmax"], fmin=self.parameters["fmin"],
                                        correct_data=False)
 
         cova = BayesISOLA.covariance_matrix(data)
         cova.covariance_matrix_noise(crosscovariance=True, save_non_inverted=True)
         #
-        solution = BayesISOLA.resolve_MT(data, cova, self.working_directory_local, deviatoric=False,
+        solution = BayesISOLA.resolve_MT(data, cova, self.working_directory_local, deviatoric=True,
                                          from_axistra=True)
 
         # deviatoric=True: force isotropic component to be zero
         #
         plot = BayesISOLA.plot(solution, self.working_directory_local, from_axistra=True)
         plot.html_log(h1='Example_Test')
+        del inputs
+        del grid
+        del data
+        del plot
+        del mt
+        del self.st
+        del stations
+        del stations_index
+        gc.collect()

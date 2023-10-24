@@ -63,17 +63,24 @@ def trim_filter_data(self, noise_slice=True, noise_starttime=None, noise_length=
 
 	for st in self.d.data_raw:
 		stats = st[0].stats
-		fmax = self.d.stations_index['_'.join([stats.network, stats.station, stats.location, stats.channel[0:2]])]['fmax']
+		#fmax = self.d.stations_index['_'.join([stats.network, stats.station, stats.location, stats.channel[0:2]])]['fmax']
+		fmax = self.d.stations_index['_'.join([stats.network, stats.station, "", stats.channel[0:2]])]['fmax']
 		self.data.append(st.copy())
 	for st in self.data:
 		stats = st[0].stats
-		fmin = self.d.stations_index['_'.join([stats.network, stats.station, stats.location, stats.channel[0:2]])]['fmin']
-		fmax = self.d.stations_index['_'.join([stats.network, stats.station, stats.location, stats.channel[0:2]])]['fmax']
+		#fmin = self.d.stations_index['_'.join([stats.network, stats.station, stats.location, stats.channel[0:2]])]['fmin']
+		#fmax = self.d.stations_index['_'.join([stats.network, stats.station, stats.location, stats.channel[0:2]])]['fmax']
+		fmin = self.d.stations_index['_'.join([stats.network, stats.station, "", stats.channel[0:2]])]['fmin']
+		fmax = self.d.stations_index['_'.join([stats.network, stats.station, "", stats.channel[0:2]])]['fmax']
 		decimate = int(round(st[0].stats.sampling_rate / self.max_samprate))
 		if noise_slice:
 			self.noise.append(st.slice(noise_starttime, noise_endtime))
 			#print self.noise[-1][0].stats.endtime-self.noise[-1][0].stats.starttime, '<', length*1.1 # DEBUG
-			if (len(self.noise[-1])!=3 or (self.noise[-1][0].stats.endtime-self.noise[-1][0].stats.starttime < length*1.1)) and self.d.stations_index['_'.join([stats.network, stats.station, stats.location, stats.channel[0:2]])]['use'+stats.channel[2]]:
+			#if (len(self.noise[-1])!=3 or (self.noise[-1][0].stats.endtime-self.noise[-1][0].stats.starttime < length*1.1)) and self.d.stations_index['_'.join([stats.network, stats.station, stats.location, stats.channel[0:2]])]['use'+stats.channel[2]]:
+			if (len(self.noise[-1]) != 3 or (
+					self.noise[-1][0].stats.endtime - self.noise[-1][0].stats.starttime < length * 1.1)) and \
+					self.d.stations_index['_'.join([stats.network, stats.station, "", stats.channel[0:2]])][
+						'use' + stats.channel[2]]:
 				self.log('Noise slice too short to generate covariance matrix (station '+st[0].stats.station+'). Stopping generating noise slices.')
 				noise_slice = False
 				self.noise = []
@@ -112,7 +119,8 @@ def decimate_shift(self):
 				st2.integrate()
 			st2.decimate(decimate, no_filter=True)
 			stats = st2[0].stats
-			stn = self.d.stations_index['_'.join([stats.network, stats.station, stats.location, stats.channel[0:2]])]
+			#stn = self.d.stations_index['_'.join([stats.network, stats.station, stats.location, stats.channel[0:2]])]
+			stn = self.d.stations_index['_'.join([stats.network, stats.station, "", stats.channel[0:2]])]
 			fmin = stn['fmin']
 			fmax = stn['fmax']
 			if stn['accelerograph']:
