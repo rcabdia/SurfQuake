@@ -27,6 +27,7 @@ class bayesian_isola_db:
         self.parameters = parameters
         self.macro = macro
         self.cpuCount = os.cpu_count() - 1
+        self.working_directory_local = None
 
     def get_now_files(self, date, pick_time, stations_list):
         date = UTCDateTime(date)
@@ -53,8 +54,15 @@ class bayesian_isola_db:
         return station_filter, max_time
 
     def run_inversion(self):
-        for (i, entity) in enumerate(self.entities):
 
+        if not os.path.exists(self.parameters['output_directory']):
+            os.makedirs(self.parameters['output_directory'])
+
+        for (i, entity) in enumerate(self.entities):
+            if not os.path.exists(os.path.join(self.parameters['output_directory'], str(i))):
+                os.makedirs(os.path.join(self.parameters['output_directory'], str(i)))
+
+            self.working_directory_local = os.path.join(self.parameters['output_directory'], str(i))
             event_info = self.model.find_by(latitude=entity[0].latitude, longitude=entity[0].longitude,
                         depth=entity[0].depth, origin_time=entity[0].origin_time)
             phase_info = event_info.phase_info
@@ -66,10 +74,10 @@ class bayesian_isola_db:
 
             # TODO: TAKE CARE WITH TYPE OF MAGNITUDE
             try:
-                self.process_data(files_path, origin_time, entity[0].transformation, str(i), pick_time=max_time,
+                self.process_data(files_path, origin_time, entity[0].transformation,  pick_time=max_time,
                                   magnitude=event_info.mw, save_stream_plot=True)
             except:
-                self.process_data(files_path, origin_time, entity[0].transformation, str(i))
+                self.process_data(files_path, origin_time, entity[0].transformation)
 
             self.invert(event_info, i)
 
@@ -77,7 +85,7 @@ class bayesian_isola_db:
         md = MessageDialog(self)
         md.set_info_message(msg)
 
-    def process_data(self, files_path, date, transform, ID_folder,  **kwargs):
+    def process_data(self, files_path, date, transform, **kwargs):
 
         all_traces = []
         date = UTCDateTime(date)
@@ -101,11 +109,11 @@ class bayesian_isola_db:
             if transform == "SIMPLE":
                 delta_time = 8*60
                 start_time = date - (delta_time / 3)
-                end_time = pick_time + delta_time
+                end_time = date + delta_time
             else:
                 delta_time = 1300
                 start_time = date - (delta_time / 3)
-                end_time = pick_time + delta_time
+                end_time = date + delta_time
 
         for file in files_path:
             sd = SeismogramDataAdvanced(file)
@@ -117,7 +125,7 @@ class bayesian_isola_db:
         self.st.merge()
 
         if save_stream_plot:
-            outputdir = os.path.join(self.parameters['output_directory'], ID_folder, "stream_raw.png")
+            outputdir = os.path.join(self.working_directory_local, "stream_raw.png")
             self.st.plot(outfile=outputdir, size=(800, 600))
 
     def invert(self, event_info,num):
@@ -126,7 +134,8 @@ class bayesian_isola_db:
             event_info.depth, UTCDateTime(event_info.origin_time), self.parameters["min_dist"]*1000,
                         self.parameters["max_dist"]*1000, self.parameters['working_directory'])
 
-        #mt.prepare_working_directory()
+        # TODO: Move binaries depending on your OS SYSTEM to the working Directory
+        #MTIManager.move_files2workdir(green_folder, working_directory)
         [st, deltas, stations_isola_path] = mt.get_stations_index()
         ID_folder = event_info.origin_time.strftime("%m/%d/%Y")+"_"+str(num)
         outputdir = os.path.join(self.parameters['output_directory'], ID_folder)
@@ -136,13 +145,13 @@ class bayesian_isola_db:
         mag=event_info.mw, t=UTCDateTime(event_info.origin_time))
 
         # Sets the source time function for calculating elementary seismograms inside green folder type, working_directory, t0=0, t1=0
-        inputs.set_source_time_function('triangle', self.parameters['working_directory'], t0=2.0, t1=0.5)
+        inputs.set_source_time_function('triangle', self.working_directory_local, t0=2.0, t1=0.5)
 
         # Create data structure self.stations
         inputs.read_network_coordinates(stations_isola_path)  # stn['useN'] = stn['useE'] = stn['useZ'] = False
 
         # edit self.stations_index
-        inputs.read_network_coordinates(os.path.join(self.parameters['working_directory'], "stations.txt"))
+        inputs.read_network_coordinates(os.path.join(self.working_directory_local, "stations.txt"))
 
         stations = inputs.stations
         stations_index = inputs.stations_index
@@ -152,31 +161,31 @@ class bayesian_isola_db:
         inputs.stations, inputs.stations_index = mt.filter_mti_inputTraces(stations, stations_index)
 
         # read crustal file and writes in green folder
-        inputs.read_crust(self.parameters['earth_model'], output=os.path.join(self.parameters['working_directory'],
+        inputs.read_crust(self.parameters['earth_model'], output=os.path.join(self.working_directory_local,
                             "crustal.dat"))  # read_crust(source, output='green/crustal.dat')
 
         # writes station.dat in working folder from self.stations
-        inputs.write_stations(self.parameters['working_directory'])
+        inputs.write_stations(self.working_directory_local)
 
         inputs.data_raw = st
         inputs.create_station_index()
         inputs.data_deltas = deltas
 
-        grid = BayesISOLA.grid(inputs, self.parameters['working_directory'], location_unc=3000, depth_unc=3000,
+        grid = BayesISOLA.grid(inputs, self.working_directory_local, location_unc=3000, depth_unc=3000,
                 time_unc=1, step_x=200, step_z=200, max_points=500, circle_shape=True, rupture_velocity=1000)
 
 
-        data = BayesISOLA.process_data(inputs, self.parameters['working_directory'], grid, threads=self.cpuCount,
+        data = BayesISOLA.process_data(inputs, self.working_directory_local, grid, threads=self.cpuCount,
                 use_precalculated_Green=False, fmax=self.parameters["fmax"], fmin=self.parameters["fmin"],
                                        correct_data=False)
 
         cova = BayesISOLA.covariance_matrix(data)
         cova.covariance_matrix_noise(crosscovariance=True, save_non_inverted=True)
         #
-        solution = BayesISOLA.resolve_MT(data, cova, self.parameters['working_directory'], deviatoric=False,
+        solution = BayesISOLA.resolve_MT(data, cova, self.working_directory_local, deviatoric=False,
                                          from_axistra=True)
 
         # deviatoric=True: force isotropic component to be zero
         #
-        plot = BayesISOLA.plot(solution, self.parameters['working_directory'], from_axistra=True)
+        plot = BayesISOLA.plot(solution, self.working_directory_local, from_axistra=True)
         plot.html_log(h1='Example_Test')

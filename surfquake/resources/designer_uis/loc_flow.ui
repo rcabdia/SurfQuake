@@ -1534,10 +1534,18 @@
                </widget>
               </item>
               <item row="0" column="2">
-               <widget class="QLineEdit" name="mti_working_path"/>
+               <widget class="QLineEdit" name="mti_working_path">
+                <property name="text">
+                 <string>/Volumes/LaCie/Andorra/mti_test/work_directory</string>
+                </property>
+               </widget>
               </item>
               <item row="2" column="2">
-               <widget class="QLineEdit" name="MTI_output_path"/>
+               <widget class="QLineEdit" name="MTI_output_path">
+                <property name="text">
+                 <string>/Volumes/LaCie/Andorra/mti_test/output</string>
+                </property>
+               </widget>
               </item>
               <item row="1" column="0">
                <widget class="QPushButton" name="earthModelMTIBtn">
@@ -1547,7 +1555,11 @@
                </widget>
               </item>
               <item row="1" column="2">
-               <widget class="QLineEdit" name="earth_model_path"/>
+               <widget class="QLineEdit" name="earth_model_path">
+                <property name="text">
+                 <string>/Volumes/LaCie/Andorra/mti_test/input/Iberia.dat</string>
+                </property>
+               </widget>
               </item>
              </layout>
             </widget>
