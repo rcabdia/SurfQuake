@@ -80,6 +80,7 @@ class bayesian_isola_db:
             origin_time = event_info.origin_time
             print(event_info)
             station_filter, max_time, max_distance = self.get_stations_list(phase_info)
+            self.max_distance = max_distance
             files_path = self.get_now_files(origin_time, max_time, station_filter)
 
             # TODO: TAKE CARE WITH TYPE OF MAGNITUDE
@@ -170,7 +171,8 @@ class bayesian_isola_db:
         stations_index = inputs.stations_index
 
         # NEW FILTER STATIONS PARTICIPATION BY RMS THRESHOLD
-        mt.get_traces_participation(None, 60, 5, magnitude=None, distance=None)
+        mt.get_traces_participation(None, 20, 5, magnitude=event_info.mw,
+                                    distance=self.max_distance)
         inputs.stations, inputs.stations_index = mt.filter_mti_inputTraces(stations, stations_index)
 
         # read crustal file and writes in green folder
@@ -185,12 +187,11 @@ class bayesian_isola_db:
         inputs.data_deltas = deltas
 
         grid = BayesISOLA.grid(inputs, self.working_directory_local, location_unc=3000, depth_unc=3000,
-                time_unc=1, step_x=200, step_z=200, max_points=500, circle_shape=True, rupture_velocity=1000)
+                time_unc=0.5, step_x=200, step_z=200, max_points=500, circle_shape=False, rupture_velocity=1000)
 
 
         data = BayesISOLA.process_data(inputs, self.working_directory_local, grid, threads=self.cpuCount,
-                use_precalculated_Green=False, fmax=self.parameters["fmax"], fmin=self.parameters["fmin"],
-                                       correct_data=False)
+                use_precalculated_Green=False, fmin=self.parameters["fmin"],fmax=self.parameters["fmax"], correct_data=False)
 
         cova = BayesISOLA.covariance_matrix(data)
         cova.covariance_matrix_noise(crosscovariance=True, save_non_inverted=True)

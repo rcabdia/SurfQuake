@@ -105,7 +105,7 @@ class MTIManager:
             for tr in st:
 
                 try:
-                    if p_arrival_time !=None:
+                    if p_arrival_time!=None:
                         pass
                     else:
 
@@ -114,7 +114,7 @@ class MTIManager:
                         lon = coords['longitude']
                         [dist, _, _] = gps2dist_azimuth(self.lat, self.lon, lat, lon, a=6378137.0, f=0.0033528106647474805)
                         distance_degrees = kilometer2degrees(dist*1E-3)
-                        arrivals = self.model.get_travel_times(source_depth_in_km=self.depth,
+                        arrivals = self.model.get_travel_times(source_depth_in_km=self.depth*1E-3,
                                                                distance_in_degree=distance_degrees)
                         p_arrival_time = self.o_time+arrivals[0].time
 

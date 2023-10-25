@@ -377,13 +377,10 @@ def get_rms_times(tr: Trace, p_arrival_time: UTCDateTime, win_length, magnitude 
     win_length_noise = win_length/3
     t1 = p_arrival_time - win_length_noise
     t2 = p_arrival_time + win_length
-    #tr_env.plot()
     tr_noise = tr_env.copy()
     tr_signal = tr_env.copy()
-    tr_noise.trim(starttime=t1, endtime=p_arrival_time,
-                  pad=False, fill_value=0)
-    tr_signal.trim(starttime=p_arrival_time, endtime=t2,
-                   pad=False, fill_value=0)
+    tr_noise.trim(starttime=t1, endtime=p_arrival_time, pad=False, fill_value=0)
+    tr_signal.trim(starttime=p_arrival_time, endtime=t2, pad=False, fill_value=0)
 
     ampmin = tr_noise.data.mean()*1.5
     ampmax = tr_signal.data.mean()
