@@ -150,7 +150,9 @@ class bayesian_isola_db:
                         self.parameters["max_dist"]*1000, self.working_directory_local)
 
         # TODO: Move binaries depending on your OS SYSTEM to the working Directory
-        # TODO : It is needed to remove this folder before another inversion
+        # TODO: It is needed to remove this folder before another inversion
+        # TODO: It is necessary to filter by max number of stations
+
         MTIManager.move_files2workdir(green_path, self.working_directory_local)
         [st, deltas] = mt.get_stations_index()
 
@@ -171,7 +173,7 @@ class bayesian_isola_db:
         stations_index = inputs.stations_index
 
         # NEW FILTER STATIONS PARTICIPATION BY RMS THRESHOLD
-        mt.get_traces_participation(None, 20, 5, magnitude=event_info.mw,
+        mt.get_traces_participation(None, 20, self.parameters['rms_thresh'], magnitude=event_info.mw,
                                     distance=self.max_distance)
         inputs.stations, inputs.stations_index = mt.filter_mti_inputTraces(stations, stations_index)
 
@@ -186,23 +188,26 @@ class bayesian_isola_db:
         inputs.create_station_index()
         inputs.data_deltas = deltas
 
-        grid = BayesISOLA.grid(inputs, self.working_directory_local, location_unc=3000, depth_unc=3000,
-                time_unc=0.5, step_x=200, step_z=200, max_points=500, circle_shape=False, rupture_velocity=1000)
-
+        grid = BayesISOLA.grid(inputs, self.working_directory_local, location_unc=3000, depth_unc=self.parameters['depth_unc'],
+                time_unc=self.parameters['time_unc'], step_x=200, step_z=200, max_points=500, circle_shape=False,
+                               rupture_velocity=self.parameters['rupture_velocity'])
 
         data = BayesISOLA.process_data(inputs, self.working_directory_local, grid, threads=self.cpuCount,
-                use_precalculated_Green=False, fmin=self.parameters["fmin"],fmax=self.parameters["fmax"], correct_data=False)
+                use_precalculated_Green=False, fmin=self.parameters["fmin"],fmax=self.parameters["fmax"],
+                                       correct_data=False)
 
         cova = BayesISOLA.covariance_matrix(data)
-        cova.covariance_matrix_noise(crosscovariance=True, save_non_inverted=True)
+        cova.covariance_matrix_noise(crosscovariance=self.parameters['covariance'], save_non_inverted=True)
         #
-        solution = BayesISOLA.resolve_MT(data, cova, self.working_directory_local, deviatoric=True,
-                                         from_axistra=True)
+        solution = BayesISOLA.resolve_MT(data, cova, self.working_directory_local,
+                    deviatoric=self.parameters["deviatoric"], from_axistra=True)
 
         # deviatoric=True: force isotropic component to be zero
         #
-        plot = BayesISOLA.plot(solution, self.working_directory_local, from_axistra=True)
-        plot.html_log(h1='Example_Test')
+        if self.parameters['plot_save']:
+            plot = BayesISOLA.plot(solution, self.working_directory_local, from_axistra=True)
+            plot.html_log(h1='Example_Test')
+
         del inputs
         del grid
         del data

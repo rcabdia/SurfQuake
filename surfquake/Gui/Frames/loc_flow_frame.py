@@ -659,7 +659,8 @@ class LocFlow(BaseFrame, UiLoc_Flow):
                       'plot_save': self.savePlotsCB.isChecked(), 'rupture_velocity': self.ruptureVelMTIDB.value(),
                       'source_type': self.sourceTypeCB.currentText(), 'min_dist': self.minDistMTIDB.value(),
                       'max_dist': self.maxDistMTIDB.value(), 'fmin': self.freq_minMTI.value(),
-                      'fmax': self.freq_maxMTI.value()}
+                      'fmax': self.freq_maxMTI.value(), 'rms_thresh': self.rms_threshMTI.value(),
+                      'max_num_stationsMTI0': self.max_num_stationsMTI.value()}
 
         return parameters
 
