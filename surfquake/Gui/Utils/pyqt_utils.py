@@ -10,7 +10,7 @@ pyc = QtCore
 pqg = QtGui
 pyc = QtCore
 pw = QtWidgets
-user_preferences = pyc.QSettings(pyc.QSettings.NativeFormat, pyc.QSettings.UserScope, "isp", "user_pref")
+user_preferences = pyc.QSettings(pyc.QSettings.NativeFormat, pyc.QSettings.UserScope, "LocFlow", "user_pref")
 def set_qdatetime(time, pyqt_time_object: pw.QDateTimeEdit):
     """
     Set the datetime to an edit time qt object.
@@ -37,22 +37,22 @@ def save_preferences(pyqt_object, ui_name=None):
     :param ui_name: The name to use in the group, If not given it will use the object name to group it.
     :return:
     """
-    try:
-        ui_name = type(pyqt_object).__name__ if ui_name is None else ui_name
-        user_preferences.beginGroup(ui_name)
-        for key, item in pyqt_object.__dict__.items():
-            if isinstance(item, pw.QDoubleSpinBox) or isinstance(item, pw.QSpinBox):
-                user_preferences.setValue(key, item.value())
-            elif isinstance(item, pw.QLineEdit):
-                user_preferences.setValue(key, item.text())
-            elif isinstance(item, pw.QDateTimeEdit):
-                user_preferences.setValue(key, item.dateTime().toPyDateTime())
-            elif hasattr(item, "save_values"):
-                item.save_values()
+    #try:
+    ui_name = type(pyqt_object).__name__ if ui_name is None else ui_name
+    user_preferences.beginGroup(ui_name)
+    for key, item in pyqt_object.__dict__.items():
+        if isinstance(item, pw.QDoubleSpinBox) or isinstance(item, pw.QSpinBox):
+            user_preferences.setValue(key, item.value())
+        elif isinstance(item, pw.QLineEdit):
+            user_preferences.setValue(key, item.text())
+        elif isinstance(item, pw.QDateTimeEdit):
+            user_preferences.setValue(key, item.dateTime().toPyDateTime())
+        elif hasattr(item, "save_values"):
+            item.save_values()
 
-        user_preferences.endGroup()
-    except:
-        pass
+    user_preferences.endGroup()
+    #except:
+        #pass
 
 def load_ui_designers(ui_file):
     ui_path = os.path.join(UIS_PATH, ui_file)

@@ -15,7 +15,7 @@ pw = QtWidgets
 pyc = QtCore
 # qt = Qt
 # file to save ui fields
-user_preferences = pyc.QSettings(pyc.QSettings.NativeFormat, pyc.QSettings.UserScope, "isp", "user_pref")
+user_preferences = pyc.QSettings(pyc.QSettings.NativeFormat, pyc.QSettings.UserScope, "LocFlow", "user_pref")
 #print(user_preferences.fileName())
 
 def controller():

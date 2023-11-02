@@ -397,7 +397,7 @@ class MseedUtil:
         return project
 
     def search_files(self, rooth_path: str):
-
+        project = {}
         self.search_file = []
         for top_dir, sub_dir, files in os.walk(rooth_path):
             for file in files:
@@ -554,3 +554,15 @@ class MseedUtil:
         except IOError:
 
            return []
+    @staticmethod
+    def save_project(cls, project, path):
+        if isinstance(project, dict):
+            try:
+                file_to_store = open(path, "wb")
+                pickle.dump(project, file_to_store)
+                print("Succesfully saved project")
+            except ProjectSaveFailed as e:
+                print(f"Project couldn't be saved: {e}")
+
+class ProjectSaveFailed(Exception):
+    pass
