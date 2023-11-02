@@ -1,4 +1,4 @@
-<img src="loc_flow_isp/resources/logo/surfQuake.png" width="600">
+<img src="surfquake/resources/logo/surfQuake.png" width="600">
 
 # SurfQuake
 
