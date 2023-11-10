@@ -6,7 +6,7 @@ import subprocess
 import time
 import warnings
 from typing import Optional, Union, List, Dict, Tuple
-from .. import real_bin, root_dir
+from .. import real_bin
 from .structs import RealD, RealR, RealG, RealV, RealS, Station, EventLocation, PhaseLocation, \
     EventsInfo
 from ..out_data import out_data_dir
