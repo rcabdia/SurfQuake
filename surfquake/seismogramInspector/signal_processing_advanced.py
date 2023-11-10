@@ -12,8 +12,6 @@ import math
 import scipy.signal
 import pywt  # this should be added on requirements.txt if is a necessary package
 from obspy import UTCDateTime, Trace
-
-from surfquake.seismogramInspector.entropy import spectral_entropy
 import copy
 from obspy.signal.trigger import classic_sta_lta, trigger_onset
 import obspy.signal
@@ -62,28 +60,6 @@ def MTspectrum(data,win,dt,tbp,ntapers,linf,lsup):
     S=S[value1:value2]
     
     return S
-
-
-
-
-def Entropydetect(data,win,dt):
-
-    if win > 0:
-        N = int(win/dt)
-    else:
-        N=1024
-    win = 2 ** math.ceil(math.log2(N))
-
-    lim=len(data)-win
-    Entropy=np.zeros([1,int(lim)])
-
-    for n in range(lim):
-        data1=data[n:win+n]
-        data1=data1-np.mean(data1)
-        Entropy1 = spectral_entropy(data1, sf=1/dt, method='welch', nperseg=win, normalize=True)
-        Entropy[:,n]=Entropy1 
-    
-    return Entropy[0]
 
 
 #######
@@ -738,37 +714,3 @@ def hampel(tr, window_size, n_sigmas=3):
 
     return tr
 
-# def hampel_old(tr, window_size=5, n=3, imputation=True):
-#
-#     """
-#     Median absolute deviation (MAD) outlier in Time Series
-#     :param ts: a pandas Series object representing the timeseries
-#     :param window_size: total window size will be computed as 2*window_size + 1
-#     :param n: threshold, default is 3 (Pearson's rule)
-#     :param imputation: If set to False, then the algorithm will be used for outlier detection.
-#         If set to True, then the algorithm will also imput the outliers with the rolling median.
-#     :return: Returns the outlier indices if imputation=False and the corrected timeseries if imputation=True
-#     """
-#
-#
-#     window_size = int(window_size*tr.stats.sampling_rate)
-#
-#     # Copy the Series object. This will be the cleaned timeserie
-#     ts = pd.Series(tr.data)
-#     ts_cleaned = ts.copy()
-#
-#     # Constant scale factor, which depends on the distribution
-#     # In this case, we assume normal distribution
-#     k = 1.4826
-#
-#     rolling_ts = ts_cleaned.rolling(window_size * 2, center=True)
-#     rolling_median = rolling_ts.median().fillna(method='bfill').fillna(method='ffill')
-#     rolling_sigma = k * (rolling_ts.apply(median_absolute_deviation).fillna(method='bfill').fillna(method='ffill'))
-#
-#     outlier_indices = list(np.array(np.where(np.abs(ts_cleaned - rolling_median) >= (n * rolling_sigma))).flatten())
-#
-#     if imputation:
-#         ts_cleaned[outlier_indices] = rolling_median[outlier_indices]
-#         tr.data = ts_cleaned.array.to_numpy()
-#
-#     return tr
