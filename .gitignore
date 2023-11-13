@@ -113,7 +113,8 @@ playground.py
 
 # local files
 surfquake/*app.log
-surfquake/data/picks
+#surfquake/data/picks
+surfquake/data/tt_real/ttdb.txt
 surfquake/data/original_picks
 surfquake/data/station
 surfquake/Gui/__pycache__/
