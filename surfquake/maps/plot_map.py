@@ -1,4 +1,4 @@
-import pandas as pd
+
 from matplotlib.transforms import offset_copy
 import cartopy.crs as ccrs
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
@@ -9,10 +9,11 @@ import shapely.geometry as sgeom
 from matplotlib import pyplot as plt
 from surfquake import realout
 from surfquake.loc_flow_tools.utils import ConversionUtils
+import matplotlib
 
 
 def plot_real_map(networks, earthquakes=False, **kwargs):
-
+    matplotlib.use("Qt5Agg")
     ##Extract Area values##
 
     area = kwargs.pop('area', None)
