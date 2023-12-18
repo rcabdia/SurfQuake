@@ -1,1 +1,1 @@
--e ../SurfQuakeCore
+-r ../SurfQuakeCore

@@ -250,12 +250,13 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         md = MessageDialog(self)
         md.hide()
         try:
-            sp = SurfProject(self.root_path_bind.value)
+            self.sp = SurfProject(self.root_path_bind.value)
             self.progressbar.reset()
             self.progressbar.setLabelText("Bulding Project")
             self.progressbar.setRange(0, 0)
             def callback():          
-                r = sp.search_files(verbose=True)
+                self.sp.search_files(verbose=True)
+                r = self.sp
                 pyc.QMetaObject.invokeMethod(self.progressbar, "accept")
                 return r
             with ThreadPoolExecutor(1) as executor:
@@ -283,9 +284,8 @@ class LocFlow(BaseFrame, UiLoc_Flow):
             if not path:
                 return
 
-            file_to_store = open(os.path.join(path, self.nameForm.text()), "wb")
-            pickle.dump(self.project, file_to_store)
-
+            file_to_store = os.path.join(path, self.nameForm.text())
+            self.project.save_project(path_file_to_storage=file_to_store)
             md = MessageDialog(self)
             md.set_info_message("Project saved successfully")
 
