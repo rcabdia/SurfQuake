@@ -29,6 +29,9 @@ from surfquake.magnitude_tools.autoag import Automag
 from surfquake.maps.plot_map import plot_real_map
 from surfquake.sq_isola_tools.sq_bayesian_isola import bayesian_isola_db
 
+from surfquakecore.project.surf_project import SurfProject
+
+
 pw = QtWidgets
 pqg = QtGui
 pyc = QtCore
@@ -247,12 +250,12 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         md = MessageDialog(self)
         md.hide()
         try:
-            ms = MseedUtil()
+            sp = SurfProject(self.root_path_bind.value)
             self.progressbar.reset()
             self.progressbar.setLabelText("Bulding Project")
             self.progressbar.setRange(0, 0)
-            def callback():
-                r = ms.search_files(self.root_path_bind.value)
+            def callback():          
+                r = sp.search_files(verbose=True)
                 pyc.QMetaObject.invokeMethod(self.progressbar, "accept")
                 return r
             with ThreadPoolExecutor(1) as executor:

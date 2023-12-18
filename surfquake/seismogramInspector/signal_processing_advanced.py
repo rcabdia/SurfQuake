@@ -6,7 +6,7 @@ Created on Tue Jul  9 18:15:16 2019
 @author: robertocabieces
 """
 
-from mtspec import mtspec
+#from mtspec import mtspec
 import numpy as np
 import math
 import scipy.signal
@@ -34,7 +34,7 @@ def median_absolute_deviation(x):
 def find_nearest(array, value):
     idx,val = min(enumerate(array), key=lambda x: abs(x[1]-value))
     return idx,val
-
+"""
 def MTspectrum(data,win,dt,tbp,ntapers,linf,lsup):
 
     if (win % 2) == 0:
@@ -60,7 +60,7 @@ def MTspectrum(data,win,dt,tbp,ntapers,linf,lsup):
     S=S[value1:value2]
     
     return S
-
+"""
 
 #######
 def _pad_zeros(a, num, num2=None):
@@ -274,12 +274,9 @@ def cohe(tr1, tr2, fs, nfft, overlap):
     return A, f, phase
 
 ###
+"""
 def spectrumelement(data,delta,sta):
-    """
 
-    Return the amplitude spectrum using multitaper aproach
-
-    """
     N = len(data)
     D = 2 ** math.ceil(math.log2(N))
     z = np.zeros(D - N)
@@ -289,7 +286,7 @@ def spectrumelement(data,delta,sta):
     spec = np.sqrt(spec) #mtspec Amplitude spectrum
     jackknife_errors = np.sqrt(jackknife_errors)
     return spec, freq, jackknife_errors
-
+"""
 
 def sta_lta(data, sampling_rate, STA = 1, LTA = 40):
     #from obspy.signal.filter import lowpass
