@@ -28,6 +28,7 @@ pw = QtWidgets
 pyc = QtCore
 qt = pyc.Qt
 
+
 class DateTimeFormatDelegate(pw.QStyledItemDelegate):
     def __init__(self, date_format, parent=None):
         super().__init__(parent)
@@ -98,7 +99,40 @@ class MinMaxValidator(pyc.QObject):
             self.validChanged.emit(True)
 
 
+class PhaseInfoDialog(pw.QDialog):
+    tableView = None
+    model = None
+
+    def __init__(self, event_id, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle('Phase Info Inspector')
+
+        columns = [getattr(PhaseInfoModel, c) for c in PhaseInfoModel.__table__.columns.keys()[2:]]
+
+        col_names = ['Stat. Code', 'Instrument', 'Component', 'Phase', 'Polarity', 'Time', 'Amplitude', 'Travel Time',
+                     'Time Residual', 'Time Weight', 'Distance (km)', 'Distance (deg)', 'Azimuth', 'Take Off angle']
+
+        self.model = SQLAlchemyModel(PhaseInfoModel, columns, col_names, self)
+        self.model.setFilter(PhaseInfoModel.event_info_id == event_id)
+        self.model.revertAll()
+
+        self.tableView = pw.QTableView()
+        self.tableView.setModel(self.model)
+        self.tableView.setSelectionBehavior(pw.QAbstractItemView.SelectRows)
+
+        self.tableView.setItemDelegateForColumn(5, DateTimeFormatDelegate('dd/MM/yyyy hh:mm:ss.zzz'))
+        self.tableView.resizeColumnsToContents()
+
+        layout = pw.QHBoxLayout()
+        layout.addWidget(self.tableView)
+        self.setLayout(layout)
+
+        self.setFixedHeight(500)
+        self.setFixedWidth(1024)
+
+
 class EventLocationFrame(BaseFrame, UiEventLocationFrame):
+    phase_info_inspector = None
     def __init__(self):
         super(EventLocationFrame, self).__init__()
         self.setupUi(self)
@@ -106,7 +140,7 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
         self.setWindowIcon(pqg.QIcon(':\icons\compass-icon.png'))
         self.cb = None
         el_columns = [getattr(EventLocationModel, c)
-                      for c in EventLocationModel.__table__.columns.keys()[1:]]
+                      for c in EventLocationModel.__table__.columns.keys()[0:]]
 
         fp_columns = [getattr(FirstPolarityModel, c)
                       for c in FirstPolarityModel.__table__.columns.keys()[2:]]
@@ -116,7 +150,7 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
 
         columns = [*el_columns, *fp_columns, *mti_columns]
 
-        col_names = ['Origin Time', 'Transformation', 'RMS',
+        col_names = ['Id', 'Origin Time', 'Transformation', 'RMS',
                      'Latitude', 'Longitude', 'Depth', 'Uncertainty',
                      'Max. Hor. Error', 'Min. Hor. Error', 'Ellipse Az.',
                      'No. Phases', 'Az. Gap', 'Max. Dist.', 'Min. Dist.',
@@ -124,8 +158,7 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
                      'Mw', 'Mw Error', 'Mc', 'Mc Error', 'Strike', 'Dip',
                      'Rake', 'Misfit', 'Az. Gap', 'Stat. Pol. Count', 'Latitude_mti', 'Longitude_mti', 'Depth_mti',
                      'VR', 'CN', 'dc', 'clvd', 'iso', 'Mw_mt', 'Mo', 'Strike_mt', 'dip_mt', 'rake_mt', 'mrr', 'mtt',
-                     'mpp',
-                     'mrt', 'mrp', 'mtp']
+                     'mpp', 'mrt', 'mrp', 'mtp']
 
         entities = [EventLocationModel, FirstPolarityModel, MomentTensorModel]
         self.model = SQLAlchemyModel(entities, columns, col_names, self)
@@ -135,6 +168,7 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
         sortmodel = pyc.QSortFilterProxyModel()
         sortmodel.setSourceModel(self.model)
         self.tableView.setModel(sortmodel)
+        self.tableView.setColumnHidden(0, True)
         self.tableView.setSortingEnabled(True)
         self.tableView.sortByColumn(0, qt.AscendingOrder)
         self.tableView.setSelectionBehavior(pw.QAbstractItemView.SelectRows)
@@ -142,7 +176,10 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
         remove_action = pw.QAction("Remove selected location(s)", self)
         remove_action.triggered.connect(self._onRemoveRowsTriggered)
         self.tableView.addAction(remove_action)
-        self.tableView.setItemDelegateForColumn(0, DateTimeFormatDelegate('dd/MM/yyyy hh:mm:ss.zzz'))
+        watch_phase_action = pw.QAction("See current column phase info", self)
+        watch_phase_action.triggered.connect(self._onShowPhaseInfo)
+        self.tableView.addAction(watch_phase_action)
+        self.tableView.setItemDelegateForColumn(1, DateTimeFormatDelegate('dd/MM/yyyy hh:mm:ss.zzz'))
         self.tableView.resizeColumnsToContents()
         self.tableView.doubleClicked.connect(self._plot_foc_mec)
 
@@ -218,13 +255,23 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
 
         self.model.submitAll()
 
+    def _onShowPhaseInfo(self):
+        current_idx = self.tableView.currentIndex()
+        if not current_idx or not current_idx.isValid():
+            return
+        self.phase_info_inspector = PhaseInfoDialog(
+            self.tableView.model().data(self.tableView.model().index(current_idx.row(), 0)), self)
+
+        self.phase_info_inspector.show()
+
     def _checkQueryParameters(self):
         self.btnRefreshQuery.setEnabled(all(v.valid for v in self._validators))
 
     def _update_magnitudes(self, magnitudes_dict):
 
         event_model = EventLocationModel.find_by(latitude=magnitudes_dict["lats"], longitude=magnitudes_dict["longs"],
-                                                depth=magnitudes_dict["depths"], origin_time=magnitudes_dict["date_id"])
+                                                 depth=magnitudes_dict["depths"],
+                                                 origin_time=magnitudes_dict["date_id"])
         if event_model:
             event_model.mw = magnitudes_dict["mw"]
             event_model.mw_error = magnitudes_dict["mw_error"]
@@ -241,7 +288,7 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
             data["date_id"] = datetime.strptime(info.date_id, date_format)
             data["lats"] = info.lats
             data["longs"] = info.longs
-            data["depths"] = info.depths*1E3
+            data["depths"] = info.depths * 1E3
             data["mw"] = info.Mw
             data["mw_error"] = info.Mw_error
             data["ml"] = info.ML
@@ -452,7 +499,6 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
                 os.environ["CARTOPY_USER_BACKGROUNDS"] = os.path.join(ROOT_DIR, "maps")
                 self.map_widget.ax.background_img(name='ne_shaded', resolution="high")
 
-
             lon = np.array(lon)
             lat = np.array(lat)
             depth = np.array(depth) / 1000
@@ -488,7 +534,7 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
         except:
             md = MessageDialog(self)
             md.set_error_message("Couldn't extract info from the DB, please check that your database "
-                             "is loaded and is not empty")
+                                 "is loaded and is not empty")
 
     def plot_foc_mec(self, method, **kwargs):
 
@@ -581,5 +627,4 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
         if not controller.earthquake_analysis_frame:
             controller.open_earthquake_window()
 
-        controller.earthquake_analysis_frame.retrieve_event([0,1,2,3])
-
+        controller.earthquake_analysis_frame.retrieve_event([0, 1, 2, 3])
