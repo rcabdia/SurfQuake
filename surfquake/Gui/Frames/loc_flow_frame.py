@@ -166,7 +166,7 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         """
         pass
 
-    @parse_excepts(lambda self, msg: self.subprocess_feedback(msg))
+    @parse_excepts(lambda self, msg: self.subprocess_feedback(msg, False)) # When launch, metadata path need show messsage to False.
     def onChange_metadata_path(self, value):
 
         try:
@@ -256,7 +256,7 @@ class LocFlow(BaseFrame, UiLoc_Flow):
             self.progressbar.setRange(0, 0)
             def callback():          
                 self.sp.search_files(verbose=True)
-                r = self.sp
+                r = self.sp.project
                 pyc.QMetaObject.invokeMethod(self.progressbar, "accept")
                 return r
             with ThreadPoolExecutor(1) as executor:
@@ -307,7 +307,8 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         if isinstance(selected[0], str) and os.path.isfile(selected[0]):
             try:
                 self.current_project_file = selected[0]
-                self.project = MseedUtil.load_project(file = selected[0])
+                loadProject = SurfProject.load_project(selected[0])
+                self.project = loadProject.project
                 project_name = os.path.basename(selected[0])
                 md.set_info_message("Project {} loaded  ".format(project_name))
             except:
