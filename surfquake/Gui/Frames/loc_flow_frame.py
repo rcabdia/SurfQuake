@@ -2,7 +2,7 @@ import os
 import pickle
 import pandas as pd
 from obspy.geodetics import gps2dist_azimuth, kilometers2degrees
-from surfquake import ROOT_DIR, model_dir, p_dir, station, ttime, nllinput, realout, magnitudes_config, magnitudes
+from surfquake import ROOT_DIR, p_dir, station, ttime, nllinput, realout, magnitudes_config, magnitudes
 from surfquake.DataProcessing.metadata_manager import MetadataManager
 from surfquake.Exceptions.exceptions import parse_excepts
 from surfquake.Gui.Frames import BaseFrame
@@ -13,11 +13,11 @@ from surfquake.Gui.Utils.pyqt_utils import BindPyqtObject, add_save_load
 from sys import platform
 from concurrent.futures.thread import ThreadPoolExecutor
 from surfquake.Utils import obspy_utils
-from surfquake.Utils.obspy_utils import MseedUtil
+#from surfquake.Utils.obspy_utils import MseedUtil
 from surfquake.loc_flow_tools.internal.real_manager import RealManager
 from surfquake.loc_flow_tools.location_output.run_nll import NllManager
-from surfquake.loc_flow_tools.phasenet.phasenet_handler import PhasenetUtils as Util
-from surfquake.loc_flow_tools.phasenet.phasenet_handler import PhasenetISP
+#from surfquake.loc_flow_tools.phasenet.phasenet_handler import PhasenetUtils as Util
+#from surfquake.loc_flow_tools.phasenet.phasenet_handler import PhasenetISP
 from surfquake.Gui.Frames.event_location_frame import EventLocationFrame
 from surfquake.Gui.Frames.parameters import ParametersSettings
 from obspy.core.inventory.inventory import Inventory
@@ -30,6 +30,11 @@ from surfquake.maps.plot_map import plot_real_map
 from surfquake.sq_isola_tools.sq_bayesian_isola import bayesian_isola_db
 
 from surfquakecore.project.surf_project import SurfProject
+
+from surfquakecore import model_dir
+from surfquakecore.phasenet.phasenet_handler import PhasenetUtils
+from surfquakecore.phasenet.phasenet_handler import PhasenetISP
+from surfquakecore.utils.obspy_utils import MseedUtil
 
 
 pw = QtWidgets
@@ -185,9 +190,9 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         if isinstance(selected[0], str) and os.path.isfile(selected[0]):
             try:
                 self.current_project_file = selected[0]
-                self.project = MseedUtil.load_project(file = selected[0])
-                project_name = os.path.basename(selected[0])
-                md.set_info_message("Project {} loaded  ".format(project_name))
+                self.sp = SurfProject.load_project(self.current_project_file)
+                self.project = self.sp.project
+                md.set_info_message("Project {} loaded  ".format(self.current_project_file))
             except:
                 md.set_error_message("Project couldn't be loaded ")
         else:
@@ -233,14 +238,17 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         md.show()
 
 
-    def on_click_select_directory(self, bind: BindPyqtObject):
+    def _select_directory(self, bind: BindPyqtObject):
 
         if "darwin" == platform:
             dir_path = pw.QFileDialog.getExistingDirectory(self, 'Select Directory', bind.value)
         else:
             dir_path = pw.QFileDialog.getExistingDirectory(self, 'Select Directory', bind.value,
                                                            pw.QFileDialog.DontUseNativeDialog)
+        return dir_path
 
+    def on_click_select_directory(self, bind: BindPyqtObject):
+        dir_path = self._select_directory(bind)
         if dir_path:
             bind.value = dir_path
 
@@ -274,67 +282,37 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         md.show()
 
     def saveProject(self):
-
         try:
-            if "darwin" == platform:
-                path = pw.QFileDialog.getExistingDirectory(self, 'Select Directory', self.root_path_bind.value)
-            else:
-                path = pw.QFileDialog.getExistingDirectory(self, 'Select Directory', self.root_path_bind.value,
-                                                           pw.QFileDialog.DontUseNativeDialog)
-            if not path:
+            dir_path = self._select_directory(self.root_path_bind)
+            if not dir_path:
                 return
-
-            file_to_store = os.path.join(path, self.nameForm.text())
-            self.project.save_project(path_file_to_storage=file_to_store)
-            md = MessageDialog(self)
-            md.set_info_message("Project saved successfully")
-
+            dir_path = os.path.join(dir_path, self.nameForm.text())
+            if self.sp.save_project(dir_path)==True:
+                MessageDialog(self).set_info_message("Succesfully saved project")
+            else:
+                MessageDialog(self).set_error_message("Error saving project")
         except:
-
-            md = MessageDialog(self)
-            md.set_info_message("No data to save in Project")
+            MessageDialog(self).set_error_message("No data to save in Project")
 
 
-###################  RunPicker   ############
-
-
-    def load_project(self):
-        self.loaded_project = True
-        selected = pw.QFileDialog.getOpenFileName(self, "Select Project", ROOT_DIR)
-
-        md = MessageDialog(self)
-
-        if isinstance(selected[0], str) and os.path.isfile(selected[0]):
-            try:
-                self.current_project_file = selected[0]
-                loadProject = SurfProject.load_project(selected[0])
-                self.project = loadProject.project
-                project_name = os.path.basename(selected[0])
-                md.set_info_message("Project {} loaded  ".format(project_name))
-            except:
-                md.set_error_message("Project couldn't be loaded ")
-        else:
-            md.set_error_message("Project couldn't be loaded ")
-
-    ######################
 
     @AsycTime.run_async()
     def send_phasenet(self):
         print("Starting Picking")
-
-        phISP = PhasenetISP(self.project, modelpath=model_dir, amplitude=True)
+        
+        phISP = PhasenetISP(self.sp.project, amplitude=True, min_p_prob=0.30, min_s_prob=0.30)
         picks = phISP.phasenet()
-
+        picks_ = PhasenetUtils.split_picks(picks)
+        
+        PhasenetUtils.convert2real(picks_, self.__pick_output_path)
+        PhasenetUtils.save_original_picks(picks_, self.__pick_output_path)
         """ PHASENET OUTPUT TO REAL INPUT"""
-
-        picks_ = Util.split_picks(picks)
-        Util.save_original_picks(picks_)
-        Util.convert2real(picks_)
         pyc.QMetaObject.invokeMethod(self.progress_dialog, 'accept', Qt.Qt.QueuedConnection)
+        
 
     def run_phasenet(self):
 
-        if self.project is None:
+        if self.sp.project is None:
             md = MessageDialog(self)
             md.set_error_message("Metadata run Picking, Please load a project first")
         else:
