@@ -11,8 +11,8 @@ SQLAlchemy~=2.0.23
 Pillow~=10.1.0
 pandas~=2.1.4
 numpy~=1.26.2
-surfquakecore~=0.0.1
 scipy~=1.11.4
 future~=0.18.3
 tensorflow~=2.15.0
 pyproj~=3.6.1
+PyWavelets
