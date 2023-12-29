@@ -28,7 +28,7 @@ class BaseFrame(pw.QMainWindow, metaclass=SettingsLoader):
 
     # Press esc key event
     def keyPressEvent(self, e):
-        if e.key() == qt.Key_Escape:
+        if e.key() == qt.Qt.Key_Escape:
             self.close()
 
     def closeEvent(self, ce):

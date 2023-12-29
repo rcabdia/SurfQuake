@@ -1,5 +1,5 @@
 pyqt5~=5.15.10
-requirements_dev.txt
+#requirements_dev.txt
 setuptools~=65.5.1
 PyYAML~=6.0.1
 obspy~=1.4.0

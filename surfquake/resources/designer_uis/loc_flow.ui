@@ -67,6 +67,57 @@
            <string>Create Full Project</string>
           </property>
           <layout class="QGridLayout" name="gridLayout">
+           <item row="2" column="2">
+            <widget class="QDateTimeEdit" name="startProj">
+             <property name="displayFormat">
+              <string>dd/MM/yyyy HH:mm:ss</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="8">
+            <widget class="QLineEdit" name="lineEdit_3"/>
+           </item>
+           <item row="2" column="7">
+            <widget class="QLineEdit" name="lineEdit_2"/>
+           </item>
+           <item row="2" column="5">
+            <widget class="QCheckBox" name="checkBox_2">
+             <property name="text">
+              <string>Filter Keys</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="4">
+            <widget class="QDateTimeEdit" name="dateTimeEdit">
+             <property name="displayFormat">
+              <string>dd/MM/yyyy HH:mm:ss</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="3">
+            <widget class="QLabel" name="label_46">
+             <property name="text">
+              <string>end</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLabel" name="label_45">
+             <property name="text">
+              <string>start</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QCheckBox" name="checkBox">
+             <property name="text">
+              <string>Filter Time Spam</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="6">
+            <widget class="QLineEdit" name="lineEdit"/>
+           </item>
            <item row="0" column="0">
             <widget class="QPushButton" name="pathFilesBtn">
              <property name="toolTip">
@@ -77,10 +128,28 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="1">
-            <widget class="QLineEdit" name="rootPathForm"/>
+           <item row="1" column="6" alignment="Qt::AlignHCenter">
+            <widget class="QLabel" name="label_48">
+             <property name="text">
+              <string>Nets</string>
+             </property>
+            </widget>
            </item>
-           <item row="0" column="2">
+           <item row="1" column="7" alignment="Qt::AlignHCenter">
+            <widget class="QLabel" name="label_49">
+             <property name="text">
+              <string>Stations</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="8" alignment="Qt::AlignHCenter">
+            <widget class="QLabel" name="label_50">
+             <property name="text">
+              <string>Channels</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="8">
             <widget class="QPushButton" name="openProjectBtn">
              <property name="toolTip">
               <string>Create project using all files (might be filtered with the settings of Eartuqake analysis)</string>
@@ -89,6 +158,9 @@
               <string>Create Project</string>
              </property>
             </widget>
+           </item>
+           <item row="0" column="1" colspan="7">
+            <widget class="QLineEdit" name="rootPathForm"/>
            </item>
           </layout>
          </widget>
