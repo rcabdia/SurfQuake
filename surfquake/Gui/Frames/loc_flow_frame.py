@@ -1,8 +1,9 @@
 import os
-import pickle
 import pandas as pd
-from obspy.geodetics import gps2dist_azimuth, kilometers2degrees
-from surfquake import ROOT_DIR, p_dir, station, ttime, nllinput, realout, magnitudes_config, magnitudes
+from surfquakecore.real.real_core import RealCore
+from surfquakecore.real.structures import RealConfig, GeographicFrame, GridSearch, TravelTimeGridSearch, ThresholdPicks
+from surfquake import ROOT_DIR, p_dir, nllinput, magnitudes_config, magnitudes, \
+    real_working_dir, real_output_data
 from surfquake.DataProcessing.metadata_manager import MetadataManager
 from surfquake.Exceptions.exceptions import parse_excepts
 from surfquake.Gui.Frames import BaseFrame
@@ -14,28 +15,25 @@ from sys import platform
 from concurrent.futures.thread import ThreadPoolExecutor
 from surfquake.Utils import obspy_utils
 #from surfquake.Utils.obspy_utils import MseedUtil
-from surfquake.loc_flow_tools.internal.real_manager import RealManager
+#from surfquake.loc_flow_tools.internal.real_manager import RealManager
 from surfquake.loc_flow_tools.location_output.run_nll import NllManager
 #from surfquake.loc_flow_tools.phasenet.phasenet_handler import PhasenetUtils as Util
 #from surfquake.loc_flow_tools.phasenet.phasenet_handler import PhasenetISP
 from surfquake.Gui.Frames.event_location_frame import EventLocationFrame
 from surfquake.Gui.Frames.parameters import ParametersSettings
 from obspy.core.inventory.inventory import Inventory
-from surfquake.loc_flow_tools.tt_db.taup_tt import create_tt_db
+#from surfquake.loc_flow_tools.tt_db.taup_tt import create_tt_db
 import numpy as np
-from surfquake.loc_flow_tools.utils import ConversionUtils
+#from surfquake.loc_flow_tools.utils import ConversionUtils
 from surfquake.Utils.time_utils import AsycTime
 from surfquake.magnitude_tools.autoag import Automag
 from surfquake.maps.plot_map import plot_real_map
 from surfquake.sq_isola_tools.sq_bayesian_isola import bayesian_isola_db
-
 from surfquakecore.project.surf_project import SurfProject
-
-from surfquakecore import model_dir
+#from surfquakecore import model_dir
 from surfquakecore.phasenet.phasenet_handler import PhasenetUtils
 from surfquakecore.phasenet.phasenet_handler import PhasenetISP
 from surfquakecore.utils.obspy_utils import MseedUtil
-
 
 pw = QtWidgets
 pqg = QtGui
@@ -295,7 +293,6 @@ class LocFlow(BaseFrame, UiLoc_Flow):
             MessageDialog(self).set_error_message("No data to save in Project")
 
 
-
     @AsycTime.run_async()
     def send_phasenet(self):
         print("Starting Picking")
@@ -321,7 +318,6 @@ class LocFlow(BaseFrame, UiLoc_Flow):
             md = MessageDialog(self)
             md.set_info_message("Picking Done")
 
-
     def plot_real_grid(self):
         print("Work in progress")
         lon_min = self.lon_refMin.value()
@@ -346,103 +342,50 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         network = obspy_utils.ObspyUtil.stationsCoodsFromMeta(self.inventory)
         plot_real_map(network, earthquakes=True, area=area)
 
-
-    def get_real_grid(self):
-
-        lon_min = self.lon_refMin.value()
-        lon_max = self.lon_refMaxSB.value()
-        lat_max = self.lat_refMaxSB.value()
-        lat_min = self.lat_refMinSB.value()
-        self.latitude_center = (lat_min + lat_max) / 2
-        self.longitude_center = (lon_min + lon_max) / 2
-        distance, az1, az2 = gps2dist_azimuth(self.latitude_center, self.longitude_center, lat_max, lon_max)
-        self.h_range = kilometers2degrees(distance*0.001)
-        # TODO A MAP with All available stations and the Grid
-        #self.gridSearchParamHorizontalRangeBtn.setValue(self.h_range)
-
-    def __get_lat_mean(self):
-
-        lat_max = self.lat_refMaxSB.value()
-        lat_min = self.lat_refMinSB.value()
-        latitude_center = (lat_min + lat_max) / 2
-        return latitude_center
-
-    @AsycTime.run_async()
-    def send_real(self):
-
-        obspy_utils.ObspyUtil.realStation(self.inventory, station)
-        # create travel times
-        tt_db = create_tt_db()
-        self.get_real_grid()
-        tt_db.run_tt_db(dist=self.h_range, depth=self.depthSB.value(), ddist=0.01, ddep=1)
-        ### grid ###
-        gridSearchParamHorizontalRange = self.gridSearchParamHorizontalRangeBtn.value()
-        HorizontalGridSize = self.HorizontalGridSizeBtn.value()
-        DepthSearchParamHorizontalRange = self.DepthSearchParamHorizontalRangeBtn.value()
-        DepthGridSize = self.DepthGridSizeBtn.value()
-        EventTimeW = self.EventTimeWindow.value()
-
-        ### travel_time ###
-        TTHorizontalRange = self.TTHorizontalRangeBtn.value()
-        TTHorizontalGridSize = self.TTHorizontalGridSizeBtn.value()
-        TTDepthGridSize = self.TTDepthGridSizeBtn.value()
-        TTDepthRange = self.TTDepthRangeBtn.value()
-
-        # Picks Thresholds
-        ThresholdPwave = self.ThresholdPwaveSB.value()
-        ThresholdSwave = self.ThresholdSwaveSB.value()
-        number_stations_picks = self.number_stations_picksSB.value()
-
-        real_handler = RealManager(pick_dir=p_dir, station_file=station, time_travel_table_file=ttime,
-                                   gridSearchParamHorizontalRange=gridSearchParamHorizontalRange,
-                                   HorizontalGridSize=HorizontalGridSize,
-                                   DepthSearchParamHorizontalRange=DepthSearchParamHorizontalRange,
-                                   DepthGridSize=DepthGridSize,
-                                   EventTimeW=EventTimeW, TTHorizontalRange=TTHorizontalRange,
-                                   TTHorizontalGridSize=TTHorizontalGridSize,
-                                   TTDepthGridSize=TTDepthGridSize, TTDepthRange=TTDepthRange,
-                                   ThresholdPwave=ThresholdPwave,
-                                   ThresholdSwave=ThresholdSwave, number_stations_picks=number_stations_picks)
-
-        real_handler.latitude_center = self.__get_lat_mean()
-        print(real_handler.stations)
-
-        ### Real Parameters ####
-
-        for events_info in real_handler:
-            print(events_info)
-            print(events_info.events_date)
-
-        real_handler.save()
-        real_handler.compute_t_dist()
-        ConversionUtils.real2nll(realout, nllinput)
-        pyc.QMetaObject.invokeMethod(self.progress_dialog, 'accept', Qt.Qt.QueuedConnection)
-
     def run_real(self):
 
         """ REAL """
-
-        # create stations file
-        #if isinstance(self.inventory, Inventory):
         if self.inventory is None:
             md = MessageDialog(self)
             md.set_error_message("Metadata couldn't be loaded")
         else:
-
             self.send_real()
             self.progress_dialog.exec()
             md = MessageDialog(self)
             md.set_info_message("Association Done")
 
-    # def on_click_select_metadata_file(self):
-    #     selected = pw.QFileDialog.getOpenFileName(self, "Select metadata/stations coordinates file")
-    #     if isinstance(selected[0], str) and os.path.isfile(selected[0]):
-    #         self.stationsPath.setText(selected[0])
-    #         self.set_dataless_dir(self.stationsPath.text())
+    @AsycTime.run_async()
+    def send_real(self):
 
-    #def set_dataless_dir(self, dir_path):
-    #    self.__dataless_dir = dir_path
-    #    self.nll_manager.set_dataless_dir(dir_path)
+        real_config = RealConfig(
+            geographic_frame=GeographicFrame(
+                lat_ref_max=self.lat_refMaxSB.value(),
+                lon_ref_max=self.lon_refMaxSB.value(),
+                lat_ref_min=self.lat_refMinSB.value(),
+                lon_ref_min=self.lon_refMin.value(),
+                depth=self.depthSB.value()
+            ),
+            grid_search_parameters=GridSearch(
+                horizontal_search_range=self.gridSearchParamHorizontalRangeBtn.value(),
+                depth_search_range=self.DepthSearchParamHorizontalRangeBtn.value(),
+                event_time_window=self.EventTimeWindow.value(),
+                horizontal_search_grid_size=self.HorizontalGridSizeBtn.value(),
+                depth_search_grid_size=self.DepthGridSizeBtn.value()),
+            travel_time_grid_search=TravelTimeGridSearch(
+                horizontal_range=self.TTHorizontalRangeBtn.value(),
+                depth_range=self.TTDepthRangeBtn.value(),
+                depth_grid_resolution_size=self.TTDepthGridSizeBtn.value(),
+                horizontal_grid_resolution_size=self.TTHorizontalGridSizeBtn.value()),
+            threshold_picks=ThresholdPicks(
+                min_num_p_wave_picks=self.ThresholdPwaveSB.value(),
+                min_num_s_wave_picks=self.ThresholdSwaveSB.value(),
+                num_stations_recorded=self.number_stations_picksSB.value())
+        )
+
+        rc = RealCore(self.metadata_path_bind.value, real_config, p_dir, real_working_dir, real_output_data)
+        rc.run_real()
+        print("End of Events AssociationProcess, please see for results: ", real_output_data)
+        pyc.QMetaObject.invokeMethod(self.progress_dialog, 'accept', Qt.Qt.QueuedConnection)
 
     @property
     def nll_manager(self):
