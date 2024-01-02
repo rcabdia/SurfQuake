@@ -406,11 +406,12 @@ class LocFlow(BaseFrame, UiLoc_Flow):
             s_wave_type = True
 
         if self.loc_modelCB.currentText() == "1D":
-            path_model1D = self.picks_path_bind.value
+            path_model1D = self.model_path_bind.value
             path_model3D = "NONE"
         else:
             path_model1D = "NONE"
             path_model3D = self.picks_path_bind.value
+
 
         nllconfig = NLLConfig(
             grid_configuration=GridConfiguration(
@@ -424,18 +425,18 @@ class LocFlow(BaseFrame, UiLoc_Flow):
                 dy=self.grid_dysize_bind.value,
                 dz=self.grid_dzsize_bind.value,
                 geo_transformation=self.transCB.currentText(),
-                grid_type=self.comboBox_gridtype.currentText(),
+                grid_type=self.gridtype.currentText(),
                 path_to_1d_model=path_model1D,
                 path_to_3d_model=path_model3D,
                 path_to_picks=self.picks_path_bind.value,
                 p_wave_type=p_wave_type,
                 s_wave_type=s_wave_type,
-                model=self.modelCB.currentText()),
+                model=self.loc_modelCB.currentText()),
             travel_times_configuration=TravelTimesConfiguration(
                 distance_limit=self.distanceSB.value(),
                 grid=self.grid_typeCB.currentText()[4:6]),
             location_parameters=LocationParameters(
-                search=self.loc_searchCB.value(),
+                search=self.loc_searchCB.currentText(),
                 method=self.loc_methodCB.currentText()))
 
         return nllconfig
