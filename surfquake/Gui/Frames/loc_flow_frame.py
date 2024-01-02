@@ -58,8 +58,8 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         self.project = None
         self.parameters = ParametersSettings()
         ####### Metadata ##########
-        self.metadata_path_bind = BindPyqtObject(self.datalessPathForm, self.onChange_metadata_path)
-        self.loadMetaBtn.clicked.connect(lambda: self.on_click_select_file(self.metadata_path_bind))
+        self.metadata_path_bind = BindPyqtObject(self.datalessPathForm)
+        self.setMetaBtn.clicked.connect(lambda: self.on_click_select_file(self.metadata_path_bind))
 
         ####### Project ###########
 
@@ -87,10 +87,12 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         self.grid_dxsize_bind = BindPyqtObject(self.dxsizeSB)
         self.grid_dysize_bind = BindPyqtObject(self.dysizeSB)
         self.grid_dzsize_bind = BindPyqtObject(self.dzsizeSB)
+        self.loc_work_bind = BindPyqtObject(self.loc_workLE)
+        self.loc_work_dirBtn.clicked.connect(lambda: self.on_click_select_directory(self.loc_work_bind))
         self.model_path_bind = BindPyqtObject(self.modelLE, self.onChange_root_path)
         self.modelPathBtn.clicked.connect(lambda: self.on_click_select_directory(self.model_path_bind))
         self.picks_path_bind = BindPyqtObject(self.picksLE, self.onChange_root_path)
-        self.picksBtn.clicked.connect(lambda: self.on_click_select_directory(self.picks_path_bind))
+        self.picksBtn.clicked.connect(lambda: self.on_click_select_file(self.picks_path_bind))
         self.genvelBtn.clicked.connect(lambda: self.on_click_run_vel_to_grid())
         self.grdtimeBtn.clicked.connect(lambda: self.on_click_run_grid_to_time())
         self.runlocBtn.clicked.connect(lambda: self.on_click_run_loc())
@@ -99,7 +101,6 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         self.actionData_Base.triggered.connect(lambda: self.open_data_base())
 
         # Magnitude
-
         self.mag_runBtn.clicked.connect(lambda: self.run_automag())
 
         # MTI

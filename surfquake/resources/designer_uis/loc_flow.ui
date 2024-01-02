@@ -208,12 +208,12 @@
           </property>
           <layout class="QGridLayout" name="gridLayout_8">
            <item row="0" column="0">
-            <widget class="QPushButton" name="loadMetaBtn">
+            <widget class="QPushButton" name="setMetaBtn">
              <property name="toolTip">
               <string>Save the Project either created from Individual files or Full Project</string>
              </property>
              <property name="text">
-              <string>Load Metadata</string>
+              <string>Set Metadata Path</string>
              </property>
             </widget>
            </item>
@@ -226,6 +226,13 @@
            </item>
            <item row="0" column="2">
             <widget class="QLineEdit" name="datalessPathForm"/>
+           </item>
+           <item row="0" column="3">
+            <widget class="QPushButton" name="load_metadataBtn">
+             <property name="text">
+              <string>Load Metadata</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -677,7 +684,7 @@
               <enum>QLayout::SetDefaultConstraint</enum>
              </property>
              <item row="0" column="1">
-              <widget class="QLineEdit" name="lineEdit_4">
+              <widget class="QLineEdit" name="loc_workLE">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -687,7 +694,7 @@
               </widget>
              </item>
              <item row="0" column="0">
-              <widget class="QPushButton" name="pushButton">
+              <widget class="QPushButton" name="loc_work_dirBtn">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -695,7 +702,7 @@
                 </sizepolicy>
                </property>
                <property name="text">
-                <string>Output Directory</string>
+                <string>Work / Output Directory</string>
                </property>
               </widget>
              </item>
@@ -733,7 +740,7 @@
              <property name="title">
               <string>Grid Configuration</string>
              </property>
-             <layout class="QGridLayout" name="gridLayout_12" rowstretch="0,0,0,0,0,0,0,0,0">
+             <layout class="QGridLayout" name="gridLayout_12" rowstretch="0,0,0,0,0,0,0,0">
               <item row="7" column="7">
                <widget class="QPushButton" name="genvelBtn">
                 <property name="sizePolicy">
