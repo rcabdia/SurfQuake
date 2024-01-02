@@ -124,19 +124,19 @@ surfquake/Utils/__pycache__/
 surfquake/loc_flow_tools/__pycache__/
 # ignore files inside folders
 surfquake/sq_isola_tools/examples_read
-surfquake/loc_flow_tools/location_output/loc/*last
-surfquake/loc_flow_tools/location_output/loc/*location
+surfquake/loc_flow_tools/location_aux/loc/*last
+surfquake/loc_flow_tools/location_aux/loc/*location
 
-surfquake/loc_flow_tools/location_output/all_locations
-surfquake/loc_flow_tools/location_output/loc
-surfquake/loc_flow_tools/location_output/model/*hdr
-surfquake/loc_flow_tools/location_output/model/*buf
+surfquake/loc_flow_tools/location_aux/all_locations
+surfquake/loc_flow_tools/location_aux/loc
+surfquake/loc_flow_tools/location_aux/model/*hdr
+surfquake/loc_flow_tools/location_aux/model/*buf
 
-surfquake/loc_flow_tools/location_output/model3D/*hdr
-surfquake/loc_flow_tools/location_output/model3D/*buf
+surfquake/loc_flow_tools/location_aux/model3D/*hdr
+surfquake/loc_flow_tools/location_aux/model3D/*buf
 
-surfquake/loc_flow_tools/location_output/stations/stations.txt
-surfquake/loc_flow_tools/location_output/obs/nll_input.txt
+surfquake/loc_flow_tools/location_aux/stations/stations.txt
+surfquake/loc_flow_tools/location_aux/obs/nll_input.txt
 
-surfquake/loc_flow_tools/location_output/time/*hdr
-surfquake/loc_flow_tools/location_output/time/*buf
+surfquake/loc_flow_tools/location_aux/time/*hdr
+surfquake/loc_flow_tools/location_aux/time/*buf

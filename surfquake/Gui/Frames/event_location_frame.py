@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 from surfquake.Utils import ObspyUtil
 from obspy.core.event import Origin
 from obspy.imaging.beachball import beach
-from surfquake import location_output, MOMENT_TENSOR_OUTPUT, ROOT_DIR, magnitudes
+from surfquake import ROOT_DIR, magnitudes
 from surfquake.sq_isola_tools import read_log
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 from PIL import Image
@@ -346,78 +346,78 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
         self._showAll()
         self.refreshLimits()
 
-    def _readLastLocation(self):
-        # Insert event location or get if it already exists
-        hyp_path = os.path.join(location_output, 'last.hyp')
-        try:
-            event = self._readHypFile(hyp_path)
-        except Exception as e:
-            pw.QMessageBox.warning(self, self.windowTitle(), f'An error ocurred reading hyp file: {e}')
-            return
-
-        # TODO INCLUDES PICKING INFO
-        # TODO INCLUDES JSON WITH WAVEFORMS
-
-        # Update magnitude data
-        mag_file = os.path.join(location_output, 'magnitudes_output.mag')
-        if os.path.isfile(mag_file):
-            with open(mag_file) as f:
-                next(f)
-                mag_dict = {}
-                for line in f:
-                    key, value = line.split()
-                    key = key.lower().replace('std', 'error')
-                    try:
-                        value = float(value)
-                        mag_dict[key] = value
-                    except ValueError:
-                        pass
-                event.set_magnitudes(mag_dict)
-                event.save()
-
-        # Update first polarity data
-        # TODO: this could be improved by updating instead of removing the
-        # existing one
-        fp = FirstPolarityModel.find_by(event_info_id=event.id)
-        if fp:
-            fp.delete()
-
-        fp_file = os.path.join(location_output, 'first_polarity.fp')
-        if os.path.isfile(fp_file):
-            with open(fp_file) as f:
-                next(f)
-                fp_dict = {}
-                fp_fields = {'Strike': 'strike_fp', 'Dip': 'dip_fp',
-                             'Rake': 'rake_fp', 'misfit_first_polarity': 'misfit_fp',
-                             'azimuthal_gap': 'azimuthal_fp_Gap',
-                             'number_of_polarities': 'station_fp_polarities_count'}
-                for line in f:
-                    key, value = line.split()
-                    try:
-                        key = fp_fields[key]
-                        value = float(value)
-                        fp_dict[key] = value
-                    except (ValueError, KeyError):
-                        pass
-                fp_dict['event_info_id'] = event.id
-                fp_dict['id'] = generate_id(16)
-                fp = FirstPolarityModel.from_dict(fp_dict)
-                fp.save()
-
-        mti = MomentTensorModel.find_by(event_info_id=event.id)
-        if mti:
-            mti.delete()
-
-        mti_file = os.path.join(MOMENT_TENSOR_OUTPUT, 'log.txt')
-        if os.path.isfile(mti_file):
-            mti_dict = read_log(mti_file)
-            mti_dict['event_info_id'] = event.id
-            mti_dict['id'] = generate_id(16)
-            mti = MomentTensorModel.from_dict(mti_dict)
-            mti.save()
-
-        self._showAll()
-        self.refreshLimits()
+    # def _readLastLocation(self):
+    #     # Insert event location or get if it already exists
+    #     hyp_path = os.path.join(location_output, 'last.hyp')
+    #     try:
+    #         event = self._readHypFile(hyp_path)
+    #     except Exception as e:
+    #         pw.QMessageBox.warning(self, self.windowTitle(), f'An error ocurred reading hyp file: {e}')
+    #         return
+    #
+    #     # TODO INCLUDES PICKING INFO
+    #     # TODO INCLUDES JSON WITH WAVEFORMS
+    #
+    #     # Update magnitude data
+    #     mag_file = os.path.join(location_output, 'magnitudes_output.mag')
+    #     if os.path.isfile(mag_file):
+    #         with open(mag_file) as f:
+    #             next(f)
+    #             mag_dict = {}
+    #             for line in f:
+    #                 key, value = line.split()
+    #                 key = key.lower().replace('std', 'error')
+    #                 try:
+    #                     value = float(value)
+    #                     mag_dict[key] = value
+    #                 except ValueError:
+    #                     pass
+    #             event.set_magnitudes(mag_dict)
+    #             event.save()
+    #
+    #     # Update first polarity data
+    #     # TODO: this could be improved by updating instead of removing the
+    #     # existing one
+    #     fp = FirstPolarityModel.find_by(event_info_id=event.id)
+    #     if fp:
+    #         fp.delete()
+    #
+    #     fp_file = os.path.join(location_output, 'first_polarity.fp')
+    #     if os.path.isfile(fp_file):
+    #         with open(fp_file) as f:
+    #             next(f)
+    #             fp_dict = {}
+    #             fp_fields = {'Strike': 'strike_fp', 'Dip': 'dip_fp',
+    #                          'Rake': 'rake_fp', 'misfit_first_polarity': 'misfit_fp',
+    #                          'azimuthal_gap': 'azimuthal_fp_Gap',
+    #                          'number_of_polarities': 'station_fp_polarities_count'}
+    #             for line in f:
+    #                 key, value = line.split()
+    #                 try:
+    #                     key = fp_fields[key]
+    #                     value = float(value)
+    #                     fp_dict[key] = value
+    #                 except (ValueError, KeyError):
+    #                     pass
+    #             fp_dict['event_info_id'] = event.id
+    #             fp_dict['id'] = generate_id(16)
+    #             fp = FirstPolarityModel.from_dict(fp_dict)
+    #             fp.save()
+    #
+    #     mti = MomentTensorModel.find_by(event_info_id=event.id)
+    #     if mti:
+    #         mti.delete()
+    #
+    #     mti_file = os.path.join(MOMENT_TENSOR_OUTPUT, 'log.txt')
+    #     if os.path.isfile(mti_file):
+    #         mti_dict = read_log(mti_file)
+    #         mti_dict['event_info_id'] = event.id
+    #         mti_dict['id'] = generate_id(16)
+    #         mti = MomentTensorModel.from_dict(mti_dict)
+    #         mti.save()
+    #
+    #     self._showAll()
+    #     self.refreshLimits()
 
     def _refreshQuery(self):
         lat = EventLocationModel.latitude.between(self.minLat.value(), self.maxLat.value())

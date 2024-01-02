@@ -4,10 +4,10 @@ import warnings
 warnings.filterwarnings("ignore")
 event_file = ""
 cat = read_nll_performance.read_nlloc_hyp_ISP("/Users/roberto/Documents/SurfQuake/surfquake/loc_flow_tools/"
-                                              "location_output/loc/last.hyp")
+                                              "location_aux/loc/last.hyp")
 
 # Origin = read_nll_performance.read_nlloc_hyp_ISP('/Users/roberto/Documents/SurfQuake/surfquake/loc_flow_tools/'
-#                                               'location_output/loc/last.hyp')
+#                                               'location_aux/loc/last.hyp')
 # picks = Origin.events[0].picks
 
 focal_parameters = [cat[0].origins[0]["time"], cat[0].origins[0]["latitude"],

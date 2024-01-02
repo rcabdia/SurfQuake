@@ -1,5 +1,7 @@
 import os
 import pandas as pd
+from surfquakecore.earthquake_location.structures import NLLConfig, GridConfiguration, TravelTimesConfiguration, \
+    LocationParameters
 from surfquakecore.real.real_core import RealCore
 from surfquakecore.real.structures import RealConfig, GeographicFrame, GridSearch, TravelTimeGridSearch, ThresholdPicks
 from surfquake import ROOT_DIR, p_dir, nllinput, magnitudes_config, magnitudes, \
@@ -16,7 +18,7 @@ from concurrent.futures.thread import ThreadPoolExecutor
 from surfquake.Utils import obspy_utils
 #from surfquake.Utils.obspy_utils import MseedUtil
 #from surfquake.loc_flow_tools.internal.real_manager import RealManager
-from surfquake.loc_flow_tools.location_output.run_nll import NllManager
+#from surfquake.loc_flow_tools.location_output.run_nll import NllManager
 #from surfquake.loc_flow_tools.phasenet.phasenet_handler import PhasenetUtils as Util
 #from surfquake.loc_flow_tools.phasenet.phasenet_handler import PhasenetISP
 from surfquake.Gui.Frames.event_location_frame import EventLocationFrame
@@ -85,6 +87,10 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         self.grid_dxsize_bind = BindPyqtObject(self.dxsizeSB)
         self.grid_dysize_bind = BindPyqtObject(self.dysizeSB)
         self.grid_dzsize_bind = BindPyqtObject(self.dzsizeSB)
+        self.model_path_bind = BindPyqtObject(self.modelLE, self.onChange_root_path)
+        self.modelPathBtn.clicked.connect(lambda: self.on_click_select_directory(self.model_path_bind))
+        self.picks_path_bind = BindPyqtObject(self.picksLE, self.onChange_root_path)
+        self.picksBtn.clicked.connect(lambda: self.on_click_select_directory(self.picks_path_bind))
         self.genvelBtn.clicked.connect(lambda: self.on_click_run_vel_to_grid())
         self.grdtimeBtn.clicked.connect(lambda: self.on_click_run_grid_to_time())
         self.runlocBtn.clicked.connect(lambda: self.on_click_run_loc())
@@ -387,44 +393,100 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         print("End of Events AssociationProcess, please see for results: ", real_output_data)
         pyc.QMetaObject.invokeMethod(self.progress_dialog, 'accept', Qt.Qt.QueuedConnection)
 
-    @property
-    def nll_manager(self):
-        if not self.__nll_manager:
-            self.__nll_manager = NllManager(self.__pick_output_path, self.__dataless_dir)
-        return self.__nll_manager
 
-    def set_dataless_dir(self):
-        self.nll_manager.set_dataless(self.metadata_path_bind.value)
-    @parse_excepts(lambda self, msg: self.subprocess_feedback(msg))
-    def on_click_run_vel_to_grid(self):
-        self.nll_manager.vel_to_grid(self.grid_latitude_bind.value, self.grid_longitude_bind.value,
-                                     self.grid_depth_bind.value, self.grid_xnode_bind.value,
-                                     self.grid_ynode_bind.value, self.grid_znode_bind.value,
-                                     self.grid_dxsize_bind.value, self.grid_dysize_bind.value,
-                                     self.grid_dzsize_bind.value, self.comboBox_gridtype.currentText(),
-                                     self.comboBox_wavetype.currentText(), self.modelCB.currentText())
+    def get_nll_config(self):
 
-
-    @parse_excepts(lambda self, msg: self.subprocess_feedback(msg))
-    def on_click_run_grid_to_time(self):
-
-
-        if self.distanceSB.value()>0:
-            limit = self.distanceSB.value()
+        #if self.modelCB.currentText() == "1D":
+        if self.loc_wavetypeCB.currentText() == "P & S":
+            p_wave_type = True
+            s_wave_type = True
         else:
-            limit = np.sqrt((self.grid_xnode_bind.value * self.grid_dxsize_bind.value) ** 2 +
-                            (self.grid_xnode_bind.value * self.grid_dxsize_bind.value) ** 2)
+            p_wave_type = True
+            s_wave_type = True
 
-        self.nll_manager.grid_to_time(self.grid_latitude_bind.value, self.grid_longitude_bind.value,
-                                      self.grid_depth_bind.value, self.comboBox_grid.currentText(),
-                                      self.comboBox_angles.currentText(), self.comboBox_ttwave.currentText(), limit)
+        if self.loc_modelCB.currentText() == "1D":
+            path_model1D = self.picks_path_bind.value
+            path_model3D = "NONE"
+        else:
+            path_model1D = "NONE"
+            path_model3D = self.picks_path_bind.value
 
-    @parse_excepts(lambda self, msg: self.subprocess_feedback(msg, set_default_complete=False))
-    def on_click_run_loc(self):
-        transform = self.transCB.currentText()
-        std_out = self.nll_manager.run_nlloc(self.grid_latitude_bind.value, self.grid_longitude_bind.value,
-                                             self.grid_depth_bind.value, transform)
-        self.info_message("Location complete. Check details.", std_out)
+        nllconfig = NLLConfig(
+            grid_configuration=GridConfiguration(
+                latitude=self.grid_latitude_bind.value,
+                longitude=self.grid_longitude_bind.value,
+                depth=self.grid_depth_bind.value,
+                x=self.grid_xnode_bind.value,
+                y=self.grid_ynode_bind.value,
+                z=self.grid_znode_bind.value,
+                dx=self.grid_dxsize_bind.value,
+                dy=self.grid_dysize_bind.value,
+                dz=self.grid_dzsize_bind.value,
+                geo_transformation=self.transCB.currentText(),
+                grid_type=self.comboBox_gridtype.currentText(),
+                path_to_1d_model=path_model1D,
+                path_to_3d_model=path_model3D,
+                path_to_picks=self.picks_path_bind.value,
+                p_wave_type=p_wave_type,
+                s_wave_type=s_wave_type,
+                model=self.modelCB.currentText()),
+            travel_times_configuration=TravelTimesConfiguration(
+                distance_limit=self.distanceSB.value(),
+                grid=self.grid_typeCB.currentText()[4:6]),
+            location_parameters=LocationParameters(
+                search=self.loc_searchCB.value(),
+                method=self.loc_methodCB.currentText()))
+
+    # @property
+    # def nll_manager(self):
+    #     if not self.__nll_manager:
+    #         self.__nll_manager = NllManager(self.__pick_output_path, self.__dataless_dir)
+    #     return self.__nll_manager
+    #
+    # def set_dataless_dir(self):
+    #     self.nll_manager.set_dataless(self.metadata_path_bind.value)
+
+
+    # @parse_excepts(lambda self, msg: self.subprocess_feedback(msg))
+    # def on_click_run_vel_to_grid(self):
+    #     self.nll_manager.vel_to_grid(self.grid_latitude_bind.value, self.grid_longitude_bind.value,
+    #                                  self.grid_depth_bind.value, self.grid_xnode_bind.value,
+    #                                  self.grid_ynode_bind.value, self.grid_znode_bind.value,
+    #                                  self.grid_dxsize_bind.value, self.grid_dysize_bind.value,
+    #                                  self.grid_dzsize_bind.value, self.comboBox_gridtype.currentText(),
+    #                                  self.comboBox_wavetype.currentText(), self.modelCB.currentText())
+
+    # @parse_excepts(lambda self, msg: self.subprocess_feedback(msg))
+    # def on_click_run_vel_to_grid(self):
+    #
+    #     nll_manager = NllManager(path_to_configfiles, self.metadata_path_bind.value, working_directory)
+    #     nll_manager.vel_to_grid()
+
+
+    # @parse_excepts(lambda self, msg: self.subprocess_feedback(msg))
+    # def on_click_run_grid_to_time(self):
+    #
+    #
+    #     if self.distanceSB.value()>0:
+    #         limit = self.distanceSB.value()
+    #     else:
+    #         limit = np.sqrt((self.grid_xnode_bind.value * self.grid_dxsize_bind.value) ** 2 +
+    #                         (self.grid_xnode_bind.value * self.grid_dxsize_bind.value) ** 2)
+    #
+    #     self.nll_manager.grid_to_time(self.grid_latitude_bind.value, self.grid_longitude_bind.value,
+    #                                   self.grid_depth_bind.value, self.comboBox_grid.currentText(),
+    #                                   self.comboBox_angles.currentText(), self.comboBox_ttwave.currentText(), limit)
+
+    # @parse_excepts(lambda self, msg: self.subprocess_feedback(msg, set_default_complete=False))
+    # def on_click_run_loc(self):
+    #     transform = self.transCB.currentText()
+    #     std_out = self.nll_manager.run_nlloc(self.grid_latitude_bind.value, self.grid_longitude_bind.value,
+    #                                          self.grid_depth_bind.value, transform)
+    #     self.info_message("Location complete. Check details.", std_out)
+
+    # @parse_excepts(lambda self, msg: self.subprocess_feedback(msg, set_default_complete=False))
+    # def on_click_run_loc(self):
+
 
 
     ####### Automag ########

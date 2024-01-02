@@ -7,7 +7,6 @@ from matplotlib.patheffects import Stroke
 import cartopy.feature as cfeature
 import shapely.geometry as sgeom
 from matplotlib import pyplot as plt
-from surfquake import realout
 from surfquake.loc_flow_tools.utils import ConversionUtils
 import matplotlib
 
@@ -52,10 +51,10 @@ def plot_real_map(networks, earthquakes=False, **kwargs):
     text_transform = offset_copy(geodetic_transform, units='dots', x=-25)
     ax.scatter(all_lon, all_lat, s=12, marker="^", color='green', alpha=0.7, transform=ccrs.PlateCarree())
 
-    if earthquakes:
-        catalog = ConversionUtils.previewCatalog(realout)
-        ax.scatter(catalog["longs"], catalog["lats"], s=12, marker="o", color='red', alpha= 0.75, transform=ccrs.PlateCarree())
-
+    # if earthquakes:
+    #     catalog = ConversionUtils.previewCatalog(realout)
+    #     ax.scatter(catalog["longs"], catalog["lats"], s=12, marker="o", color='red', alpha= 0.75, transform=ccrs.PlateCarree())
+    #
 
     if area is not None:
         ax.plot(x, y, color='blue', transform=ccrs.PlateCarree())
