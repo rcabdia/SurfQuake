@@ -36,7 +36,7 @@ from surfquakecore.project.surf_project import SurfProject
 from surfquakecore.phasenet.phasenet_handler import PhasenetUtils
 from surfquakecore.phasenet.phasenet_handler import PhasenetISP
 from surfquakecore.utils.obspy_utils import MseedUtil
-
+from surfquakecore.earthquake_location.run_nll import Nllcatalog, NllManager
 pw = QtWidgets
 pqg = QtGui
 pyc = QtCore
@@ -46,7 +46,7 @@ class LocFlow(BaseFrame, UiLoc_Flow):
     def __init__(self):
         super(LocFlow, self).__init__()
         self.setupUi(self)
-        self.setWindowTitle('SurfQuake')
+        self.setWindowTitle('surfQuake')
         self.__pick_output_path = nllinput
         self.__dataless_dir = None
         self.__nll_manager = None
@@ -60,12 +60,12 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         ####### Metadata ##########
         self.metadata_path_bind = BindPyqtObject(self.datalessPathForm)
         self.setMetaBtn.clicked.connect(lambda: self.on_click_select_file(self.metadata_path_bind))
-
+        self.loadMetaBtn.clicked.connect(lambda: self.onChange_metadata_path(self.metadata_path_bind.value))
         ####### Project ###########
 
         self.progressbar = pw.QProgressDialog(self)
         self.progressbar.setLabelText("Computing Project ")
-        self.progressbar.setWindowIcon(pqg.QIcon(':\icons\map-icon.png'))
+        self.progressbar.setWindowIcon(pqg.QIcon(':/icons/icon.png'))
         self.progressbar.close()
         self.root_path_bind = BindPyqtObject(self.rootPathForm, self.onChange_root_path)
         self.pathFilesBtn.clicked.connect(lambda: self.on_click_select_directory(self.root_path_bind))
@@ -76,6 +76,7 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         self.phasenetBtn.clicked.connect(self.run_phasenet)
         self.realBtn.clicked.connect(self.run_real)
         self.plot_grid_stationsBtn.clicked.connect(self.plot_real_grid)
+
 
         # NonLinLoc
         self.grid_latitude_bind = BindPyqtObject(self.gridlatSB)
@@ -397,7 +398,6 @@ class LocFlow(BaseFrame, UiLoc_Flow):
 
     def get_nll_config(self):
 
-        #if self.modelCB.currentText() == "1D":
         if self.loc_wavetypeCB.currentText() == "P & S":
             p_wave_type = True
             s_wave_type = True
@@ -438,59 +438,32 @@ class LocFlow(BaseFrame, UiLoc_Flow):
                 search=self.loc_searchCB.value(),
                 method=self.loc_methodCB.currentText()))
 
-    # @property
-    # def nll_manager(self):
-    #     if not self.__nll_manager:
-    #         self.__nll_manager = NllManager(self.__pick_output_path, self.__dataless_dir)
-    #     return self.__nll_manager
-    #
-    # def set_dataless_dir(self):
-    #     self.nll_manager.set_dataless(self.metadata_path_bind.value)
+        return nllconfig
 
+    @parse_excepts(lambda self, msg: self.subprocess_feedback(msg))
+    def on_click_run_vel_to_grid(self):
+        nllconfig = self.get_nll_config()
+        if isinstance(nllconfig, NLLConfig):
+            nll_manager = NllManager(nllconfig, self.metadata_path_bind.value, self.loc_work_bind.value)
+            nll_manager.vel_to_grid()
 
-    # @parse_excepts(lambda self, msg: self.subprocess_feedback(msg))
-    # def on_click_run_vel_to_grid(self):
-    #     self.nll_manager.vel_to_grid(self.grid_latitude_bind.value, self.grid_longitude_bind.value,
-    #                                  self.grid_depth_bind.value, self.grid_xnode_bind.value,
-    #                                  self.grid_ynode_bind.value, self.grid_znode_bind.value,
-    #                                  self.grid_dxsize_bind.value, self.grid_dysize_bind.value,
-    #                                  self.grid_dzsize_bind.value, self.comboBox_gridtype.currentText(),
-    #                                  self.comboBox_wavetype.currentText(), self.modelCB.currentText())
+    @parse_excepts(lambda self, msg: self.subprocess_feedback(msg))
+    def on_click_run_grid_to_time(self):
+        nllconfig = self.get_nll_config()
+        if isinstance(nllconfig, NLLConfig):
+            nll_manager = NllManager(nllconfig, self.metadata_path_bind.value, self.loc_work_bind.value)
+            nll_manager.grid_to_time()
 
-    # @parse_excepts(lambda self, msg: self.subprocess_feedback(msg))
-    # def on_click_run_vel_to_grid(self):
-    #
-    #     nll_manager = NllManager(path_to_configfiles, self.metadata_path_bind.value, working_directory)
-    #     nll_manager.vel_to_grid()
+    @parse_excepts(lambda self, msg: self.subprocess_feedback(msg, set_default_complete=False))
+    def on_click_run_loc(self):
+        nllconfig = self.get_nll_config()
+        if isinstance(nllconfig, NLLConfig):
+            nll_manager = NllManager(nllconfig, self.metadata_path_bind.value, self.loc_work_bind.value)
+            nll_manager.run_nlloc()
+            nll_catalog = Nllcatalog(self.loc_work_bind.value)
+            nll_catalog.run_catalog(self.loc_work_bind.value)
 
-
-    # @parse_excepts(lambda self, msg: self.subprocess_feedback(msg))
-    # def on_click_run_grid_to_time(self):
-    #
-    #
-    #     if self.distanceSB.value()>0:
-    #         limit = self.distanceSB.value()
-    #     else:
-    #         limit = np.sqrt((self.grid_xnode_bind.value * self.grid_dxsize_bind.value) ** 2 +
-    #                         (self.grid_xnode_bind.value * self.grid_dxsize_bind.value) ** 2)
-    #
-    #     self.nll_manager.grid_to_time(self.grid_latitude_bind.value, self.grid_longitude_bind.value,
-    #                                   self.grid_depth_bind.value, self.comboBox_grid.currentText(),
-    #                                   self.comboBox_angles.currentText(), self.comboBox_ttwave.currentText(), limit)
-
-    # @parse_excepts(lambda self, msg: self.subprocess_feedback(msg, set_default_complete=False))
-    # def on_click_run_loc(self):
-    #     transform = self.transCB.currentText()
-    #     std_out = self.nll_manager.run_nlloc(self.grid_latitude_bind.value, self.grid_longitude_bind.value,
-    #                                          self.grid_depth_bind.value, transform)
-    #     self.info_message("Location complete. Check details.", std_out)
-
-    # @parse_excepts(lambda self, msg: self.subprocess_feedback(msg, set_default_complete=False))
-    # def on_click_run_loc(self):
-
-
-
-    ####### Automag ########
+    ####### Source Parameters ########
 
     def __modify_pred_config(self):
 

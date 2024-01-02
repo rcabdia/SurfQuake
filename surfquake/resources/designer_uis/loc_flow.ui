@@ -228,7 +228,7 @@
             <widget class="QLineEdit" name="datalessPathForm"/>
            </item>
            <item row="0" column="3">
-            <widget class="QPushButton" name="load_metadataBtn">
+            <widget class="QPushButton" name="loadMetaBtn">
              <property name="text">
               <string>Load Metadata</string>
              </property>
