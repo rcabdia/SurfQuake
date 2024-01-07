@@ -28,7 +28,7 @@
     <item>
      <widget class="QTabWidget" name="SurfQuakeWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>4</number>
       </property>
       <widget class="QWidget" name="Project">
        <attribute name="title">
@@ -1896,7 +1896,7 @@
               <item row="5" column="5" colspan="2">
                <widget class="QPushButton" name="showResultsBtn">
                 <property name="text">
-                 <string>Show Results</string>
+                 <string>Print Results</string>
                 </property>
                </widget>
               </item>
@@ -2080,13 +2080,6 @@
                <widget class="QLabel" name="label_32">
                 <property name="text">
                  <string>Inversion Freqs</string>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="0" colspan="2">
-               <widget class="QPushButton" name="macroMITBtn">
-                <property name="text">
-                 <string>Macro</string>
                 </property>
                </widget>
               </item>
