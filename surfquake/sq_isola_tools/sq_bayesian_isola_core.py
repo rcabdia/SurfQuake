@@ -19,7 +19,7 @@ class BayesianIsolaGUICore:
             origin_date=event_info.origin_time,
             latitude=event_info.latitude,
             longitude=event_info.longitude,
-            depth_km=event_info.depth,
+            depth_km=event_info.depth/1000,
             magnitude=event_info.mw,
             stations=[StationConfig(name=".", channels=["."])],
             inversion_parameters=InversionParameters(
@@ -47,9 +47,9 @@ class BayesianIsolaGUICore:
                     event_info.mw =3.0
 
                 mti_config = self.__get_mti_config(event_info)
-                print("Running inversion ", event_info.date, event_info.latitude, event_info.longitude, event_info.depth,
+                print("Running inversion ", event_info.origin_time, event_info.latitude, event_info.longitude, event_info.depth,
                       event_info.mw)
                 self.bayesian_isola.run_inversion(mti_config)
             except:
-                print("Failed Inversion of event ", event_info.date, event_info.latitude, event_info.longitude, event_info.depth,
+                print("Failed Inversion of event ", event_info.origin_time, event_info.latitude, event_info.longitude, event_info.depth,
                       event_info.mw)
