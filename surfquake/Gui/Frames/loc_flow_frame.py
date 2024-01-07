@@ -2,10 +2,11 @@ import os
 import pandas as pd
 from surfquakecore.earthquake_location.structures import NLLConfig, GridConfiguration, TravelTimesConfiguration, \
     LocationParameters
+from surfquakecore.magnitudes.source_tools import ReadSource
 from surfquakecore.real.real_core import RealCore
 from surfquakecore.real.structures import RealConfig, GeographicFrame, GridSearch, TravelTimeGridSearch, ThresholdPicks
 from surfquake import ROOT_DIR, p_dir, nllinput, magnitudes_config, magnitudes, \
-    real_working_dir, real_output_data
+    real_working_dir, real_output_data, source_config
 from surfquake.DataProcessing.metadata_manager import MetadataManager
 from surfquake.Exceptions.exceptions import parse_excepts
 from surfquake.Gui.Frames import BaseFrame
@@ -16,30 +17,34 @@ from surfquake.Gui.Utils.pyqt_utils import BindPyqtObject, add_save_load
 from sys import platform
 from concurrent.futures.thread import ThreadPoolExecutor
 from surfquake.Utils import obspy_utils
-#from surfquake.Utils.obspy_utils import MseedUtil
-#from surfquake.loc_flow_tools.internal.real_manager import RealManager
-#from surfquake.loc_flow_tools.location_output.run_nll import NllManager
-#from surfquake.loc_flow_tools.phasenet.phasenet_handler import PhasenetUtils as Util
-#from surfquake.loc_flow_tools.phasenet.phasenet_handler import PhasenetISP
+# from surfquake.Utils.obspy_utils import MseedUtil
+# from surfquake.loc_flow_tools.internal.real_manager import RealManager
+# from surfquake.loc_flow_tools.location_output.run_nll import NllManager
+# from surfquake.loc_flow_tools.phasenet.phasenet_handler import PhasenetUtils as Util
+# from surfquake.loc_flow_tools.phasenet.phasenet_handler import PhasenetISP
 from surfquake.Gui.Frames.event_location_frame import EventLocationFrame
 from surfquake.Gui.Frames.parameters import ParametersSettings
 from obspy.core.inventory.inventory import Inventory
-#from surfquake.loc_flow_tools.tt_db.taup_tt import create_tt_db
+# from surfquake.loc_flow_tools.tt_db.taup_tt import create_tt_db
 import numpy as np
-#from surfquake.loc_flow_tools.utils import ConversionUtils
+# from surfquake.loc_flow_tools.utils import ConversionUtils
 from surfquake.Utils.time_utils import AsycTime
-from surfquake.magnitude_tools.autoag import Automag
+#from surfquake.magnitude_tools.autoag import Automag
 from surfquake.maps.plot_map import plot_real_map
 from surfquake.sq_isola_tools.sq_bayesian_isola import bayesian_isola_db
 from surfquakecore.project.surf_project import SurfProject
-#from surfquakecore import model_dir
+# from surfquakecore import model_dir
 from surfquakecore.phasenet.phasenet_handler import PhasenetUtils
 from surfquakecore.phasenet.phasenet_handler import PhasenetISP
 from surfquakecore.utils.obspy_utils import MseedUtil
 from surfquakecore.earthquake_location.run_nll import Nllcatalog, NllManager
+from surfquakecore.magnitudes.run_magnitudes import Automag
+
 pw = QtWidgets
 pqg = QtGui
 pyc = QtCore
+
+
 @add_save_load()
 class LocFlow(BaseFrame, UiLoc_Flow):
 
@@ -56,6 +61,7 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         self.h_range = None
         self.inventory = None
         self.project = None
+        self.config_automag = {}
         self.parameters = ParametersSettings()
         ####### Metadata ##########
         self.metadata_path_bind = BindPyqtObject(self.datalessPathForm)
@@ -77,7 +83,6 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         self.realBtn.clicked.connect(self.run_real)
         self.plot_grid_stationsBtn.clicked.connect(self.plot_real_grid)
 
-
         # NonLinLoc
         self.grid_latitude_bind = BindPyqtObject(self.gridlatSB)
         self.grid_longitude_bind = BindPyqtObject(self.gridlonSB)
@@ -97,11 +102,16 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         self.genvelBtn.clicked.connect(lambda: self.on_click_run_vel_to_grid())
         self.grdtimeBtn.clicked.connect(lambda: self.on_click_run_grid_to_time())
         self.runlocBtn.clicked.connect(lambda: self.on_click_run_loc())
-        #self.plotmapBtn.clicked.connect(lambda: self.on_click_plot_map())
-        #self.stationsBtn.clicked.connect(lambda: self.on_click_select_metadata_file())
+        # self.plotmapBtn.clicked.connect(lambda: self.on_click_plot_map())
+        # self.stationsBtn.clicked.connect(lambda: self.on_click_select_metadata_file())
         self.actionData_Base.triggered.connect(lambda: self.open_data_base())
 
         # Magnitude
+        self.source_locs_bind = BindPyqtObject(self.source_locsLE)
+        self.setLocFolderBtn.clicked.connect(lambda: self.on_click_select_directory(self.source_locs_bind))
+
+        self.source_out_bind = BindPyqtObject(self.source_outLE)
+        self.setSourceOutBtn.clicked.connect(lambda: self.on_click_select_directory(self.source_out_bind))
         self.mag_runBtn.clicked.connect(lambda: self.run_automag())
 
         # MTI
@@ -177,7 +187,8 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         """
         pass
 
-    @parse_excepts(lambda self, msg: self.subprocess_feedback(msg, False)) # When launch, metadata path need show messsage to False.
+    @parse_excepts(lambda self, msg: self.subprocess_feedback(msg,
+                                                              False))  # When launch, metadata path need show messsage to False.
     def onChange_metadata_path(self, value):
 
         try:
@@ -243,7 +254,6 @@ class LocFlow(BaseFrame, UiLoc_Flow):
 
         md.show()
 
-
     def _select_directory(self, bind: BindPyqtObject):
 
         if "darwin" == platform:
@@ -258,7 +268,6 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         if dir_path:
             bind.value = dir_path
 
-
     def openProject(self):
 
         md = MessageDialog(self)
@@ -268,11 +277,13 @@ class LocFlow(BaseFrame, UiLoc_Flow):
             self.progressbar.reset()
             self.progressbar.setLabelText("Bulding Project")
             self.progressbar.setRange(0, 0)
-            def callback():          
+
+            def callback():
                 self.sp.search_files(verbose=True)
                 r = self.sp.project
                 pyc.QMetaObject.invokeMethod(self.progressbar, "accept")
                 return r
+
             with ThreadPoolExecutor(1) as executor:
                 f = executor.submit(callback)
                 self.progressbar.exec()
@@ -293,27 +304,25 @@ class LocFlow(BaseFrame, UiLoc_Flow):
             if not dir_path:
                 return
             dir_path = os.path.join(dir_path, self.nameForm.text())
-            if self.sp.save_project(dir_path)==True:
+            if self.sp.save_project(dir_path) == True:
                 MessageDialog(self).set_info_message("Succesfully saved project")
             else:
                 MessageDialog(self).set_error_message("Error saving project")
         except:
             MessageDialog(self).set_error_message("No data to save in Project")
 
-
     @AsycTime.run_async()
     def send_phasenet(self):
         print("Starting Picking")
-        
+
         phISP = PhasenetISP(self.sp.project, amplitude=True, min_p_prob=0.30, min_s_prob=0.30)
         picks = phISP.phasenet()
         picks_ = PhasenetUtils.split_picks(picks)
-        
+
         PhasenetUtils.convert2real(picks_, self.__pick_output_path)
         PhasenetUtils.save_original_picks(picks_, self.__pick_output_path)
         """ PHASENET OUTPUT TO REAL INPUT"""
         pyc.QMetaObject.invokeMethod(self.progress_dialog, 'accept', Qt.Qt.QueuedConnection)
-        
 
     def run_phasenet(self):
 
@@ -395,7 +404,6 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         print("End of Events AssociationProcess, please see for results: ", real_output_data)
         pyc.QMetaObject.invokeMethod(self.progress_dialog, 'accept', Qt.Qt.QueuedConnection)
 
-
     def get_nll_config(self):
 
         if self.loc_wavetypeCB.currentText() == "P & S":
@@ -411,7 +419,6 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         else:
             path_model1D = "NONE"
             path_model3D = self.picks_path_bind.value
-
 
         nllconfig = NLLConfig(
             grid_configuration=GridConfiguration(
@@ -466,140 +473,188 @@ class LocFlow(BaseFrame, UiLoc_Flow):
 
     ####### Source Parameters ########
 
-    def __modify_pred_config(self):
+    def run_automag(self):
+        self.__send_run_automag()
+        self.progress_dialog.exec()
+        md = MessageDialog(self)
+        md.set_info_message("Source Parameters estimation finished, Please see output directory adn screen results")
 
-        self.config_automag["max_epi_dist"] = self.mag_max_distDB.value()
+    @AsycTime.run_async()
+    def __send_run_automag(self):
 
-        if self.mag_max_distDB.value() < 700:
-            self.config_automag["scale"] = "Regional"
-        else:
-            self.config_automag["scale"] = "Teleseism"
+        self.__load_config_automag()
+        # Running stage
+        mg = Automag(self.sp, self.source_locs_bind.value, self.metadata_path_bind.value, source_config,
+                     self.source_out_bind.value, scale="regional", gui_mod=self.config_automag)
+        print("Estimating Source Parameters")
+        mg.estimate_source_parameters()
 
-        self.config_automag["mag_vpweight"] = self.mag_vpweightDB.value()
-        self.config_automag["rho"] = self.automag_density_DB.value()
-        self.config_automag["automag_rpp"] = self.automag_rppDB.value()
-        self.config_automag["automag_rps"] = self.automag_rpsDB.value()
+        # write a txt summarizing the results
+        rs = ReadSource(self.source_out_bind.value)
+        summary = rs.generate_source_summary()
+        summary_path = os.path.join(self.source_out_bind.value, "source_parameters.txt")
+        rs.write_summary(summary, summary_path)
+        pyc.QMetaObject.invokeMethod(self.progress_dialog, 'accept', Qt.Qt.QueuedConnection)
 
-        if self.r_power_nRB.isChecked():
-            self.config_automag["geom_spread_model"] = "r_power_n"
-        else:
-            self.config_automag["geom_spread_model"] = "boatwright"
-        self.config_automag["geom_spread_n_exponent"] = self.geom_spread_n_exponentDB.value()
-        self.config_automag["geom_spread_cutoff_distance"] = self.geom_spread_cutoff_distanceDB.value()
-        self.config_automag["a_local_magnitude"] = self.mag_aDB.value()
-        self.config_automag["b_local_magnitude"] = self.mag_bDB.value()
-        self.config_automag["c_local_magnitude"] = self.mag_cDB.value()
-        self.config_automag["win_length"] = self.win_lengthDB.value()
 
     def __load_config_automag(self):
-        try:
-            self.config_automag = pd.read_pickle(magnitudes_config)
-            self.__modify_pred_config()
-        except:
-            md = MessageDialog(self)
-            md.set_error_message("Coundn't open magnitude config file")
+        self.config_automag['epi_dist_ranges'] = [0, self.mag_max_distDB.value()]
+        self.config_automag['p_arrival_tolerance'] = self.p_tolDB.value()
+        self.config_automag['s_arrival_tolerance'] = self.s_tolDB.value()
+        self.config_automag['noise_pre_time'] = self.noise_windowDB.value()
+        self.config_automag['win_length'] = self.signal_windowDB.value()
+        self.config_automag['spectral_win_length'] = self.spec_windowSB.value()
+        self.config_automag['rho_source'] = self.automag_density_DB.value()
+        self.config_automag['rpp'] = self.automag_rppDB.value()
+        self.config_automag['rps'] = self.automag_rpsDB.value()
 
-    def mag_runBtn(self):
-        self.__load_config_automag(magnitudes_config)
-
-    def run_automag(self):
-        self.automagnitudesText.clear()
-        self.Date_Id = []
-        self.lats = []
-        self.longs = []
-        self.depths = []
-        self.Mw = []
-        self.Mw_std = []
-        self.ML = []
-        self.ML_std = []
-        self.__load_config_automag()
-        mg = Automag(self.project, self.inventory)
-        magnitude_mw_statistics_list, magnitude_ml_statistics_list, focal_parameters_list = (
-            mg.estimate_magnitudes(self.config_automag))
-        for magnitude_mw_statistics, magnitude_ml_statistics, focal_parameters in zip(magnitude_mw_statistics_list,
-                                                            magnitude_ml_statistics_list, focal_parameters_list):
-            self.print_automag_results(magnitude_mw_statistics, magnitude_ml_statistics, focal_parameters)
-
-        self.save_magnitudes()
-    def print_automag_results(self, magnitude_mw_statistics, magnitude_ml_statistics, focal_parameters):
-        self.automagnitudesText.appendPlainText("#####################################################")
-        self.automagnitudesText.appendPlainText(focal_parameters[0].strftime(format="%m/%d/%Y, %H:%M:%S")+ "    "+str(focal_parameters[1])+
-            "º    "+ str(focal_parameters[2])+"º    "+ str(focal_parameters[3])+" km")
-
-        #self.Date_Id.append(focal_parameters[0].strftime(format="%Y%m%d%H%M%S"))
-        self.Date_Id.append(focal_parameters[0].strftime('%m/%d/%Y, %H:%M:%S.%f'))
-        self.lats.append(focal_parameters[1])
-        self.longs.append(focal_parameters[2])
-        self.depths.append(focal_parameters[3])
-
-        if magnitude_mw_statistics != None:
-            Mw = magnitude_mw_statistics.summary_spectral_parameters.Mw.weighted_mean.value
-            Mw_std = magnitude_mw_statistics.summary_spectral_parameters.Mw.weighted_mean.uncertainty
-
-            Mo = magnitude_mw_statistics.summary_spectral_parameters.Mo.mean.value
-            Mo_units = magnitude_mw_statistics.summary_spectral_parameters.Mo.units
-
-            fc = magnitude_mw_statistics.summary_spectral_parameters.fc.weighted_mean.value
-            fc_units = "Hz"
-
-            t_star = magnitude_mw_statistics.summary_spectral_parameters.t_star.weighted_mean.value
-            t_star_std = magnitude_mw_statistics.summary_spectral_parameters.t_star.weighted_mean.uncertainty
-            t_star_units = magnitude_mw_statistics.summary_spectral_parameters.t_star.units
-
-            source_radius = magnitude_mw_statistics.summary_spectral_parameters.radius.mean.value
-            radius_units = magnitude_mw_statistics.summary_spectral_parameters.radius.units
-
-            bsd = magnitude_mw_statistics.summary_spectral_parameters.bsd.mean.value
-            bsd_units = magnitude_mw_statistics.summary_spectral_parameters.bsd.units
-
-            Qo =  magnitude_mw_statistics.summary_spectral_parameters.Qo.mean.value
-            Qo_std = magnitude_mw_statistics.summary_spectral_parameters.Qo.mean.uncertainty
-            Qo_units = magnitude_mw_statistics.summary_spectral_parameters.Qo.units
-
-            Er = magnitude_mw_statistics.summary_spectral_parameters.Er.mean.value
-            Er_units = "jul"
-
-            self.Mw.append("{:.2f}".format(Mw))
-            self.Mw_std.append("{:.2f}".format(Mw_std))
-
-            self.automagnitudesText.appendPlainText("Moment Magnitude: " " Mw {Mw:.3f} "
-                                                    " std {std:.3f} ".format(Mw=Mw, std=Mw_std))
-
-            self.automagnitudesText.appendPlainText("Seismic Moment and Source radius: " " Mo {Mo:e} Nm"
-                                                    ", R {std:.3f} km".format(Mo=Mo, std=source_radius / 1000))
-
-            self.automagnitudesText.appendPlainText("Brune stress Drop: " "{bsd:.3f} MPa".format(bsd=bsd))
-
-            self.automagnitudesText.appendPlainText(
-                "Quality factor: " " Qo {Qo:.3f} " " Q_std {Qo_std:.3f} ".format(Qo=Qo, Qo_std=Qo_std))
-
-            self.automagnitudesText.appendPlainText(
-                "t_star: " "{t_star:.3f} s" " t_star_std {t_star_std:.3f} ".format(t_star=t_star,
-                                                                                   t_star_std=t_star_std))
-
+        if self.r_power_nRB.isChecked():
+            self.config_automag['geom_spread_model'] = "r_power_n"
         else:
-            self.automagnitudesText.appendPlainText("Mw cannot be estimated")
-            self.Mw.append("None")
-            self.Mw_std.append("None")
+            self.config_automag['geom_spread_model'] = "boatwright"
 
-        if magnitude_ml_statistics != None:
-            ML = magnitude_ml_statistics[0]
-            ML_std = magnitude_ml_statistics[1]
-            self.ML.append("{:.2f}".format(ML))
-            self.ML_std.append("{:.2f}".format(ML_std))
-            self.automagnitudesText.appendPlainText("Local Magnitude: " " ML {ML:.3f} "
-                                                    " ML_std {std:.3f} ".format(ML=ML, std=ML_std))
+        self.config_automag['geom_spread_n_exponent'] = self.geom_spread_n_exponentDB.value()
+        self.config_automag['geom_spread_cutoff_distance'] = self.geom_spread_cutoff_distanceDB.value()
 
-        else:
-            self.automagnitudesText.appendPlainText("ML cannot be estimated")
-            self.ML.append("None")
-            self.ML_std.append("None")
+        self.config_automag['a'] = self.mag_aDB.value()
+        self.config_automag['b'] = self.mag_bDB.value()
+        self.config_automag['c'] = self.mag_cDB.value()
+        print("Loaded Source Config from GUI")
 
-    def save_magnitudes(self):
-        magnitudes_dict = {'date_id': self.Date_Id, 'lats': self.lats, 'longs': self.longs, 'depths': self.depths,
-        'Mw': self.Mw, 'Mw_error': self.Mw_std,'ML': self.ML, 'ML_error': self.ML_std}
-        df_magnitudes = pd.DataFrame.from_dict(magnitudes_dict)
-        df_magnitudes.to_csv(magnitudes, sep=";", index=False)
+    # def __modify_pred_config(self):
+    #
+    #     self.config_automag["max_epi_dist"] = self.mag_max_distDB.value()
+    #
+    #     if self.mag_max_distDB.value() < 700:
+    #         self.config_automag["scale"] = "Regional"
+    #     else:
+    #         self.config_automag["scale"] = "Teleseism"
+    #
+    #     self.config_automag["mag_vpweight"] = self.mag_vpweightDB.value()
+    #     self.config_automag["rho"] = self.automag_density_DB.value()
+    #     self.config_automag["automag_rpp"] = self.automag_rppDB.value()
+    #     self.config_automag["automag_rps"] = self.automag_rpsDB.value()
+    #
+    #     if self.r_power_nRB.isChecked():
+    #         self.config_automag["geom_spread_model"] = "r_power_n"
+    #     else:
+    #         self.config_automag["geom_spread_model"] = "boatwright"
+    #     self.config_automag["geom_spread_n_exponent"] = self.geom_spread_n_exponentDB.value()
+    #     self.config_automag["geom_spread_cutoff_distance"] = self.geom_spread_cutoff_distanceDB.value()
+    #     self.config_automag["a_local_magnitude"] = self.mag_aDB.value()
+    #     self.config_automag["b_local_magnitude"] = self.mag_bDB.value()
+    #     self.config_automag["c_local_magnitude"] = self.mag_cDB.value()
+    #     self.config_automag["win_length"] = self.win_lengthDB.value()
+
+    # def __load_config_automag(self):
+    #     try:
+    #         self.config_automag = pd.read_pickle(magnitudes_config)
+    #         self.__modify_pred_config()
+    #     except:
+    #         md = MessageDialog(self)
+    #         md.set_error_message("Coundn't open magnitude config file")
+
+    # def mag_runBtn(self):
+    #     self.__load_config_automag(magnitudes_config)
+
+    # def run_automag(self):
+    #     self.automagnitudesText.clear()
+    #     self.Date_Id = []
+    #     self.lats = []
+    #     self.longs = []
+    #     self.depths = []
+    #     self.Mw = []
+    #     self.Mw_std = []
+    #     self.ML = []
+    #     self.ML_std = []
+    #     self.__load_config_automag()
+    #     mg = Automag(self.project, self.inventory)
+    #     magnitude_mw_statistics_list, magnitude_ml_statistics_list, focal_parameters_list = (
+    #         mg.estimate_magnitudes(self.config_automag))
+    #     for magnitude_mw_statistics, magnitude_ml_statistics, focal_parameters in zip(magnitude_mw_statistics_list,
+    #                                                         magnitude_ml_statistics_list, focal_parameters_list):
+    #         self.print_automag_results(magnitude_mw_statistics, magnitude_ml_statistics, focal_parameters)
+    #
+    #     self.save_magnitudes()
+    # def print_automag_results(self, magnitude_mw_statistics, magnitude_ml_statistics, focal_parameters):
+    #     self.automagnitudesText.appendPlainText("#####################################################")
+    #     self.automagnitudesText.appendPlainText(focal_parameters[0].strftime(format="%m/%d/%Y, %H:%M:%S")+ "    "+str(focal_parameters[1])+
+    #         "º    "+ str(focal_parameters[2])+"º    "+ str(focal_parameters[3])+" km")
+    #
+    #     #self.Date_Id.append(focal_parameters[0].strftime(format="%Y%m%d%H%M%S"))
+    #     self.Date_Id.append(focal_parameters[0].strftime('%m/%d/%Y, %H:%M:%S.%f'))
+    #     self.lats.append(focal_parameters[1])
+    #     self.longs.append(focal_parameters[2])
+    #     self.depths.append(focal_parameters[3])
+    #
+    #     if magnitude_mw_statistics != None:
+    #         Mw = magnitude_mw_statistics.summary_spectral_parameters.Mw.weighted_mean.value
+    #         Mw_std = magnitude_mw_statistics.summary_spectral_parameters.Mw.weighted_mean.uncertainty
+    #
+    #         Mo = magnitude_mw_statistics.summary_spectral_parameters.Mo.mean.value
+    #         Mo_units = magnitude_mw_statistics.summary_spectral_parameters.Mo.units
+    #
+    #         fc = magnitude_mw_statistics.summary_spectral_parameters.fc.weighted_mean.value
+    #         fc_units = "Hz"
+    #
+    #         t_star = magnitude_mw_statistics.summary_spectral_parameters.t_star.weighted_mean.value
+    #         t_star_std = magnitude_mw_statistics.summary_spectral_parameters.t_star.weighted_mean.uncertainty
+    #         t_star_units = magnitude_mw_statistics.summary_spectral_parameters.t_star.units
+    #
+    #         source_radius = magnitude_mw_statistics.summary_spectral_parameters.radius.mean.value
+    #         radius_units = magnitude_mw_statistics.summary_spectral_parameters.radius.units
+    #
+    #         bsd = magnitude_mw_statistics.summary_spectral_parameters.bsd.mean.value
+    #         bsd_units = magnitude_mw_statistics.summary_spectral_parameters.bsd.units
+    #
+    #         Qo =  magnitude_mw_statistics.summary_spectral_parameters.Qo.mean.value
+    #         Qo_std = magnitude_mw_statistics.summary_spectral_parameters.Qo.mean.uncertainty
+    #         Qo_units = magnitude_mw_statistics.summary_spectral_parameters.Qo.units
+    #
+    #         Er = magnitude_mw_statistics.summary_spectral_parameters.Er.mean.value
+    #         Er_units = "jul"
+    #
+    #         self.Mw.append("{:.2f}".format(Mw))
+    #         self.Mw_std.append("{:.2f}".format(Mw_std))
+    #
+    #         self.automagnitudesText.appendPlainText("Moment Magnitude: " " Mw {Mw:.3f} "
+    #                                                 " std {std:.3f} ".format(Mw=Mw, std=Mw_std))
+    #
+    #         self.automagnitudesText.appendPlainText("Seismic Moment and Source radius: " " Mo {Mo:e} Nm"
+    #                                                 ", R {std:.3f} km".format(Mo=Mo, std=source_radius / 1000))
+    #
+    #         self.automagnitudesText.appendPlainText("Brune stress Drop: " "{bsd:.3f} MPa".format(bsd=bsd))
+    #
+    #         self.automagnitudesText.appendPlainText(
+    #             "Quality factor: " " Qo {Qo:.3f} " " Q_std {Qo_std:.3f} ".format(Qo=Qo, Qo_std=Qo_std))
+    #
+    #         self.automagnitudesText.appendPlainText(
+    #             "t_star: " "{t_star:.3f} s" " t_star_std {t_star_std:.3f} ".format(t_star=t_star,
+    #                                                                                t_star_std=t_star_std))
+    #
+    #     else:
+    #         self.automagnitudesText.appendPlainText("Mw cannot be estimated")
+    #         self.Mw.append("None")
+    #         self.Mw_std.append("None")
+    #
+    #     if magnitude_ml_statistics != None:
+    #         ML = magnitude_ml_statistics[0]
+    #         ML_std = magnitude_ml_statistics[1]
+    #         self.ML.append("{:.2f}".format(ML))
+    #         self.ML_std.append("{:.2f}".format(ML_std))
+    #         self.automagnitudesText.appendPlainText("Local Magnitude: " " ML {ML:.3f} "
+    #                                                 " ML_std {std:.3f} ".format(ML=ML, std=ML_std))
+    #
+    #     else:
+    #         self.automagnitudesText.appendPlainText("ML cannot be estimated")
+    #         self.ML.append("None")
+    #         self.ML_std.append("None")
+
+    # def save_magnitudes(self):
+    #     magnitudes_dict = {'date_id': self.Date_Id, 'lats': self.lats, 'longs': self.longs, 'depths': self.depths,
+    #                        'Mw': self.Mw, 'Mw_error': self.Mw_std, 'ML': self.ML, 'ML_error': self.ML_std}
+    #     df_magnitudes = pd.DataFrame.from_dict(magnitudes_dict)
+    #     df_magnitudes.to_csv(magnitudes, sep=";", index=False)
 
     ########## Moment Tensor Inversion #######################
 
@@ -614,8 +669,10 @@ class LocFlow(BaseFrame, UiLoc_Flow):
 
     def get_inversion_parameters(self):
 
-        parameters = {'working_directory': self.mti_working_path.text(), 'output_directory': self.MTI_output_path.text(),
-                      'earth_model': self.earth_model_path.text(), 'location_unc': self.HorizontalLocUncertainityMTIDB.value(),
+        parameters = {'working_directory': self.mti_working_path.text(),
+                      'output_directory': self.MTI_output_path.text(),
+                      'earth_model': self.earth_model_path.text(),
+                      'location_unc': self.HorizontalLocUncertainityMTIDB.value(),
                       'time_unc': self.timeUncertainityMTIDB.value(), 'depth_unc': self.depthUncertainityMTIDB.value(),
                       'deviatoric': self.deviatoricCB.isChecked(), 'covariance': self.covarianceCB.isChecked(),
                       'plot_save': self.savePlotsCB.isChecked(), 'rupture_velocity': self.ruptureVelMTIDB.value(),

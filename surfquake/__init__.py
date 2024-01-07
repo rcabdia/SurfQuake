@@ -14,7 +14,7 @@ UIS_PATH = os.path.join(os.path.dirname(ROOT_DIR), 'surfquake/resources', 'desig
 MOMENT_TENSOR_OUTPUT = os.path.join(os.path.dirname(ROOT_DIR), "surfquake/moment_tensor_output")
 magnitudes_config = os.path.join(os.path.dirname(ROOT_DIR), "surfquake/magnitude_tools/MagnitudesConfig"
                                                             "/automag_config")
-
+source_config = os.path.join(os.path.dirname(ROOT_DIR), "surfquake/source_spec_parse/config/source_spec.conf")
 location_output = os.path.join(os.path.dirname(ROOT_DIR), "surfquake/loc_flow_tools", "location_output")
 all_locations = os.path.join(os.path.dirname(ROOT_DIR), "surfquake/loc_flow_tools", "location_output", "all_locations")
 magnitudes = os.path.join(os.path.dirname(ROOT_DIR), "surfquake/magnitudes_output/magnitudes_output.txt")
