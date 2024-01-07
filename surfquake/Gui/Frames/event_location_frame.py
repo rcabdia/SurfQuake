@@ -196,7 +196,7 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
 
         self.actionRead_hyp_folder.triggered.connect(self._readHypFolder)
         self.actionUpdate_Magnitudes.triggered.connect(self.update_magnitudes)
-        self.actionRead_last_location.triggered.connect(self._readLastLocation)
+        #self.actionRead_last_location.triggered.connect(self._readLastLocation)
         self.btnRefreshQuery.clicked.connect(self._refreshQuery)
         self.btnShowAll.clicked.connect(self._showAll)
         self.PlotMapBtn.clicked.connect(self.__plot_map)

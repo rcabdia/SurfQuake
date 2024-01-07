@@ -28,7 +28,7 @@
     <item>
      <widget class="QTabWidget" name="SurfQuakeWidget">
       <property name="currentIndex">
-       <number>3</number>
+       <number>4</number>
       </property>
       <widget class="QWidget" name="Project">
        <attribute name="title">
@@ -1827,7 +1827,7 @@
          </rect>
         </property>
         <property name="title">
-         <string>Magnitudes Parameters</string>
+         <string>Settings</string>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_8">
          <item>

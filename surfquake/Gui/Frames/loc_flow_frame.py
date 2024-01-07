@@ -2,6 +2,8 @@ import os
 from surfquakecore.earthquake_location.structures import NLLConfig, GridConfiguration, TravelTimesConfiguration, \
     LocationParameters
 from surfquakecore.magnitudes.source_tools import ReadSource
+from surfquakecore.moment_tensor.sq_isola_tools import BayesianIsolaCore
+from surfquakecore.moment_tensor.structures import MomentTensorInversionConfig, StationConfig, InversionParameters
 from surfquakecore.real.real_core import RealCore
 from surfquakecore.real.structures import RealConfig, GeographicFrame, GridSearch, TravelTimeGridSearch, ThresholdPicks
 from surfquake import ROOT_DIR, p_dir, nllinput, magnitudes_config, magnitudes, \
@@ -30,6 +32,7 @@ from surfquake.Utils.time_utils import AsycTime
 #from surfquake.magnitude_tools.autoag import Automag
 from surfquake.maps.plot_map import plot_real_map
 from surfquake.sq_isola_tools.sq_bayesian_isola import bayesian_isola_db
+from surfquake.sq_isola_tools.sq_bayesian_isola_core import BayesianIsolaGUICore
 from surfquakecore.project.surf_project import SurfProject
 # from surfquakecore import model_dir
 from surfquakecore.phasenet.phasenet_handler import PhasenetUtils
@@ -554,6 +557,16 @@ class LocFlow(BaseFrame, UiLoc_Flow):
             else:
                 source_radius = row['radius']
 
+            if not math.isnan(row['ML']):
+                ML = str("{: .2f}".format(row['ML']))
+            else:
+                ML = row['ML']
+
+            if not math.isnan(row['ML_error']):
+                ML_std = str("{: .2f}".format(row['ML_error']))
+            else:
+                ML_std = row['ML_error']
+
             if not math.isnan(row['bsd']):
                 bsd = str("{: .2f}".format(row['bsd']))
             else:
@@ -607,6 +620,9 @@ class LocFlow(BaseFrame, UiLoc_Flow):
             self.automagnitudesText.appendPlainText("Seismic Moment and Source radius: " " Mo {Mo:} Nm"
                                                               ", R {std} km".format(Mo=Mo, std=source_radius))
 
+            self.automagnitudesText.appendPlainText("Local Magnitude: " " ML {ML} "
+                                                    " std {std} ".format(ML=ML, std=ML_std))
+
             self.automagnitudesText.appendPlainText("Brune stress Drop: " "{bsd} MPa".format(bsd=bsd))
 
             self.automagnitudesText.appendPlainText(
@@ -646,13 +662,23 @@ class LocFlow(BaseFrame, UiLoc_Flow):
                       'source_type': self.sourceTypeCB.currentText(), 'min_dist': self.minDistMTIDB.value(),
                       'max_dist': self.maxDistMTIDB.value(), 'fmin': self.freq_minMTI.value(),
                       'fmax': self.freq_maxMTI.value(), 'rms_thresh': self.rms_threshMTI.value(),
-                      'max_num_stationsMTI0': self.max_num_stationsMTI.value()}
+                      'max_num_stationsMTI0': self.max_num_stationsMTI.value(),
+                      'source_duration': self.sourceTypeLenthgMTIDB.value()}
 
         return parameters
 
     def run_mti(self):
-        macroMTI = self.parameters.getParameters()
-        parametersGUI = self.get_inversion_parameters()
-        sq_bayesian = bayesian_isola_db(model=self.get_model(), entities=self.get_db(), metadata=self.inventory,
-                                        project=self.project, parameters=parametersGUI, macro=macroMTI)
-        sq_bayesian.run_inversion()
+        # macroMTI = self.parameters.getParameters()
+        #parameters = self.get_inversion_parameters()
+        # sq_bayesian = bayesian_isola_db(model=self.get_model(), entities=self.get_db(), metadata=self.inventory,
+        #                                 project=self.project, parameters=parametersGUI, macro=macroMTI)
+        #sq_bayesian.run_inversion()
+
+        ### from surfquakecore ###
+        bic = BayesianIsolaCore(project=self.project, inventory_file=self.metadata_path_bind.value,
+                                output_directory=self.MTI_output_path.text(), save_plots=True)
+
+        bi = BayesianIsolaGUICore(bic, model=self.get_model(), entities=self.get_db(),
+                                  parameters=self.get_inversion_parameters())
+        bi.run_inversion()
+        #########################
