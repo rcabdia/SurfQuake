@@ -3,10 +3,9 @@ from surfquakecore.earthquake_location.structures import NLLConfig, GridConfigur
     LocationParameters
 from surfquakecore.magnitudes.source_tools import ReadSource
 from surfquakecore.moment_tensor.sq_isola_tools import BayesianIsolaCore
-from surfquakecore.moment_tensor.structures import MomentTensorInversionConfig, StationConfig, InversionParameters
 from surfquakecore.real.real_core import RealCore
 from surfquakecore.real.structures import RealConfig, GeographicFrame, GridSearch, TravelTimeGridSearch, ThresholdPicks
-from surfquake import ROOT_DIR, p_dir, nllinput, magnitudes_config, magnitudes, \
+from surfquake import ROOT_DIR, p_dir, nllinput, \
     real_working_dir, real_output_data, source_config
 from surfquake.DataProcessing.metadata_manager import MetadataManager
 from surfquake.Exceptions.exceptions import parse_excepts
@@ -18,23 +17,13 @@ from surfquake.Gui.Utils.pyqt_utils import BindPyqtObject, add_save_load
 from sys import platform
 from concurrent.futures.thread import ThreadPoolExecutor
 from surfquake.Utils import obspy_utils
-# from surfquake.Utils.obspy_utils import MseedUtil
-# from surfquake.loc_flow_tools.internal.real_manager import RealManager
-# from surfquake.loc_flow_tools.location_output.run_nll import NllManager
-# from surfquake.loc_flow_tools.phasenet.phasenet_handler import PhasenetUtils as Util
-# from surfquake.loc_flow_tools.phasenet.phasenet_handler import PhasenetISP
 from surfquake.Gui.Frames.event_location_frame import EventLocationFrame
 from surfquake.Gui.Frames.parameters import ParametersSettings
 from obspy.core.inventory.inventory import Inventory
-# from surfquake.loc_flow_tools.tt_db.taup_tt import create_tt_db
-# from surfquake.loc_flow_tools.utils import ConversionUtils
 from surfquake.Utils.time_utils import AsycTime
-#from surfquake.magnitude_tools.autoag import Automag
 from surfquake.maps.plot_map import plot_real_map
-from surfquake.sq_isola_tools.sq_bayesian_isola import bayesian_isola_db
 from surfquake.sq_isola_tools.sq_bayesian_isola_core import BayesianIsolaGUICore
 from surfquakecore.project.surf_project import SurfProject
-# from surfquakecore import model_dir
 from surfquakecore.phasenet.phasenet_handler import PhasenetUtils
 from surfquakecore.phasenet.phasenet_handler import PhasenetISP
 from surfquakecore.utils.obspy_utils import MseedUtil
@@ -676,8 +665,9 @@ class LocFlow(BaseFrame, UiLoc_Flow):
 
         ### from surfquakecore ###
         bic = BayesianIsolaCore(project=self.project, inventory_file=self.metadata_path_bind.value,
-                                output_directory=self.MTI_output_path.text(), save_plots=True)
-
+                                output_directory=self.MTI_output_path.text(),
+                                save_plots=True)
+        bic.working_directory = self.mti_working_path.text()
         bi = BayesianIsolaGUICore(bic, model=self.get_model(), entities=self.get_db(),
                                   parameters=self.get_inversion_parameters())
         bi.run_inversion()

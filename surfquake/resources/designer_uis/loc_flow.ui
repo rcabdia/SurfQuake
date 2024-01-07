@@ -28,7 +28,7 @@
     <item>
      <widget class="QTabWidget" name="SurfQuakeWidget">
       <property name="currentIndex">
-       <number>4</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="Project">
        <attribute name="title">
@@ -2160,7 +2160,7 @@
                 </property>
                </widget>
               </item>
-              <item row="2" column="2">
+              <item row="2" column="2" alignment="Qt::AlignHCenter">
                <widget class="QLabel" name="label_31">
                 <property name="text">
                  <string>Time Uncertainity (s)</string>
@@ -2193,7 +2193,7 @@
                 </property>
                </widget>
               </item>
-              <item row="3" column="2">
+              <item row="3" column="2" alignment="Qt::AlignHCenter">
                <widget class="QLabel" name="label_42">
                 <property name="text">
                  <string>Traces Selection Criteria</string>

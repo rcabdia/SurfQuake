@@ -201,6 +201,12 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
         self.btnShowAll.clicked.connect(self._showAll)
         self.PlotMapBtn.clicked.connect(self.__plot_map)
 
+    def on_click_select_file(self):
+        selected = pw.QFileDialog.getOpenFileName(self, "Select file")
+        if isinstance(selected[0], str) and os.path.isfile(selected[0]):
+            file_path = selected[0]
+        return file_path
+
     def refreshLimits(self):
         entities = self.model.getEntities()
         events = []
@@ -280,7 +286,8 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
             event_model.save()
 
     def update_magnitudes(self):
-        df = pd.read_csv(magnitudes, sep=";")
+        magnitude_file = self.on_click_select_file()
+        df = pd.read_csv(magnitude_file, sep=";", na_values='missing')
         date_format = "%m/%d/%Y, %H:%M:%S.%f"
         for i in range(len(df)):
             data = {}
