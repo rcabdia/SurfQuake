@@ -31,7 +31,10 @@ class BayesianIsolaGUICore:
                 rupture_velocity=self.parameters['rupture_velocity'],
                 min_dist=self.parameters['min_dist'],
                 max_dist=self.parameters['max_dist'],
-                source_type=self.parameters['source_type']
+                source_type=self.parameters['source_type'],
+                deviatoric=self.parameters['deviatoric'],
+                covariance=self.parameters['covariance']
+
             ),
         )
         return mti_config

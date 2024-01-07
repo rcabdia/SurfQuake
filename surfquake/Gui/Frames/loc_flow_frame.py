@@ -672,12 +672,13 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         #sq_bayesian.run_inversion()
 
         ### from surfquakecore ###
+        parameters =self.get_inversion_parameters()
         bic = BayesianIsolaCore(project=self.project, inventory_file=self.metadata_path_bind.value,
                                 output_directory=self.MTI_output_path.text(),
-                                save_plots=True)
+                                save_plots=parameters['plot_save'])
         bic.working_directory = self.mti_working_path.text()
         bi = BayesianIsolaGUICore(bic, model=self.get_model(), entities=self.get_db(),
-                                  parameters=self.get_inversion_parameters())
+                                  parameters=parameters)
         bi.run_inversion()
         pyc.QMetaObject.invokeMethod(self.progress_dialog, 'accept', Qt.Qt.QueuedConnection)
         #########################
