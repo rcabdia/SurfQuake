@@ -38,14 +38,18 @@ class BayesianIsolaGUICore:
 
     def run_inversion(self):
         for (i, entity) in enumerate(self.entities):
-            event_info = self.model.find_by(latitude=entity[0].latitude, longitude=entity[0].longitude,
-                        depth=entity[0].depth, origin_time=entity[0].origin_time)
+            try:
+                event_info = self.model.find_by(latitude=entity[0].latitude, longitude=entity[0].longitude,
+                            depth=entity[0].depth, origin_time=entity[0].origin_time)
 
-            if event_info.mw is None:
-                # might be users has not ru magnitude module but wants to do an inversion
-                event_info.mw =3.0
+                if event_info.mw is None:
+                    # might be users has not ru magnitude module but wants to do an inversion
+                    event_info.mw =3.0
 
-            mti_config = self.__get_mti_config(event_info)
-            print("Running inversion ", event_info.date, event_info.latitude, event_info.longitude, event_info.depth,
-                  event_info.mw)
-            self.bayesian_isola.run_inversion(mti_config)
+                mti_config = self.__get_mti_config(event_info)
+                print("Running inversion ", event_info.date, event_info.latitude, event_info.longitude, event_info.depth,
+                      event_info.mw)
+                self.bayesian_isola.run_inversion(mti_config)
+            except:
+                print("Failed Inversion of event ", event_info.date, event_info.latitude, event_info.longitude, event_info.depth,
+                      event_info.mw)

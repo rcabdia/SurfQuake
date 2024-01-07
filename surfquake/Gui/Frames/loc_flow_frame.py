@@ -657,6 +657,14 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         return parameters
 
     def run_mti(self):
+        self.__send_run_mti()
+        self.progress_dialog.exec()
+        md = MessageDialog(self)
+        md.set_info_message("Moment Tensor Inversion finished, Please see output directory and press "
+                            "print results")
+
+    @AsycTime.run_async()
+    def __send_run_mti(self):
         # macroMTI = self.parameters.getParameters()
         #parameters = self.get_inversion_parameters()
         # sq_bayesian = bayesian_isola_db(model=self.get_model(), entities=self.get_db(), metadata=self.inventory,
@@ -671,4 +679,5 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         bi = BayesianIsolaGUICore(bic, model=self.get_model(), entities=self.get_db(),
                                   parameters=self.get_inversion_parameters())
         bi.run_inversion()
+        pyc.QMetaObject.invokeMethod(self.progress_dialog, 'accept', Qt.Qt.QueuedConnection)
         #########################
