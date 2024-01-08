@@ -112,7 +112,7 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         self.earthModelMTIBtn.clicked.connect(lambda: self.on_click_select_file(self.earth_model_bind))
         self.mti_output_path_bind = BindPyqtObject(self.MTI_output_path, self.onChange_root_path)
         self.outputDirectoryMTIBtn.clicked.connect(lambda: self.on_click_select_directory(self.mti_output_path_bind))
-        self.macroMITBtn.clicked.connect(lambda: self.open_parameters_settings())
+        #self.macroMITBtn.clicked.connect(lambda: self.open_parameters_settings())
         self.runInversionMTIBtn.clicked.connect(lambda: self.run_mti())
         # Dialog
 
