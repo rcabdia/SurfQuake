@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1560</width>
-    <height>896</height>
+    <width>1250</width>
+    <height>895</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -28,7 +28,7 @@
     <item>
      <widget class="QTabWidget" name="SurfQuakeWidget">
       <property name="currentIndex">
-       <number>4</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="Project">
        <attribute name="title">
@@ -37,6 +37,12 @@
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
          <widget class="QGroupBox" name="groupBox_4">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="title">
            <string>Create Project from Individual Files</string>
           </property>
@@ -63,6 +69,12 @@
         </item>
         <item>
          <widget class="QGroupBox" name="groupBox_5">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="title">
            <string>Create Full Project</string>
           </property>
@@ -167,6 +179,12 @@
         </item>
         <item>
          <widget class="QGroupBox" name="groupBox_6">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="title">
            <string>Saving Project Box</string>
           </property>
@@ -203,6 +221,12 @@
         </item>
         <item>
          <widget class="QGroupBox" name="groupBox_9">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="title">
            <string>Metadata</string>
           </property>
@@ -246,6 +270,12 @@
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
          <widget class="QGroupBox" name="groupBox_19">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="title">
            <string>Phase Picking Box</string>
           </property>
@@ -295,404 +325,462 @@
          </widget>
         </item>
         <item>
-         <widget class="QGroupBox" name="groupBox_10">
-          <property name="toolTip">
-           <string>Search range in depth (km)</string>
+         <widget class="QGroupBox" name="groupBox_23">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
           </property>
           <property name="title">
-           <string>Geraphic Framework</string>
+           <string>Associator Box</string>
           </property>
-          <layout class="QGridLayout" name="gridLayout_9">
-           <item row="3" column="3">
-            <widget class="QPushButton" name="plot_grid_stationsBtn">
+          <layout class="QVBoxLayout" name="verticalLayout_11">
+           <property name="spacing">
+            <number>25</number>
+           </property>
+           <property name="topMargin">
+            <number>20</number>
+           </property>
+           <item>
+            <widget class="QGroupBox" name="groupBox_24">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="title">
+              <string>Working Framework</string>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_4">
+              <item>
+               <widget class="QPushButton" name="pushButton">
+                <property name="text">
+                 <string>Picking Directory</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="lineEdit_5"/>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_10">
              <property name="toolTip">
-              <string>Plot Grid Stations</string>
+              <string>Search range in depth (km)</string>
              </property>
-             <property name="text">
-              <string>Plot Grid Stations</string>
+             <property name="title">
+              <string>Geraphic Framework</string>
              </property>
+             <layout class="QGridLayout" name="gridLayout_9">
+              <item row="3" column="3">
+               <widget class="QPushButton" name="plot_grid_stationsBtn">
+                <property name="toolTip">
+                 <string>Plot Grid Stations</string>
+                </property>
+                <property name="text">
+                 <string>Plot Grid Stations</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="3">
+               <widget class="QDoubleSpinBox" name="depthSB">
+                <property name="toolTip">
+                 <string>Depth max</string>
+                </property>
+                <property name="prefix">
+                 <string>Depth (km) </string>
+                </property>
+                <property name="decimals">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <double>750.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QDoubleSpinBox" name="lon_refMaxSB">
+                <property name="toolTip">
+                 <string>Longitude max.</string>
+                </property>
+                <property name="prefix">
+                 <string>Ref Longitude Max </string>
+                </property>
+                <property name="decimals">
+                 <number>5</number>
+                </property>
+                <property name="minimum">
+                 <double>-180.000000000000000</double>
+                </property>
+                <property name="maximum">
+                 <double>180.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.050000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QDoubleSpinBox" name="lat_refMaxSB">
+                <property name="toolTip">
+                 <string>Latitude max</string>
+                </property>
+                <property name="prefix">
+                 <string>Ref Latitude Max </string>
+                </property>
+                <property name="decimals">
+                 <number>5</number>
+                </property>
+                <property name="maximum">
+                 <double>90.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.050000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QDoubleSpinBox" name="lat_refMinSB">
+                <property name="toolTip">
+                 <string>Latitude min</string>
+                </property>
+                <property name="prefix">
+                 <string>Ref Latitude Min </string>
+                </property>
+                <property name="decimals">
+                 <number>5</number>
+                </property>
+                <property name="maximum">
+                 <double>90.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.050000000000000</double>
+                </property>
+                <property name="value">
+                 <double>0.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QDoubleSpinBox" name="lon_refMin">
+                <property name="toolTip">
+                 <string>Longitude min</string>
+                </property>
+                <property name="prefix">
+                 <string>Ref Longitude Min  </string>
+                </property>
+                <property name="decimals">
+                 <number>5</number>
+                </property>
+                <property name="minimum">
+                 <double>-180.000000000000000</double>
+                </property>
+                <property name="maximum">
+                 <double>180.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.050000000000000</double>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </widget>
            </item>
-           <item row="2" column="3">
-            <widget class="QDoubleSpinBox" name="depthSB">
-             <property name="toolTip">
-              <string>Depth max</string>
+           <item>
+            <widget class="QGroupBox" name="groupBox">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
              </property>
-             <property name="prefix">
-              <string>Depth (km) </string>
+             <property name="title">
+              <string>Associator Parameters</string>
              </property>
-             <property name="decimals">
-              <number>1</number>
-             </property>
-             <property name="maximum">
-              <double>750.000000000000000</double>
-             </property>
+             <layout class="QGridLayout" name="gridLayout_10">
+              <item row="0" column="4">
+               <widget class="QLabel" name="label_22">
+                <property name="text">
+                 <string>Threshold Picks</string>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="2" colspan="3">
+               <widget class="QDoubleSpinBox" name="TTHorizontalGridSizeBtn">
+                <property name="toolTip">
+                 <string>Grid size of the travel times table (degree)</string>
+                </property>
+                <property name="statusTip">
+                 <string>Travel times table grid size (degree)</string>
+                </property>
+                <property name="prefix">
+                 <string>Horizontal Grid Resolution Size (º) </string>
+                </property>
+                <property name="decimals">
+                 <number>2</number>
+                </property>
+                <property name="maximum">
+                 <double>10.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.250000000000000</double>
+                </property>
+                <property name="value">
+                 <double>0.010000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="3" rowspan="4">
+               <widget class="Line" name="line_7">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="2" colspan="3">
+               <widget class="QDoubleSpinBox" name="TTDepthGridSizeBtn">
+                <property name="toolTip">
+                 <string>Vertical grid size of travel times table (km)</string>
+                </property>
+                <property name="statusTip">
+                 <string>Grid size of travel times table (km)</string>
+                </property>
+                <property name="prefix">
+                 <string>Depth Grid Resolution Size (km) </string>
+                </property>
+                <property name="decimals">
+                 <number>2</number>
+                </property>
+                <property name="maximum">
+                 <double>50.000000000000000</double>
+                </property>
+                <property name="value">
+                 <double>2.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
+               <widget class="QDoubleSpinBox" name="HorizontalGridSizeBtn">
+                <property name="toolTip">
+                 <string>Search grid size for epicenter (degree)</string>
+                </property>
+                <property name="prefix">
+                 <string>Horizontal Search Grid Size (º) </string>
+                </property>
+                <property name="decimals">
+                 <number>2</number>
+                </property>
+                <property name="singleStep">
+                 <double>0.100000000000000</double>
+                </property>
+                <property name="value">
+                 <double>0.600000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0" colspan="2">
+               <widget class="QDoubleSpinBox" name="gridSearchParamHorizontalRangeBtn">
+                <property name="toolTip">
+                 <string>Horizontal search range centered on the station where the first phase is recorded (degrees).</string>
+                </property>
+                <property name="prefix">
+                 <string>Horizontal Search Range (º) </string>
+                </property>
+                <property name="decimals">
+                 <number>2</number>
+                </property>
+                <property name="singleStep">
+                 <double>0.100000000000000</double>
+                </property>
+                <property name="value">
+                 <double>4.800000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="0" colspan="2">
+               <widget class="QDoubleSpinBox" name="TTHorizontalRangeBtn">
+                <property name="toolTip">
+                 <string>Horizontal range in the travel times table (degree)</string>
+                </property>
+                <property name="statusTip">
+                 <string>Horizontal range in the travel times table (degree)</string>
+                </property>
+                <property name="prefix">
+                 <string>Horizontal Range (º) </string>
+                </property>
+                <property name="decimals">
+                 <number>2</number>
+                </property>
+                <property name="maximum">
+                 <double>50.000000000000000</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.200000000000000</double>
+                </property>
+                <property name="value">
+                 <double>5.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0" colspan="2">
+               <widget class="QDoubleSpinBox" name="DepthSearchParamHorizontalRangeBtn">
+                <property name="toolTip">
+                 <string>Depth search range (km)</string>
+                </property>
+                <property name="statusTip">
+                 <string>Vertical range in the travel times table (km)</string>
+                </property>
+                <property name="prefix">
+                 <string>Depth Search Range (km) </string>
+                </property>
+                <property name="decimals">
+                 <number>2</number>
+                </property>
+                <property name="value">
+                 <double>50.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0" colspan="3">
+               <widget class="QLabel" name="label_20">
+                <property name="text">
+                 <string>Grid Search Parameters</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="4">
+               <widget class="QSpinBox" name="number_stations_picksSB">
+                <property name="toolTip">
+                 <string>Minimum number of stations where there must be P and S picks</string>
+                </property>
+                <property name="suffix">
+                 <string/>
+                </property>
+                <property name="prefix">
+                 <string>Number of Stations Recorded (P &amp; S) </string>
+                </property>
+                <property name="value">
+                 <number>1</number>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="0" colspan="3">
+               <widget class="QLabel" name="label_21">
+                <property name="text">
+                 <string>Travel Time Grid Search</string>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="0" colspan="2">
+               <widget class="QDoubleSpinBox" name="TTDepthRangeBtn">
+                <property name="toolTip">
+                 <string>Vertical range in the travel times table (km)</string>
+                </property>
+                <property name="prefix">
+                 <string>Depth Range (km) </string>
+                </property>
+                <property name="decimals">
+                 <number>2</number>
+                </property>
+                <property name="maximum">
+                 <double>700.000000000000000</double>
+                </property>
+                <property name="value">
+                 <double>50.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0" colspan="3">
+               <widget class="QDoubleSpinBox" name="EventTimeWindow">
+                <property name="toolTip">
+                 <string>Time between two events (seconds)</string>
+                </property>
+                <property name="prefix">
+                 <string>Event Time Window (s) </string>
+                </property>
+                <property name="decimals">
+                 <number>0</number>
+                </property>
+                <property name="maximum">
+                 <double>3600.000000000000000</double>
+                </property>
+                <property name="value">
+                 <double>120.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="2">
+               <widget class="QDoubleSpinBox" name="DepthGridSizeBtn">
+                <property name="toolTip">
+                 <string>Search grid size for depth (km)</string>
+                </property>
+                <property name="prefix">
+                 <string>Depth Search Grid Size (km) </string>
+                </property>
+                <property name="decimals">
+                 <number>2</number>
+                </property>
+                <property name="value">
+                 <double>10.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="4">
+               <widget class="QSpinBox" name="ThresholdPwaveSB">
+                <property name="toolTip">
+                 <string>Minimum number of P-phase selections required in an event</string>
+                </property>
+                <property name="statusTip">
+                 <string>Minimum number of P-phase selections required in an event</string>
+                </property>
+                <property name="suffix">
+                 <string/>
+                </property>
+                <property name="prefix">
+                 <string>Minimum Number P-wave Picks </string>
+                </property>
+                <property name="value">
+                 <number>3</number>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0" colspan="5">
+               <widget class="Line" name="line">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="4">
+               <widget class="QSpinBox" name="ThresholdSwaveSB">
+                <property name="toolTip">
+                 <string>Minimum number of S-phase selections required in an event</string>
+                </property>
+                <property name="suffix">
+                 <string/>
+                </property>
+                <property name="prefix">
+                 <string>Minimum Number S-wave Picks </string>
+                </property>
+                <property name="value">
+                 <number>1</number>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </widget>
            </item>
-           <item row="3" column="1">
-            <widget class="QDoubleSpinBox" name="lon_refMin">
-             <property name="toolTip">
-              <string>Longitude min</string>
-             </property>
-             <property name="prefix">
-              <string>Ref Longitude Min  </string>
-             </property>
-             <property name="decimals">
-              <number>5</number>
-             </property>
-             <property name="minimum">
-              <double>-180.000000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>180.000000000000000</double>
-             </property>
-             <property name="singleStep">
-              <double>0.050000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0">
-            <widget class="QDoubleSpinBox" name="lat_refMinSB">
-             <property name="toolTip">
-              <string>Latitude min</string>
-             </property>
-             <property name="prefix">
-              <string>Ref Latitude Min </string>
-             </property>
-             <property name="decimals">
-              <number>5</number>
-             </property>
-             <property name="maximum">
-              <double>90.000000000000000</double>
-             </property>
-             <property name="singleStep">
-              <double>0.050000000000000</double>
-             </property>
-             <property name="value">
-              <double>0.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QDoubleSpinBox" name="lat_refMaxSB">
-             <property name="toolTip">
-              <string>Latitude max</string>
-             </property>
-             <property name="prefix">
-              <string>Ref Latitude Max </string>
-             </property>
-             <property name="decimals">
-              <number>5</number>
-             </property>
-             <property name="maximum">
-              <double>90.000000000000000</double>
-             </property>
-             <property name="singleStep">
-              <double>0.050000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="QDoubleSpinBox" name="lon_refMaxSB">
-             <property name="toolTip">
-              <string>Longitude max.</string>
-             </property>
-             <property name="prefix">
-              <string>Ref Longitude Max </string>
-             </property>
-             <property name="decimals">
-              <number>5</number>
-             </property>
-             <property name="minimum">
-              <double>-180.000000000000000</double>
-             </property>
-             <property name="maximum">
-              <double>180.000000000000000</double>
-             </property>
-             <property name="singleStep">
-              <double>0.050000000000000</double>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QGroupBox" name="groupBox">
-          <property name="title">
-           <string>Associator Parameters</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_10">
-           <item row="7" column="0" colspan="2">
-            <widget class="QDoubleSpinBox" name="TTDepthRangeBtn">
-             <property name="toolTip">
-              <string>Vertical range in the travel times table (km)</string>
-             </property>
-             <property name="prefix">
-              <string>Depth Range (km) </string>
-             </property>
-             <property name="decimals">
-              <number>2</number>
-             </property>
-             <property name="maximum">
-              <double>700.000000000000000</double>
-             </property>
-             <property name="value">
-              <double>50.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="0" colspan="2">
-            <widget class="QDoubleSpinBox" name="TTHorizontalRangeBtn">
-             <property name="toolTip">
-              <string>Horizontal range in the travel times table (degree)</string>
-             </property>
-             <property name="statusTip">
-              <string>Horizontal range in the travel times table (degree)</string>
-             </property>
-             <property name="prefix">
-              <string>Horizontal Range (º) </string>
-             </property>
-             <property name="decimals">
-              <number>2</number>
-             </property>
-             <property name="maximum">
-              <double>50.000000000000000</double>
-             </property>
-             <property name="singleStep">
-              <double>0.200000000000000</double>
-             </property>
-             <property name="value">
-              <double>5.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0" colspan="2">
-            <widget class="QDoubleSpinBox" name="DepthSearchParamHorizontalRangeBtn">
-             <property name="toolTip">
-              <string>Depth search range (km)</string>
-             </property>
-             <property name="statusTip">
-              <string>Vertical range in the travel times table (km)</string>
-             </property>
-             <property name="prefix">
-              <string>Depth Search Range (km) </string>
-             </property>
-             <property name="decimals">
-              <number>2</number>
-             </property>
-             <property name="value">
-              <double>50.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0" colspan="3">
-            <widget class="QLabel" name="label_20">
-             <property name="text">
-              <string>Grid Search Parameters</string>
-             </property>
-            </widget>
-           </item>
-           <item row="10" column="0">
-            <widget class="QLabel" name="label_22">
-             <property name="text">
-              <string>Threshold Picks</string>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="2">
-            <widget class="QDoubleSpinBox" name="TTHorizontalGridSizeBtn">
-             <property name="toolTip">
-              <string>Grid size of the travel times table (degree)</string>
-             </property>
-             <property name="statusTip">
-              <string>Travel times table grid size (degree)</string>
-             </property>
-             <property name="prefix">
-              <string>Horizontal Grid Resolution Size (º) </string>
-             </property>
-             <property name="decimals">
-              <number>2</number>
-             </property>
-             <property name="maximum">
-              <double>10.000000000000000</double>
-             </property>
-             <property name="singleStep">
-              <double>0.250000000000000</double>
-             </property>
-             <property name="value">
-              <double>0.010000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="7" column="2">
-            <widget class="QDoubleSpinBox" name="TTDepthGridSizeBtn">
-             <property name="toolTip">
-              <string>Vertical grid size of travel times table (km)</string>
-             </property>
-             <property name="statusTip">
-              <string>Grid size of travel times table (km)</string>
-             </property>
-             <property name="prefix">
-              <string>Depth Grid Resolution Size (km) </string>
-             </property>
-             <property name="decimals">
-              <number>2</number>
-             </property>
-             <property name="maximum">
-              <double>50.000000000000000</double>
-             </property>
-             <property name="value">
-              <double>2.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="11" column="2" rowspan="2">
-            <widget class="QSpinBox" name="number_stations_picksSB">
-             <property name="toolTip">
-              <string>Minimum number of stations where there must be P and S picks</string>
-             </property>
-             <property name="suffix">
-              <string/>
-             </property>
-             <property name="prefix">
-              <string>Number of Stations Recorded (P &amp; S) </string>
-             </property>
-             <property name="value">
-              <number>1</number>
-             </property>
-            </widget>
-           </item>
-           <item row="12" column="0" colspan="2">
-            <widget class="QSpinBox" name="ThresholdSwaveSB">
-             <property name="toolTip">
-              <string>Minimum number of S-phase selections required in an event</string>
-             </property>
-             <property name="suffix">
-              <string/>
-             </property>
-             <property name="prefix">
-              <string>Minimum Number S-wave Picks </string>
-             </property>
-             <property name="value">
-              <number>1</number>
-             </property>
-            </widget>
-           </item>
-           <item row="8" column="0" rowspan="2" colspan="3">
-            <widget class="Line" name="line_2">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="11" column="0" colspan="2">
-            <widget class="QSpinBox" name="ThresholdPwaveSB">
-             <property name="toolTip">
-              <string>Minimum number of P-phase selections required in an event</string>
-             </property>
-             <property name="statusTip">
-              <string>Minimum number of P-phase selections required in an event</string>
-             </property>
-             <property name="suffix">
-              <string/>
-             </property>
-             <property name="prefix">
-              <string>Minimum Number P-wave Picks </string>
-             </property>
-             <property name="value">
-              <number>3</number>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0" colspan="3">
-            <widget class="QDoubleSpinBox" name="EventTimeWindow">
-             <property name="toolTip">
-              <string>Time between two events (seconds)</string>
-             </property>
-             <property name="prefix">
-              <string>Event Time Window (s) </string>
-             </property>
-             <property name="decimals">
-              <number>0</number>
-             </property>
-             <property name="maximum">
-              <double>3600.000000000000000</double>
-             </property>
-             <property name="value">
-              <double>120.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="2">
-            <widget class="QDoubleSpinBox" name="HorizontalGridSizeBtn">
-             <property name="toolTip">
-              <string>Search grid size for epicenter (degree)</string>
-             </property>
-             <property name="prefix">
-              <string>Horizontal Search Grid Size (º) </string>
-             </property>
-             <property name="decimals">
-              <number>2</number>
-             </property>
-             <property name="singleStep">
-              <double>0.100000000000000</double>
-             </property>
-             <property name="value">
-              <double>0.600000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0" colspan="2">
-            <widget class="QDoubleSpinBox" name="gridSearchParamHorizontalRangeBtn">
-             <property name="toolTip">
-              <string>Horizontal search range centered on the station where the first phase is recorded (degrees).</string>
-             </property>
-             <property name="prefix">
-              <string>Horizontal Search Range (º) </string>
-             </property>
-             <property name="decimals">
-              <number>2</number>
-             </property>
-             <property name="singleStep">
-              <double>0.100000000000000</double>
-             </property>
-             <property name="value">
-              <double>4.800000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0" colspan="3">
-            <widget class="Line" name="line">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="0" colspan="3">
-            <widget class="QLabel" name="label_21">
-             <property name="text">
-              <string>Travel Time Grid Search</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="2">
-            <widget class="QDoubleSpinBox" name="DepthGridSizeBtn">
-             <property name="toolTip">
-              <string>Search grid size for depth (km)</string>
-             </property>
-             <property name="prefix">
-              <string>Depth Search Grid Size (km) </string>
-             </property>
-             <property name="decimals">
-              <number>2</number>
-             </property>
-             <property name="value">
-              <double>10.000000000000000</double>
-             </property>
-            </widget>
-           </item>
-           <item row="14" column="2">
+           <item>
             <widget class="QPushButton" name="realBtn">
              <property name="toolTip">
               <string>Associator</string>
@@ -719,64 +807,91 @@
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_6">
            <item>
-            <layout class="QGridLayout" name="gridLayout_23">
-             <property name="sizeConstraint">
-              <enum>QLayout::SetDefaultConstraint</enum>
+            <widget class="QGroupBox" name="groupBox_22">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
              </property>
-             <item row="0" column="1">
-              <widget class="QLineEdit" name="loc_workLE">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="0">
-              <widget class="QPushButton" name="loc_work_dirBtn">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Work / Output Directory</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QPushButton" name="modelPathBtn">
-               <property name="text">
-                <string>Model Folder Path</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QLineEdit" name="modelLE"/>
-             </item>
-             <item row="2" column="0">
-              <widget class="QPushButton" name="picksBtn">
-               <property name="text">
-                <string>Pick File</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="QLineEdit" name="picksLE">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-              </widget>
-             </item>
-            </layout>
+             <property name="title">
+              <string>Working Framework</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_10">
+              <item>
+               <layout class="QGridLayout" name="gridLayout_23">
+                <property name="sizeConstraint">
+                 <enum>QLayout::SetDefaultConstraint</enum>
+                </property>
+                <property name="horizontalSpacing">
+                 <number>15</number>
+                </property>
+                <property name="verticalSpacing">
+                 <number>12</number>
+                </property>
+                <item row="0" column="1">
+                 <widget class="QLineEdit" name="loc_workLE">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="0">
+                 <widget class="QPushButton" name="loc_work_dirBtn">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="text">
+                   <string>Work / Output Directory</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QPushButton" name="modelPathBtn">
+                  <property name="text">
+                   <string>Model Folder Path</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QLineEdit" name="modelLE"/>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QPushButton" name="picksBtn">
+                  <property name="text">
+                   <string>Pick File</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QLineEdit" name="picksLE">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
            </item>
            <item>
             <widget class="QGroupBox" name="groupBox_7">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="title">
               <string>Grid Configuration</string>
              </property>
@@ -1187,6 +1302,12 @@
            </item>
            <item>
             <widget class="QGroupBox" name="groupBox_8">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="title">
               <string>Travel Times and Locate</string>
              </property>
@@ -1399,6 +1520,114 @@
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_7">
            <item>
+            <widget class="QGroupBox" name="groupBox_20">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>130</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>130</height>
+              </size>
+             </property>
+             <property name="title">
+              <string>Working Framework</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_9">
+              <property name="sizeConstraint">
+               <enum>QLayout::SetDefaultConstraint</enum>
+              </property>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout">
+                <property name="spacing">
+                 <number>15</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QPushButton" name="setLocFolderBtn">
+                  <property name="minimumSize">
+                   <size>
+                    <width>150</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>150</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>Loc Folder</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="source_locsLE">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_3">
+                <property name="spacing">
+                 <number>15</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QPushButton" name="setSourceOutBtn">
+                  <property name="minimumSize">
+                   <size>
+                    <width>150</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>150</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>Output Folder</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="source_outLE">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
             <layout class="QGridLayout" name="gridLayout_3">
              <item row="0" column="0">
               <widget class="QGroupBox" name="groupBox_12">
@@ -1553,26 +1782,6 @@
                   </property>
                  </widget>
                 </item>
-                <item row="0" column="0">
-                 <widget class="QPushButton" name="setLocFolderBtn">
-                  <property name="text">
-                   <string>Loc Folder</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="1" colspan="3">
-                 <widget class="QLineEdit" name="source_locsLE"/>
-                </item>
-                <item row="1" column="0">
-                 <widget class="QPushButton" name="setSourceOutBtn">
-                  <property name="text">
-                   <string>Output Folder</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="1" colspan="3">
-                 <widget class="QLineEdit" name="source_outLE"/>
-                </item>
                </layout>
               </widget>
              </item>
@@ -1586,142 +1795,7 @@
                 <string>Source Parameters</string>
                </property>
                <layout class="QGridLayout" name="gridLayout_13">
-                <item row="2" column="2">
-                 <widget class="QPushButton" name="mag_runBtn">
-                  <property name="text">
-                   <string>Run Automag</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="0" alignment="Qt::AlignHCenter">
-                 <widget class="QLabel" name="label_34">
-                  <property name="text">
-                   <string>rpp</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="1">
-                 <widget class="QDoubleSpinBox" name="automag_rpsDB">
-                  <property name="value">
-                   <double>0.620000000000000</double>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="1">
-                 <widget class="QDoubleSpinBox" name="automag_density_DB">
-                  <property name="suffix">
-                   <string> (kg/m3)</string>
-                  </property>
-                  <property name="decimals">
-                   <number>1</number>
-                  </property>
-                  <property name="maximum">
-                   <double>5000.000000000000000</double>
-                  </property>
-                  <property name="value">
-                   <double>2500.000000000000000</double>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="0" alignment="Qt::AlignHCenter">
-                 <widget class="QLabel" name="label_35">
-                  <property name="toolTip">
-                   <string>S-wave average radiation pattern coefficient</string>
-                  </property>
-                  <property name="text">
-                   <string>rps</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="0" alignment="Qt::AlignHCenter">
-                 <widget class="QLabel" name="label_33">
-                  <property name="text">
-                   <string>Source Density</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="1">
-                 <widget class="QDoubleSpinBox" name="automag_rppDB">
-                  <property name="toolTip">
-                   <string>P-wave average radiation pattern coefficient</string>
-                  </property>
-                  <property name="value">
-                   <double>0.520000000000000</double>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="3">
-                 <widget class="QPushButton" name="printSourceResultsBtn">
-                  <property name="text">
-                   <string>Print Results</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="2" colspan="2">
-                 <widget class="QGroupBox" name="groupBox_14">
-                  <property name="title">
-                   <string>Geometrical spreading correction</string>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_15">
-                   <item row="2" column="0">
-                    <widget class="QLabel" name="label_27">
-                     <property name="text">
-                      <string>geom spread n_exponent</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="0">
-                    <layout class="QHBoxLayout" name="horizontalLayout_2">
-                     <item>
-                      <widget class="QRadioButton" name="r_power_nRB">
-                       <property name="text">
-                        <string>r_power_n</string>
-                       </property>
-                       <property name="checked">
-                        <bool>true</bool>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QRadioButton" name="radioButton_2">
-                       <property name="text">
-                        <string>boatwright</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </item>
-                   <item row="2" column="1">
-                    <widget class="QDoubleSpinBox" name="geom_spread_n_exponentDB">
-                     <property name="value">
-                      <double>1.000000000000000</double>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="2">
-                    <widget class="QLabel" name="label_28">
-                     <property name="text">
-                      <string>geom spread cutoff_distance</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="3">
-                    <widget class="QDoubleSpinBox" name="geom_spread_cutoff_distanceDB">
-                     <property name="decimals">
-                      <number>1</number>
-                     </property>
-                     <property name="maximum">
-                      <double>400.000000000000000</double>
-                     </property>
-                     <property name="value">
-                      <double>100.000000000000000</double>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="1" column="2" colspan="2">
+                <item row="2" column="2" colspan="2">
                  <widget class="QGroupBox" name="groupBox_15">
                   <property name="title">
                    <string>Local Magnitude</string>
@@ -1787,6 +1861,134 @@
                   </layout>
                  </widget>
                 </item>
+                <item row="1" column="2" colspan="2">
+                 <widget class="QGroupBox" name="groupBox_14">
+                  <property name="title">
+                   <string>Geometrical spreading correction</string>
+                  </property>
+                  <layout class="QGridLayout" name="gridLayout_15">
+                   <item row="2" column="0">
+                    <widget class="QLabel" name="label_27">
+                     <property name="text">
+                      <string>geom spread n_exponent</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="0">
+                    <layout class="QHBoxLayout" name="horizontalLayout_2">
+                     <item>
+                      <widget class="QRadioButton" name="r_power_nRB">
+                       <property name="text">
+                        <string>r_power_n</string>
+                       </property>
+                       <property name="checked">
+                        <bool>true</bool>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QRadioButton" name="radioButton_2">
+                       <property name="text">
+                        <string>boatwright</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item row="2" column="1">
+                    <widget class="QDoubleSpinBox" name="geom_spread_n_exponentDB">
+                     <property name="value">
+                      <double>1.000000000000000</double>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="2" column="2">
+                    <widget class="QLabel" name="label_28">
+                     <property name="text">
+                      <string>geom spread cutoff_distance</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="2" column="3">
+                    <widget class="QDoubleSpinBox" name="geom_spread_cutoff_distanceDB">
+                     <property name="decimals">
+                      <number>1</number>
+                     </property>
+                     <property name="maximum">
+                      <double>400.000000000000000</double>
+                     </property>
+                     <property name="value">
+                      <double>100.000000000000000</double>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item row="1" column="0" rowspan="2">
+                 <layout class="QGridLayout" name="gridLayout_21">
+                  <property name="topMargin">
+                   <number>12</number>
+                  </property>
+                  <item row="0" column="1">
+                   <widget class="QDoubleSpinBox" name="automag_density_DB">
+                    <property name="suffix">
+                     <string> (kg/m3)</string>
+                    </property>
+                    <property name="decimals">
+                     <number>1</number>
+                    </property>
+                    <property name="maximum">
+                     <double>5000.000000000000000</double>
+                    </property>
+                    <property name="value">
+                     <double>2500.000000000000000</double>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QDoubleSpinBox" name="automag_rppDB">
+                    <property name="toolTip">
+                     <string>P-wave average radiation pattern coefficient</string>
+                    </property>
+                    <property name="value">
+                     <double>0.520000000000000</double>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="label_33">
+                    <property name="text">
+                     <string>Source Density</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="label_34">
+                    <property name="text">
+                     <string>rpp</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QDoubleSpinBox" name="automag_rpsDB">
+                    <property name="value">
+                     <double>0.620000000000000</double>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="label_35">
+                    <property name="toolTip">
+                     <string>S-wave average radiation pattern coefficient</string>
+                    </property>
+                    <property name="text">
+                     <string>rps</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
                </layout>
               </widget>
              </item>
@@ -1800,8 +2002,47 @@
                 <string>Results</string>
                </property>
                <layout class="QGridLayout" name="gridLayout_18">
-                <item row="0" column="0">
+                <item row="1" column="0">
+                 <widget class="QPushButton" name="mag_runBtn">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="text">
+                   <string>Run Source</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="2">
+                 <widget class="QPushButton" name="printSourceResultsBtn">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="text">
+                   <string>Print Results</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="0" colspan="3">
                  <widget class="QPlainTextEdit" name="automagnitudesText"/>
+                </item>
+                <item row="1" column="1">
+                 <spacer name="horizontalSpacer">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
                 </item>
                </layout>
               </widget>
@@ -1817,418 +2058,639 @@
        <attribute name="title">
         <string>MTI</string>
        </attribute>
-       <widget class="QGroupBox" name="groupBox_11">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>10</y>
-          <width>1511</width>
-          <height>791</height>
-         </rect>
-        </property>
-        <property name="title">
-         <string>Settings</string>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout_8">
-         <item>
-          <layout class="QGridLayout" name="gridLayout_19">
-           <item row="0" column="0">
-            <widget class="QGroupBox" name="groupBox_17">
-             <property name="title">
-              <string>Working Framework</string>
+       <layout class="QHBoxLayout" name="horizontalLayout_6">
+        <item>
+         <widget class="QGroupBox" name="groupBox_11">
+          <property name="title">
+           <string>Settings</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_8">
+           <property name="spacing">
+            <number>20</number>
+           </property>
+           <item>
+            <layout class="QGridLayout" name="gridLayout_19">
+             <item row="0" column="0">
+              <widget class="QGroupBox" name="groupBox_17">
+               <property name="title">
+                <string>Working Framework</string>
+               </property>
+               <layout class="QGridLayout" name="gridLayout_20">
+                <item row="0" column="0">
+                 <widget class="QPushButton" name="workingDirectoryMTIBtn">
+                  <property name="text">
+                   <string>Working Directory</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QPushButton" name="outputDirectoryMTIBtn">
+                  <property name="text">
+                   <string>Output Directory</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="2">
+                 <widget class="QLineEdit" name="mti_working_path">
+                  <property name="text">
+                   <string>/Volumes/LaCie/Andorra/mti_test/work_directory</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="2">
+                 <widget class="QLineEdit" name="MTI_output_path">
+                  <property name="text">
+                   <string>/Volumes/LaCie/Andorra/mti_test/output</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QPushButton" name="earthModelMTIBtn">
+                  <property name="text">
+                   <string>Earth Model File</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="2">
+                 <widget class="QLineEdit" name="earth_model_path">
+                  <property name="text">
+                   <string>/Volumes/LaCie/Andorra/mti_test/input/Iberia.dat</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_25">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
              </property>
-             <layout class="QGridLayout" name="gridLayout_20">
-              <item row="0" column="0">
-               <widget class="QPushButton" name="workingDirectoryMTIBtn">
-                <property name="text">
-                 <string>Working Directory</string>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>100</height>
+              </size>
+             </property>
+             <property name="title">
+              <string>Grid Search</string>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_5">
+              <property name="spacing">
+               <number>15</number>
+              </property>
+              <item>
+               <layout class="QGridLayout" name="gridLayout_30">
+                <property name="spacing">
+                 <number>0</number>
+                </property>
+                <item row="1" column="0">
+                 <widget class="QLabel" name="label_44">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="text">
+                   <string>Horizontal search step</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_47">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="text">
+                   <string>Horizontal Location Uncertainity (m)</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QDoubleSpinBox" name="HorizontalLocUncertainityMTIDB">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Maximum">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="suffix">
+                   <string/>
+                  </property>
+                  <property name="decimals">
+                   <number>1</number>
+                  </property>
+                  <property name="maximum">
+                   <double>15000.000000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>3000.000000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QDoubleSpinBox" name="HorizontalSeachStepMTIDB">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Maximum">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="decimals">
+                   <number>1</number>
+                  </property>
+                  <property name="maximum">
+                   <double>1000.000000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>200.000000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <widget class="Line" name="line_2">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
                 </property>
                </widget>
               </item>
-              <item row="2" column="0">
-               <widget class="QPushButton" name="outputDirectoryMTIBtn">
-                <property name="text">
-                 <string>Output Directory</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="2">
-               <widget class="QLineEdit" name="mti_working_path">
-                <property name="text">
-                 <string>/Volumes/LaCie/Andorra/mti_test/work_directory</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="2">
-               <widget class="QLineEdit" name="MTI_output_path">
-                <property name="text">
-                 <string>/Volumes/LaCie/Andorra/mti_test/output</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QPushButton" name="earthModelMTIBtn">
-                <property name="text">
-                 <string>Earth Model File</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="2">
-               <widget class="QLineEdit" name="earth_model_path">
-                <property name="text">
-                 <string>/Volumes/LaCie/Andorra/mti_test/input/Iberia.dat</string>
-                </property>
-               </widget>
+              <item>
+               <layout class="QGridLayout" name="gridLayout_29">
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_39">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="text">
+                   <string>Depth Uncertainity (m)</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QLabel" name="label_31">
+                  <property name="text">
+                   <string>Time Uncertainity (s)</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QLabel" name="label_40">
+                  <property name="text">
+                   <string>Depth Search step (m)</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QDoubleSpinBox" name="depthUncertainityMTIDB">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="decimals">
+                   <number>1</number>
+                  </property>
+                  <property name="maximum">
+                   <double>15000.000000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>3000.000000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QDoubleSpinBox" name="depthSearchStepMTIDB">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="decimals">
+                   <number>1</number>
+                  </property>
+                  <property name="maximum">
+                   <double>1000.000000000000000</double>
+                  </property>
+                  <property name="singleStep">
+                   <double>1.000000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>200.000000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QDoubleSpinBox" name="timeUncertainityMTIDB">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="decimals">
+                   <number>1</number>
+                  </property>
+                  <property name="maximum">
+                   <double>11.000000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>1.000000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </item>
              </layout>
             </widget>
            </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QGridLayout" name="gridLayout_21">
-           <item row="0" column="0">
-            <widget class="QGroupBox" name="groupBox_18">
-             <property name="title">
-              <string>Source Parameters</string>
+           <item>
+            <widget class="QGroupBox" name="groupBox_26">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
              </property>
-             <layout class="QGridLayout" name="gridLayout_22">
-              <item row="5" column="5" colspan="2">
-               <widget class="QPushButton" name="showResultsBtn">
-                <property name="text">
-                 <string>Print Results</string>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>100</height>
+              </size>
+             </property>
+             <property name="title">
+              <string>Settings</string>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_7">
+              <item>
+               <widget class="QGroupBox" name="groupBox_27">
+                <property name="title">
+                 <string>GroupBox</string>
                 </property>
+                <layout class="QGridLayout" name="gridLayout_26">
+                 <item row="4" column="0">
+                  <widget class="QLabel" name="label_32">
+                   <property name="text">
+                    <string>Inversion Freqs</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QDoubleSpinBox" name="ruptureVelMTIDB">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="suffix">
+                    <string> (km/s)</string>
+                   </property>
+                   <property name="decimals">
+                    <number>1</number>
+                   </property>
+                   <property name="maximum">
+                    <double>5000.000000000000000</double>
+                   </property>
+                   <property name="value">
+                    <double>2500.000000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="label_41">
+                   <property name="text">
+                    <string>Source type</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QCheckBox" name="deviatoricCB">
+                   <property name="text">
+                    <string>Deviatoric</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="label_43">
+                   <property name="toolTip">
+                    <string>S-wave average radiation pattern coefficient</string>
+                   </property>
+                   <property name="text">
+                    <string>Rupture Velocity</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QCheckBox" name="covarianceCB">
+                   <property name="text">
+                    <string>Cross Covariance</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="2">
+                  <widget class="QDoubleSpinBox" name="freq_maxMTI">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="prefix">
+                    <string>freq max </string>
+                   </property>
+                   <property name="suffix">
+                    <string> Hz</string>
+                   </property>
+                   <property name="decimals">
+                    <number>3</number>
+                   </property>
+                   <property name="value">
+                    <double>0.600000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="1">
+                  <widget class="QDoubleSpinBox" name="freq_minMTI">
+                   <property name="prefix">
+                    <string>freq min </string>
+                   </property>
+                   <property name="suffix">
+                    <string> Hz</string>
+                   </property>
+                   <property name="decimals">
+                    <number>3</number>
+                   </property>
+                   <property name="value">
+                    <double>0.040000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="QComboBox" name="sourceTypeCB">
+                   <item>
+                    <property name="text">
+                     <string>Triangle</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item row="2" column="2">
+                  <widget class="QDoubleSpinBox" name="sourceTypeLenthgMTIDB">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="prefix">
+                    <string>legth </string>
+                   </property>
+                   <property name="suffix">
+                    <string> (s)</string>
+                   </property>
+                   <property name="value">
+                    <double>2.000000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
                </widget>
               </item>
-              <item row="3" column="5">
-               <widget class="QDoubleSpinBox" name="minDistMTIDB">
-                <property name="prefix">
-                 <string>Min Distante </string>
-                </property>
-                <property name="suffix">
-                 <string> km</string>
-                </property>
-                <property name="decimals">
-                 <number>1</number>
-                </property>
-                <property name="maximum">
-                 <double>1000.000000000000000</double>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="3">
-               <widget class="QDoubleSpinBox" name="depthSearchStepMTIDB">
-                <property name="decimals">
-                 <number>1</number>
-                </property>
-                <property name="maximum">
-                 <double>1000.000000000000000</double>
-                </property>
-                <property name="singleStep">
-                 <double>1.000000000000000</double>
-                </property>
-                <property name="value">
-                 <double>200.000000000000000</double>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="0" colspan="7">
-               <widget class="Line" name="line_3">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="2" alignment="Qt::AlignHCenter">
-               <widget class="QLabel" name="label_39">
-                <property name="text">
-                 <string>Depth Uncertainity (m)</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QDoubleSpinBox" name="HorizontalLocUncertainityMTIDB">
-                <property name="suffix">
-                 <string/>
-                </property>
-                <property name="decimals">
-                 <number>1</number>
-                </property>
-                <property name="maximum">
-                 <double>15000.000000000000000</double>
-                </property>
-                <property name="value">
-                 <double>3000.000000000000000</double>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="QDoubleSpinBox" name="HorizontalSeachStepMTIDB">
-                <property name="decimals">
-                 <number>1</number>
-                </property>
-                <property name="maximum">
-                 <double>1000.000000000000000</double>
-                </property>
-                <property name="value">
-                 <double>200.000000000000000</double>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="2" alignment="Qt::AlignHCenter">
-               <widget class="QLabel" name="label_40">
-                <property name="text">
-                 <string>Depth Search step (m)</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="6">
-               <widget class="QDoubleSpinBox" name="maxDistMTIDB">
-                <property name="prefix">
-                 <string>Max Distance </string>
-                </property>
-                <property name="suffix">
-                 <string> (km)</string>
-                </property>
-                <property name="decimals">
-                 <number>1</number>
-                </property>
-                <property name="maximum">
-                 <double>100000.000000000000000</double>
-                </property>
-                <property name="value">
-                 <double>450.000000000000000</double>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="6">
-               <widget class="QDoubleSpinBox" name="freq_maxMTI">
-                <property name="prefix">
-                 <string>freq max </string>
-                </property>
-                <property name="suffix">
-                 <string> Hz</string>
-                </property>
-                <property name="decimals">
-                 <number>3</number>
-                </property>
-                <property name="value">
-                 <double>0.600000000000000</double>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="5">
-               <widget class="QComboBox" name="sourceTypeCB">
-                <item>
-                 <property name="text">
-                  <string>Triangle</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-              <item row="0" column="4" alignment="Qt::AlignHCenter">
-               <widget class="QLabel" name="label_41">
-                <property name="text">
-                 <string>Source type</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="5">
-               <widget class="QDoubleSpinBox" name="freq_minMTI">
-                <property name="prefix">
-                 <string>freq min </string>
-                </property>
-                <property name="suffix">
-                 <string> Hz</string>
-                </property>
-                <property name="decimals">
-                 <number>3</number>
-                </property>
-                <property name="value">
-                 <double>0.040000000000000</double>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="4" alignment="Qt::AlignHCenter">
-               <widget class="QCheckBox" name="deviatoricCB">
-                <property name="text">
-                 <string>Deviatoric</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0" alignment="Qt::AlignHCenter">
-               <widget class="QLabel" name="label_47">
-                <property name="text">
-                 <string>Horizontal Location Uncertainity (m)</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="6" alignment="Qt::AlignHCenter">
-               <widget class="QCheckBox" name="savePlotsCB">
-                <property name="text">
-                 <string>Save Plots</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="4" alignment="Qt::AlignHCenter">
-               <widget class="QLabel" name="label_32">
-                <property name="text">
-                 <string>Inversion Freqs</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="5" alignment="Qt::AlignHCenter">
-               <widget class="QCheckBox" name="covarianceCB">
-                <property name="text">
-                 <string>Cross Covariance</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="3">
-               <widget class="QDoubleSpinBox" name="depthUncertainityMTIDB">
-                <property name="decimals">
-                 <number>1</number>
-                </property>
-                <property name="maximum">
-                 <double>15000.000000000000000</double>
-                </property>
-                <property name="value">
-                 <double>3000.000000000000000</double>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0" alignment="Qt::AlignHCenter">
-               <widget class="QLabel" name="label_44">
-                <property name="text">
-                 <string>Horizontal search step</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="6">
-               <widget class="QDoubleSpinBox" name="sourceTypeLenthgMTIDB">
-                <property name="prefix">
-                 <string>legth </string>
-                </property>
-                <property name="suffix">
-                 <string> (s)</string>
-                </property>
-                <property name="value">
-                 <double>2.000000000000000</double>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="2" colspan="3">
-               <widget class="QPushButton" name="runInversionMTIBtn">
-                <property name="text">
-                 <string>Run Inversion</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="label_43">
-                <property name="toolTip">
-                 <string>S-wave average radiation pattern coefficient</string>
-                </property>
-                <property name="text">
-                 <string>Rupture Velocity (km/s)</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="1">
-               <widget class="QDoubleSpinBox" name="ruptureVelMTIDB">
-                <property name="maximum">
-                 <double>5000.000000000000000</double>
-                </property>
-                <property name="value">
-                 <double>1000.000000000000000</double>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="2" alignment="Qt::AlignHCenter">
-               <widget class="QLabel" name="label_31">
-                <property name="text">
-                 <string>Time Uncertainity (s)</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="3">
-               <widget class="QDoubleSpinBox" name="timeUncertainityMTIDB">
-                <property name="decimals">
-                 <number>1</number>
-                </property>
-                <property name="maximum">
-                 <double>11.000000000000000</double>
-                </property>
-                <property name="value">
-                 <double>1.000000000000000</double>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="4">
-               <widget class="QDoubleSpinBox" name="rms_threshMTI">
-                <property name="prefix">
-                 <string>RMS threshold </string>
-                </property>
-                <property name="decimals">
-                 <number>1</number>
-                </property>
-                <property name="value">
-                 <double>5.000000000000000</double>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="2" alignment="Qt::AlignHCenter">
-               <widget class="QLabel" name="label_42">
-                <property name="text">
+              <item>
+               <widget class="QGroupBox" name="groupBox_28">
+                <property name="title">
                  <string>Traces Selection Criteria</string>
                 </property>
-               </widget>
-              </item>
-              <item row="3" column="3">
-               <widget class="QSpinBox" name="max_num_stationsMTI">
-                <property name="suffix">
-                 <string/>
-                </property>
-                <property name="prefix">
-                 <string>max num stations </string>
-                </property>
-                <property name="value">
-                 <number>10</number>
-                </property>
+                <layout class="QFormLayout" name="formLayout">
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="label_56">
+                   <property name="toolTip">
+                    <string>S-wave average radiation pattern coefficient</string>
+                   </property>
+                   <property name="text">
+                    <string>Max numer of stations</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QSpinBox" name="max_num_stationsMTI">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="suffix">
+                    <string/>
+                   </property>
+                   <property name="prefix">
+                    <string/>
+                   </property>
+                   <property name="value">
+                    <number>10</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="label_57">
+                   <property name="toolTip">
+                    <string>S-wave average radiation pattern coefficient</string>
+                   </property>
+                   <property name="text">
+                    <string>RMS Threshold</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="QDoubleSpinBox" name="rms_threshMTI">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="prefix">
+                    <string/>
+                   </property>
+                   <property name="suffix">
+                    <string> (s)</string>
+                   </property>
+                   <property name="decimals">
+                    <number>1</number>
+                   </property>
+                   <property name="value">
+                    <double>5.000000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="1">
+                  <widget class="QDoubleSpinBox" name="minDistMTIDB">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="prefix">
+                    <string/>
+                   </property>
+                   <property name="suffix">
+                    <string> km</string>
+                   </property>
+                   <property name="decimals">
+                    <number>1</number>
+                   </property>
+                   <property name="maximum">
+                    <double>1000.000000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="0">
+                  <widget class="QLabel" name="label_58">
+                   <property name="toolTip">
+                    <string>S-wave average radiation pattern coefficient</string>
+                   </property>
+                   <property name="text">
+                    <string>Minimum Epicenter Distance</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="1">
+                  <widget class="QDoubleSpinBox" name="maxDistMTIDB">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="prefix">
+                    <string/>
+                   </property>
+                   <property name="suffix">
+                    <string> (km)</string>
+                   </property>
+                   <property name="decimals">
+                    <number>1</number>
+                   </property>
+                   <property name="maximum">
+                    <double>100000.000000000000000</double>
+                   </property>
+                   <property name="value">
+                    <double>450.000000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="0">
+                  <widget class="QLabel" name="label_59">
+                   <property name="toolTip">
+                    <string>S-wave average radiation pattern coefficient</string>
+                   </property>
+                   <property name="text">
+                    <string>Maximum Epicenter Distance</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
                </widget>
               </item>
              </layout>
             </widget>
            </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QGridLayout" name="gridLayout_25">
-           <item row="0" column="0">
-            <widget class="QGroupBox" name="groupBox_21">
-             <property name="title">
-              <string>Results</string>
-             </property>
-             <layout class="QGridLayout" name="gridLayout_26">
-              <item row="0" column="0">
-               <widget class="QPlainTextEdit" name="automagnitudesText_2"/>
-              </item>
-             </layout>
-            </widget>
+           <item>
+            <layout class="QGridLayout" name="gridLayout_25">
+             <item row="0" column="0">
+              <widget class="QGroupBox" name="groupBox_21">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="title">
+                <string>Results</string>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_12">
+                <property name="spacing">
+                 <number>12</number>
+                </property>
+                <item>
+                 <widget class="QPlainTextEdit" name="automagnitudesText_2">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_9">
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <widget class="QPushButton" name="runInversionMTIBtn">
+                    <property name="text">
+                     <string>Run Inversion</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QCheckBox" name="savePlotsCB">
+                    <property name="text">
+                     <string>Save Plots</string>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="showResultsBtn">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="text">
+                     <string>Print Results</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
-         </item>
-        </layout>
-       </widget>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>
@@ -2239,7 +2701,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1560</width>
+     <width>1250</width>
      <height>24</height>
     </rect>
    </property>
