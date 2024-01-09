@@ -53,10 +53,12 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         self.project = None
         self.config_automag = {}
         self.parameters = ParametersSettings()
+
         ####### Metadata ##########
         self.metadata_path_bind = BindPyqtObject(self.datalessPathForm)
         self.setMetaBtn.clicked.connect(lambda: self.on_click_select_file(self.metadata_path_bind))
         self.loadMetaBtn.clicked.connect(lambda: self.onChange_metadata_path(self.metadata_path_bind.value))
+
         ####### Project ###########
 
         self.progressbar = pw.QProgressDialog(self)
@@ -72,6 +74,16 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         self.phasenetBtn.clicked.connect(self.run_phasenet)
         self.realBtn.clicked.connect(self.run_real)
         self.plot_grid_stationsBtn.clicked.connect(self.plot_real_grid)
+
+        ############# Phasent -Picking ##############
+        self.picking_bind = BindPyqtObject(self.picking_LE, self.onChange_root_path)
+        self.output_path_pickBtn.clicked.connect(lambda: self.on_click_select_directory(self.picking_bind))
+
+        ############ REAL ###########################
+        self.real_bind = BindPyqtObject(self.real_inputLE, self.onChange_root_path)
+        self.real_picking_inputBtn.clicked.connect(lambda: self.on_click_select_directory(self.real_bind))
+        self.real_output_bind = BindPyqtObject(self.output_realLE, self.onChange_root_path)
+        self.output_realBtn.clicked.connect(lambda: self.on_click_select_directory(self.real_output_bind))
 
         # NonLinLoc
         self.grid_latitude_bind = BindPyqtObject(self.gridlatSB)
@@ -140,7 +152,7 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         md.set_info_message(msg, detailed_message)
 
     def on_click_select_file(self, bind: BindPyqtObject):
-        selected = pw.QFileDialog.getOpenFileName(self, "Select metadata file")
+        selected = pw.QFileDialog.getOpenFileName(self, "Select file")
         if isinstance(selected[0], str) and os.path.isfile(selected[0]):
             bind.value = selected[0]
 
@@ -306,12 +318,15 @@ class LocFlow(BaseFrame, UiLoc_Flow):
     def send_phasenet(self):
         print("Starting Picking")
 
-        phISP = PhasenetISP(self.sp.project, amplitude=True, min_p_prob=0.30, min_s_prob=0.30)
+        phISP = PhasenetISP(self.sp.project, amplitude=True, min_p_prob=self.p_wave_picking_thresholdDB.value(),
+                            min_s_prob=self.s_wave_picking_thresholdDB.value())
+
         picks = phISP.phasenet()
         picks_ = PhasenetUtils.split_picks(picks)
 
-        PhasenetUtils.convert2real(picks_, self.__pick_output_path)
-        PhasenetUtils.save_original_picks(picks_, self.__pick_output_path)
+        PhasenetUtils.convert2real(picks_, self.picking_bind.value)
+        PhasenetUtils.save_original_picks(picks_, self.picking_bind.value)
+
         """ PHASENET OUTPUT TO REAL INPUT"""
         pyc.QMetaObject.invokeMethod(self.progress_dialog, 'accept', Qt.Qt.QueuedConnection)
 
@@ -390,7 +405,8 @@ class LocFlow(BaseFrame, UiLoc_Flow):
                 num_stations_recorded=self.number_stations_picksSB.value())
         )
 
-        rc = RealCore(self.metadata_path_bind.value, real_config, p_dir, real_working_dir, real_output_data)
+        rc = RealCore(self.metadata_path_bind.value, real_config, self.real_bind.value, real_working_dir,
+                      self.real_output_bind.value)
         rc.run_real()
         print("End of Events AssociationProcess, please see for results: ", real_output_data)
         pyc.QMetaObject.invokeMethod(self.progress_dialog, 'accept', Qt.Qt.QueuedConnection)
