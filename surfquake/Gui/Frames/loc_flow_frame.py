@@ -70,7 +70,7 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         self.loadProjectBtn.clicked.connect(lambda: self.load_project())
         self.openProjectBtn.clicked.connect(lambda: self.openProject())
         self.saveBtn.clicked.connect(lambda: self.saveProject())
-        self.regularBtn.clicked.connect(lambda: self.load_files_done())
+        self.regularBtn.clicked.connect(lambda: self.load_files())
         self.phasenetBtn.clicked.connect(self.run_phasenet)
         self.realBtn.clicked.connect(self.run_real)
         self.plot_grid_stationsBtn.clicked.connect(self.plot_real_grid)
@@ -218,14 +218,13 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         else:
             md.set_error_message("Project couldn't be loaded ")
 
-    def load_files_done(self):
+    def load_files(self):
 
         if self.rootPathForm_inv.text() == "":
             filter = "All files (*.*)"
         else:
 
             filter = self.rootPathForm_inv.text()
-        print(filter)
 
         selected_files, _ = pw.QFileDialog.getOpenFileNames(self, "Select Project", ROOT_DIR, filter=filter)
 
@@ -233,13 +232,14 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         md.hide()
 
         try:
-            ms = MseedUtil()
+            self.sp = SurfProject(selected_files)
             self.progressbar.reset()
             self.progressbar.setLabelText("Bulding Project")
             self.progressbar.setRange(0, 0)
 
             def callback():
-                r = ms.search_indiv_files(selected_files)
+                self.sp.search_files(verbose=True)
+                r = self.sp.project
                 pyc.QMetaObject.invokeMethod(self.progressbar, "accept")
                 return r
 
@@ -256,6 +256,7 @@ class LocFlow(BaseFrame, UiLoc_Flow):
             md.set_error_message("Something went wrong. Please check that your data files are correct mseed files")
 
         md.show()
+
 
     def _select_directory(self, bind: BindPyqtObject):
 
