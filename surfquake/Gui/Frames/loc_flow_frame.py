@@ -2,6 +2,7 @@ import os
 from surfquakecore.earthquake_location.structures import NLLConfig, GridConfiguration, TravelTimesConfiguration, \
     LocationParameters
 from surfquakecore.magnitudes.source_tools import ReadSource
+from surfquakecore.moment_tensor.mti_parse import read_isola_result
 from surfquakecore.moment_tensor.sq_isola_tools import BayesianIsolaCore
 from surfquakecore.real.real_core import RealCore
 from surfquakecore.real.structures import RealConfig, GeographicFrame, GridSearch, TravelTimeGridSearch, ThresholdPicks
@@ -126,6 +127,7 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         self.outputDirectoryMTIBtn.clicked.connect(lambda: self.on_click_select_directory(self.mti_output_path_bind))
         #self.macroMITBtn.clicked.connect(lambda: self.open_parameters_settings())
         self.runInversionMTIBtn.clicked.connect(lambda: self.run_mti())
+        self.printMTIresultsBtn.clicked.connect(lambda: self.print_mti())
         # Dialog
 
         self.progress_dialog = pw.QProgressDialog(self)
@@ -534,6 +536,7 @@ class LocFlow(BaseFrame, UiLoc_Flow):
     def print_source_results(self):
         import pandas as pd
         import math
+        self.automagnitudesText.clear()
         summary_path = os.path.join(self.source_out_bind.value, "source_summary.txt")
         df = pd.read_csv(summary_path, sep=";", na_values='missing')
 
@@ -689,13 +692,59 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         #sq_bayesian.run_inversion()
 
         ### from surfquakecore ###
-        parameters =self.get_inversion_parameters()
+        parameters = self.get_inversion_parameters()
         bic = BayesianIsolaCore(project=self.project, inventory_file=self.metadata_path_bind.value,
                                 output_directory=self.MTI_output_path.text(),
                                 save_plots=parameters['plot_save'])
-        bic.working_directory = self.mti_working_path.text()
+        #bic.working_directory = self.mti_working_path.text()
         bi = BayesianIsolaGUICore(bic, model=self.get_model(), entities=self.get_db(),
                                   parameters=parameters)
         bi.run_inversion()
         pyc.QMetaObject.invokeMethod(self.progress_dialog, 'accept', Qt.Qt.QueuedConnection)
         #########################
+
+    def print_mti(self):
+        self.mti_text.clear()
+        iversion_json_files = []
+
+        for foldername, subfolders, filenames in os.walk(self.MTI_output_path.text()):
+            for filename in filenames:
+                if filename == "inversion.json":
+                    iversion_json_files.append(os.path.join(foldername, filename))
+
+        for result_file in iversion_json_files:
+            result = read_isola_result(result_file)
+            self.mti_text.appendPlainText("#####################################################")
+            formatted_date = result.centroid.time.strftime("%Y-%m-%d %H:%M:%S")
+            lat = str("{: .2f}".format(result.centroid.latitude))
+            lon = str("{: .2f}".format(result.centroid.longitude))
+            depth = str("{: .2f}".format(result.centroid.depth))
+            self.mti_text.appendPlainText(formatted_date + "    " + lat +"º    "+ lon+"º    "+ depth+" km")
+            mrr = str("{: .2e}".format(result.centroid.mrr))
+            mtt = str("{: .2e}".format(result.centroid.mtt))
+            mpp = str("{: .2e}".format(result.centroid.mpp))
+            mrt = str("{: .2e}".format(result.centroid.mrt))
+            mrp = str("{: .2e}".format(result.centroid.mtt))
+            mtp = str("{: .2e}".format(result.centroid.mpp))
+            self.mti_text.appendPlainText("mrr    " + mrr + "    mtt    " + mtt + "    mpp    " + mpp)
+            self.mti_text.appendPlainText("mrt    " + mrt + "    mrp    " + mrp + "    mtp    " + mtp)
+            cn = str("{: .2f}".format(result.centroid.cn))
+            vr = str("{: .2f}".format(result.centroid.vr))
+            self.mti_text.appendPlainText("cn    " + cn + "    vr    "+vr)
+            cvld = str("{: .2f}".format(result.scalar.clvd))
+            dc = str("{: .2f}".format(result.scalar.dc))
+            mo = str("{: .2e}".format(result.scalar.mo))
+            mw = str("{: .2f}".format(result.scalar.mw))
+            plane_1_dip = str("{: .1f}".format(result.scalar.plane_1_dip))
+            plane_1_slip_strike = str("{: .1f}".format(result.scalar.plane_1_slip_rake))
+            plane_1_strike = str("{: .1f}".format(result.scalar.plane_1_strike))
+            plane_2_dip = str("{: .1f}".format(result.scalar.plane_2_dip))
+            plane_2_slip_strike = str("{: .1f}".format(result.scalar.plane_2_slip_rake))
+            plane_2_strike = str("{: .1f}".format(result.scalar.plane_2_strike))
+            self.mti_text.appendPlainText("cvld    " + cvld + "    dc    "+dc)
+            self.mti_text.appendPlainText("Mo    " + mo + "    Mw    " + mw)
+            self.mti_text.appendPlainText("strike A    " + plane_1_strike + "    slip A    " + plane_1_slip_strike +
+                                          "    dip A    " + plane_1_dip)
+            self.mti_text.appendPlainText("strike B    " + plane_2_strike + "    slip B    " + plane_2_slip_strike +
+                                          "    dip B    " + plane_2_dip)
+            self.mti_text.appendPlainText("#####################################################")

@@ -2678,7 +2678,7 @@
                  <number>12</number>
                 </property>
                 <item>
-                 <widget class="QPlainTextEdit" name="automagnitudesText_2">
+                 <widget class="QPlainTextEdit" name="mti_text">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                     <horstretch>0</horstretch>
@@ -2710,7 +2710,7 @@
                    </widget>
                   </item>
                   <item>
-                   <widget class="QPushButton" name="showResultsBtn">
+                   <widget class="QPushButton" name="printMTIresultsBtn">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
                       <horstretch>0</horstretch>
