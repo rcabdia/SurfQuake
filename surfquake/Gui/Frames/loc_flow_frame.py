@@ -6,7 +6,7 @@ from surfquakecore.moment_tensor.mti_parse import read_isola_result
 from surfquakecore.moment_tensor.sq_isola_tools import BayesianIsolaCore
 from surfquakecore.real.real_core import RealCore
 from surfquakecore.real.structures import RealConfig, GeographicFrame, GridSearch, TravelTimeGridSearch, ThresholdPicks
-from surfquake import ROOT_DIR, p_dir, nllinput, \
+from surfquake import ROOT_DIR, nllinput, \
     real_working_dir, real_output_data, source_config
 from surfquake.DataProcessing.metadata_manager import MetadataManager
 from surfquake.Exceptions.exceptions import parse_excepts
@@ -27,7 +27,6 @@ from surfquake.sq_isola_tools.sq_bayesian_isola_core import BayesianIsolaGUICore
 from surfquakecore.project.surf_project import SurfProject
 from surfquakecore.phasenet.phasenet_handler import PhasenetUtils
 from surfquakecore.phasenet.phasenet_handler import PhasenetISP
-from surfquakecore.utils.obspy_utils import MseedUtil
 from surfquakecore.earthquake_location.run_nll import Nllcatalog, NllManager
 from surfquakecore.magnitudes.run_magnitudes import Automag
 
@@ -693,7 +692,7 @@ class LocFlow(BaseFrame, UiLoc_Flow):
 
         ### from surfquakecore ###
         parameters = self.get_inversion_parameters()
-        bic = BayesianIsolaCore(project=self.project, inventory_file=self.metadata_path_bind.value,
+        bic = BayesianIsolaCore(project=self.sp, inventory_file=self.metadata_path_bind.value,
                                 output_directory=self.MTI_output_path.text(),
                                 save_plots=parameters['plot_save'])
         #bic.working_directory = self.mti_working_path.text()
@@ -730,7 +729,7 @@ class LocFlow(BaseFrame, UiLoc_Flow):
             self.mti_text.appendPlainText("mrt    " + mrt + "    mrp    " + mrp + "    mtp    " + mtp)
             cn = str("{: .2f}".format(result.centroid.cn))
             vr = str("{: .2f}".format(result.centroid.vr))
-            self.mti_text.appendPlainText("cn    " + cn + "    vr    "+vr)
+            self.mti_text.appendPlainText("CN    " + cn + "    VR    "+vr+" "+ "%")
             cvld = str("{: .2f}".format(result.scalar.clvd))
             dc = str("{: .2f}".format(result.scalar.dc))
             mo = str("{: .2e}".format(result.scalar.mo))
@@ -741,8 +740,8 @@ class LocFlow(BaseFrame, UiLoc_Flow):
             plane_2_dip = str("{: .1f}".format(result.scalar.plane_2_dip))
             plane_2_slip_strike = str("{: .1f}".format(result.scalar.plane_2_slip_rake))
             plane_2_strike = str("{: .1f}".format(result.scalar.plane_2_strike))
-            self.mti_text.appendPlainText("cvld    " + cvld + "    dc    "+dc)
-            self.mti_text.appendPlainText("Mo    " + mo + "    Mw    " + mw)
+            self.mti_text.appendPlainText("cvld    " + cvld + " %" + "    dc    "+dc + " %")
+            self.mti_text.appendPlainText("Mo    " + mo + " Nm"+"    Mw    " + mw)
             self.mti_text.appendPlainText("strike A    " + plane_1_strike + "    slip A    " + plane_1_slip_strike +
                                           "    dip A    " + plane_1_dip)
             self.mti_text.appendPlainText("strike B    " + plane_2_strike + "    slip B    " + plane_2_slip_strike +

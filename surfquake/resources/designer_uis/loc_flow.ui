@@ -2401,7 +2401,7 @@
                     </sizepolicy>
                    </property>
                    <property name="suffix">
-                    <string> (km/s)</string>
+                    <string> (m/s)</string>
                    </property>
                    <property name="decimals">
                     <number>1</number>
