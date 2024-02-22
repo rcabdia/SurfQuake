@@ -1,4 +1,6 @@
 import math
+
+import cartopy
 from PyQt5 import QtWidgets, QtGui, QtCore
 from surfquake.Gui.Frames import BaseFrame
 from surfquake.Gui.Frames.qt_components import MessageDialog
@@ -139,6 +141,9 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
         self.setWindowTitle('Events Location')
         self.setWindowIcon(pqg.QIcon(':\icons\compass-icon.png'))
         self.cb = None
+        self.topoCB.toggled.connect(self.set_topo_param_enable)
+        self.set_topo_param_enable(False)
+        self.topoCB.setChecked(False)
         el_columns = [getattr(EventLocationModel, c)
                       for c in EventLocationModel.__table__.columns.keys()[0:]]
 
@@ -173,12 +178,19 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
         self.tableView.sortByColumn(0, qt.AscendingOrder)
         self.tableView.setSelectionBehavior(pw.QAbstractItemView.SelectRows)
         self.tableView.setContextMenuPolicy(qt.ActionsContextMenu)
+
         remove_action = pw.QAction("Remove selected location(s)", self)
         remove_action.triggered.connect(self._onRemoveRowsTriggered)
         self.tableView.addAction(remove_action)
+
         watch_phase_action = pw.QAction("See current column phase info", self)
         watch_phase_action.triggered.connect(self._onShowPhaseInfo)
         self.tableView.addAction(watch_phase_action)
+
+        copy_table = pw.QAction("Copy table to clipboard", self)
+        copy_table.triggered.connect(self._copy_table)
+        self.tableView.addAction(copy_table)
+
         self.tableView.setItemDelegateForColumn(1, DateTimeFormatDelegate('dd/MM/yyyy hh:mm:ss.zzz'))
         self.tableView.resizeColumnsToContents()
         self.tableView.doubleClicked.connect(self._plot_foc_mec)
@@ -200,6 +212,10 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
         self.btnRefreshQuery.clicked.connect(self._refreshQuery)
         self.btnShowAll.clicked.connect(self._showAll)
         self.PlotMapBtn.clicked.connect(self.__plot_map)
+
+    def set_topo_param_enable(self, enabled):
+        self.wmsLE.setEnabled(enabled)
+        self.layerLE.setEnabled(enabled)
 
     def on_click_select_file(self):
         selected = pw.QFileDialog.getOpenFileName(self, "Select file")
@@ -269,6 +285,27 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
             self.tableView.model().data(self.tableView.model().index(current_idx.row(), 0)), self)
 
         self.phase_info_inspector.show()
+
+    def _copy_table(self):
+        date_format = "MM.dd.yyyy hh:mm:ss.zzz"
+        index_list = self.tableView.selectionModel().selectedRows()
+        model = self.tableView.model()
+        col_num = model.columnCount()
+        results = ""
+        for i in index_list:
+            for j in range(1, col_num):
+                var = model.data(model.index(i.row(), j))
+                if isinstance(var, pyc.QDateTime):
+                    results += var.toString(date_format)
+                else:
+                    results += str(var)
+                results += " "
+
+            results += "\n"
+
+        pqg.QGuiApplication.instance().clipboard().setText(results)
+
+
 
     def _checkQueryParameters(self):
         self.btnRefreshQuery.setEnabled(all(v.valid for v in self._validators))
@@ -451,14 +488,16 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
 
         URL = self.wmsLE.text()
         layer = self.layerLE.text()
-        if URL != "" and layer != "":
-            self.plot_map(map_service=URL, layer=layer)
+        if not URL and not layer:
+            self.plot_map(topography=self.topoCB.isChecked(), map_service=URL, layer=layer)
         else:
             self.plot_map()
 
-    def plot_map(self, map_service='https://www.gebco.net/data_and_products/gebco_web_services/2020/mapserv?',
+    def plot_map(self, topography=False, map_service='https://www.gebco.net/data_and_products/gebco_web_services/2020/mapserv?',
                  layer='GEBCO_2020_Grid'):
 
+        wms = ""
+        #self.map_widget.clear()
         try:
             if self.cb:
                 self.cb.remove()
@@ -467,8 +506,9 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
 
             MAP_SERVICE_URL = map_service
             try:
-                wms = WebMapService(MAP_SERVICE_URL)
-                list(wms.contents)
+                if topography:
+                    wms = WebMapService(MAP_SERVICE_URL)
+                    list(wms.contents)
             except:
                 pass
             layer = layer
@@ -484,7 +524,7 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
                 depth.append(j[0].depth)
 
                 if j[0].mw is None:
-                    j[0].mw = 3.0
+                    j[0].mw = 0.5
 
                 mag.append(j[0].mw)
 
@@ -501,7 +541,14 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
             self.map_widget.ax.set_extent(extent, crs=ccrs.PlateCarree())
 
             try:
-                self.map_widget.ax.add_wms(wms, layer)
+                if topography and isinstance(wms, WebMapService):
+                    self.map_widget.ax.add_wms(wms, layer)
+                else:
+                    coastline_10m = cartopy.feature.NaturalEarthFeature('physical', 'coastline', '10m',
+                                                                        edgecolor='k', alpha=0.6, linewidth=0.5,
+                                                                        facecolor=cartopy.feature.COLORS['land'])
+                    self.map_widget.ax.add_feature(coastline_10m)
+
             except:
                 os.environ["CARTOPY_USER_BACKGROUNDS"] = os.path.join(ROOT_DIR, "maps")
                 self.map_widget.ax.background_img(name='ne_shaded', resolution="high")
