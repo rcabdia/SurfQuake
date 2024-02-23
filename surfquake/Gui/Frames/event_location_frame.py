@@ -141,6 +141,7 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
         self.setWindowTitle('Events Location')
         self.setWindowIcon(pqg.QIcon(':\icons\compass-icon.png'))
         self.cb = None
+        self.inverted = True
         self.topoCB.toggled.connect(self.set_topo_param_enable)
         self.set_topo_param_enable(False)
         self.topoCB.setChecked(False)
@@ -489,20 +490,39 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
         URL = self.wmsLE.text()
         layer = self.layerLE.text()
         if not URL and not layer:
-            self.plot_map(topography=self.topoCB.isChecked(), map_service=URL, layer=layer)
-        else:
-            self.plot_map()
+            URL = 'https://www.gebco.net/data_and_products/gebco_web_services/2020/mapserv?'
+            layer = 'GEBCO_2020_Grid'
+        self.plot_map(topography=self.topoCB.isChecked(), map_service=URL, layer=layer)
+
+    def update_inset_axes(self, event):
+
+        self.map_widget.lat.set_ylim(self.map_widget.ax.get_ylim())
+        self.map_widget.lon.set_xlim(self.map_widget.ax.get_xlim())
+
+    def update_resize_axes(self, event):
+
+        self.map_widget.lat.set_ylim(self.map_widget.ax.get_ylim())
+        self.map_widget.lon.set_xlim(self.map_widget.ax.get_xlim())
 
     def plot_map(self, topography=False, map_service='https://www.gebco.net/data_and_products/gebco_web_services/2020/mapserv?',
                  layer='GEBCO_2020_Grid'):
 
-        wms = ""
-        #self.map_widget.clear()
-        try:
-            if self.cb:
-                self.cb.remove()
+        self.map_widget.fig.canvas.mpl_connect('draw_event', self.update_inset_axes)
+        self.map_widget.fig.canvas.mpl_connect('resize_event', self.update_resize_axes)
 
-                # self.map_widget.fig.delaxes(self.map_widget.fig.axes[1])
+        try:
+            wms = ""
+
+            self.map_widget.ax.clear()
+            self.map_widget.lon.clear()
+            self.map_widget.lat.clear()
+
+            #Clear existing colorbar
+            if hasattr(self, 'cb') and self.cb:
+                try:
+                    self.cb.remove()
+                except Exception as e:
+                    print(f"Error removing colorbar: {e}")
 
             MAP_SERVICE_URL = map_service
             try:
@@ -510,7 +530,7 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
                     wms = WebMapService(MAP_SERVICE_URL)
                     list(wms.contents)
             except:
-                pass
+                print("No topography detected")
             layer = layer
 
             entities = self.model.getEntities()
@@ -541,7 +561,7 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
             self.map_widget.ax.set_extent(extent, crs=ccrs.PlateCarree())
 
             try:
-                if topography and isinstance(wms, WebMapService):
+                if topography:
                     self.map_widget.ax.add_wms(wms, layer)
                 else:
                     coastline_10m = cartopy.feature.NaturalEarthFeature('physical', 'coastline', '10m',
@@ -560,31 +580,32 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
             reversed_color_map = color_map.reversed()
             cs = self.map_widget.ax.scatter(lon, lat, s=mag, c=depth, edgecolors="black", cmap=reversed_color_map,
                                             transform=ccrs.PlateCarree())
-            self.cb = self.map_widget.fig.colorbar(cs, ax=self.map_widget.ax, orientation='horizontal', fraction=0.05,
-                                                   extend='both', pad=0.15, label='Depth (km)')
+
+            cax = self.map_widget.fig.add_axes([0.92, 0.1, 0.02, 0.8])  # Adjust these values as needed
+            self.cb = self.map_widget.fig.colorbar(cs, cax=cax, orientation='vertical', extend='both', label='Depth (km)')
             self.map_widget.lat.scatter(depth, lat, s=mag, c=depth, edgecolors="black", cmap=reversed_color_map)
             self.map_widget.lat.set_ylim((min_lat, max_lat))
             self.map_widget.lon.scatter(lon, depth, s=mag, c=depth, edgecolors="black", cmap=reversed_color_map)
             self.map_widget.lon.xaxis.tick_top()
             self.map_widget.lon.yaxis.tick_right()
-            self.map_widget.lon.invert_yaxis()
-            # self.map_widget.lon.set(xlabel='Longitude', ylabel='Depth (km)')
+            self.map_widget.lat.set(ylabel='Latitude')
+            if self.inverted:
+                self.map_widget.lon.invert_yaxis()
+            self.map_widget.lon.yaxis.set_label_position('left')
+            self.map_widget.lon.set(xlabel='Longitude')
             self.map_widget.lon.set_xlim((min_lon, max_lon))
-
+            self.map_widget.lon.set_xbound((min_lon, max_lon))
+            self.map_widget.lon.xaxis.set_label_position('top')
+            self.map_widget.lon.yaxis.set_label_position('right')
+            self.map_widget.lon.xaxis.set_ticks_position('top')
+            self.map_widget.lon.yaxis.set_ticks_position('right')
             # magnitude legend
-            kw = dict(prop="sizes", num=5, fmt="{x:.0f}", color="red", func=lambda s: np.log(s / 0.5))
+            kw = dict(prop="sizes", num=5, fmt="{x:.1f}", color="red", func=lambda s: np.log(s / 0.5))
             self.map_widget.ax.legend(*cs.legend_elements(**kw), loc="lower right", title="Magnitudes")
-
-            gl = self.map_widget.ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=True,
-                                              linewidth=0.2, color='gray', alpha=0.2, linestyle='-')
-
-            gl.top_labels = False
-            gl.left_labels = False
-            gl.xlines = False
-            gl.ylines = False
-            gl.xformatter = LONGITUDE_FORMATTER
-            gl.yformatter = LATITUDE_FORMATTER
+            self.map_widget.fig.subplots_adjust(right=0.986, bottom=0.062, top=0.828, left = 0.014)
             self.map_widget.fig.canvas.draw()
+            self.inverted = False
+
         except:
             md = MessageDialog(self)
             md.set_error_message("Couldn't extract info from the DB, please check that your database "
