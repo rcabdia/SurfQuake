@@ -1,5 +1,5 @@
 import math
-
+import matplotlib.dates as mdates
 import cartopy
 from PyQt5 import QtWidgets, QtGui, QtCore
 from surfquake.Gui.Frames import BaseFrame
@@ -213,6 +213,30 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
         self.btnRefreshQuery.clicked.connect(self._refreshQuery)
         self.btnShowAll.clicked.connect(self._showAll)
         self.PlotMapBtn.clicked.connect(self.__plot_map)
+
+
+        ### statistics ###
+        self.run_statisticsBtn.clicked.connect(self.plot_statistics)
+
+    ## statistics ##
+
+    def plot_statistics(self):
+        entities = self.model.getEntities()
+        dates = []
+        for j in entities:
+            dates.append(j[0].origin_time)
+        self.statistics_widget.ax.hist(dates, bins='auto', edgecolor='black', alpha=0.7)
+        # Format x-axis as dates
+        self.statistics_widget.ax.xaxis.set_major_locator(mdates.MonthLocator())
+        # Set major locator to DayLocator
+        #ax.xaxis.set_major_locator(mdates.DayLocator())
+        self.statistics_widget.ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+        self.statistics_widget.ax.set(ylabel='Number of Events')
+        self.statistics_widget.ax.set(xlabel='Date')
+        self.statistics_widget.ax.tick_params(axis='x', rotation=30)
+        self.statistics_widget.fig.canvas.draw()
+
+
 
     def set_topo_param_enable(self, enabled):
         self.wmsLE.setEnabled(enabled)

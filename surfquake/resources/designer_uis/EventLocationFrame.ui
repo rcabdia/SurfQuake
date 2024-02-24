@@ -535,7 +535,7 @@
               </widget>
              </item>
              <item row="1" column="0">
-              <widget class="QPushButton" name="pushButton_2">
+              <widget class="QPushButton" name="run_statisticsBtn">
                <property name="text">
                 <string>Run and Plot</string>
                </property>
@@ -547,7 +547,7 @@
          </layout>
         </item>
         <item>
-         <widget class="QWidget" name="widget" native="true">
+         <widget class="MatplotlibWidgetStatistics" name="statistics_widget" native="true">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -605,7 +605,13 @@
   <customwidget>
    <class>MatplotlibWidget</class>
    <extends>QWidget</extends>
-   <header>surfquake/db/map_class/clases_mpl_pyqt</header>
+   <header location="global">surfquake/db/map_class/clases_mpl_pyqt</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>MatplotlibWidgetStatistics</class>
+   <extends>QWidget</extends>
+   <header location="global">surfquake/db/map_class/clases_mpl_pyqt_statistics</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
