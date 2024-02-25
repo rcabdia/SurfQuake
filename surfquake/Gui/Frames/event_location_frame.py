@@ -6,6 +6,7 @@ from surfquake.Gui.Frames import BaseFrame
 from surfquake.Gui.Frames.qt_components import MessageDialog
 from surfquake.Gui.Frames.uis_frames import UiEventLocationFrame
 from surfquake.Gui.Models.sql_alchemy_model import SQLAlchemyModel
+from surfquake.Utils.statistics_utils import GutenbergRichterLawFitter
 from surfquake.db.models import EventLocationModel, FirstPolarityModel, MomentTensorModel, PhaseInfoModel
 from surfquake.db import generate_id
 from datetime import datetime, timedelta
@@ -217,26 +218,69 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
 
         ### statistics ###
         self.run_statisticsBtn.clicked.connect(self.plot_statistics)
-
+        self.clearStatisticsBtn.clicked.connect(self.clear_statistics)
     ## statistics ##
 
     def plot_statistics(self):
+
         entities = self.model.getEntities()
         dates = []
-        for j in entities:
+        cum_events = []
+        magnitudes = []
+
+        for i, j in enumerate(entities):
             dates.append(j[0].origin_time)
-        self.statistics_widget.ax.hist(dates, bins='auto', edgecolor='black', alpha=0.7)
-        # Format x-axis as dates
-        self.statistics_widget.ax.xaxis.set_major_locator(mdates.MonthLocator())
-        # Set major locator to DayLocator
-        #ax.xaxis.set_major_locator(mdates.DayLocator())
-        self.statistics_widget.ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
-        self.statistics_widget.ax.set(ylabel='Number of Events')
-        self.statistics_widget.ax.set(xlabel='Date')
-        self.statistics_widget.ax.tick_params(axis='x', rotation=30)
+            cum_events.append(i+1)
+            if j[0].mw is None:
+                pass
+            elif j[0].mw >= self.minMagCB.value() or j[0].mw <= self.maxMagCB.value():
+                magnitudes.append(j[0].mw)
+
+        if self.binsSelectionCB.currentText() == "Monthly":
+            self.statistics_widget.ax1.hist(dates, bins='auto', edgecolor='black', alpha=0.7)
+            self.statistics_widget.ax1.xaxis.set_major_locator(mdates.MonthLocator())
+        elif self.binsSelectionCB.currentText() == "Daily":
+            self.statistics_widget.ax1.hist(dates, bins='auto', edgecolor='black', alpha=0.7)
+            self.statistics_widget.ax1.xaxis.set_major_locator(mdates.DayLocator())
+        elif self.binsSelectionCB.currentText() == "Auto":
+            self.statistics_widget.ax1.hist(dates, bins=self.numBinsSB.value(), edgecolor='black', alpha=0.7)
+
+        self.statistics_widget.ax1.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+        self.statistics_widget.ax1.set(ylabel='Number of Events')
+        self.statistics_widget.ax1.set(xlabel='Date')
+        self.statistics_widget.ax1.set_title('Number of Events vs Date')
+        self.statistics_widget.ax1.tick_params(axis='x', rotation=30)
+        self.statistics_widget.ax2.plot(dates, cum_events, color='orange')
+        self.statistics_widget.ax2.set(ylabel='Cumulative Number of  Events')
+        self.statistics_widget.ax2.xaxis.set_major_locator(mdates.MonthLocator())
+        self.statistics_widget.ax2.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+
+        # Fit Gutenberg-Richter Law using the dedicated class
+
+        gr_fitter = GutenbergRichterLawFitter(magnitudes)
+        params, bin_centers, counts = gr_fitter.fit_gutenberg_richter_law()
+        #b_value = gr_fitter.get_b_value()
+        # Plot the individual points
+        #self.statistics_widget.ax3.plot(magnitudes, np.arange(len(magnitudes)),
+        #                          'o', markersize=3, color='blue', markeredgecolor='black', alpha=0.5)
+
+        self.statistics_widget.ax3.plot(bin_centers, np.log10(counts), 'bo', label='Event magnitudes', markersize=3,
+                                        markeredgecolor='black')
+        self.statistics_widget.ax3.set_yscale('log')  # Set y-axis to logarithmic scale
+        # Plot the fitted line
+        magnitude_range = np.linspace(min(magnitudes), max(magnitudes), 100)
+        fitted_values = gr_fitter.gutenberg_richter_law(magnitude_range, *params)
+        a = f'{params[0]:.2f}'
+        b = f'{params[1]:.2f}'
+        self.statistics_widget.ax3.plot(magnitude_range, fitted_values, color='red', label=f'Fitted Line (a = {a}, b={b})')
+        self.statistics_widget.ax3.legend()
         self.statistics_widget.fig.canvas.draw()
 
-
+    def clear_statistics(self):
+        self.statistics_widget.ax1.clear()
+        self.statistics_widget.ax2.clear()
+        self.statistics_widget.ax3.clear()
+        self.statistics_widget.fig.canvas.draw()
 
     def set_topo_param_enable(self, enabled):
         self.wmsLE.setEnabled(enabled)

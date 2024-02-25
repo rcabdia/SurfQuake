@@ -15,12 +15,20 @@ class MatplotlibWidgetStatistics(QtWidgets.QWidget):
         super(MatplotlibWidgetStatistics, self).__init__(parent)
 
         self.fig = Figure()
-        self.ax = self.fig.add_subplot(111)
+        self.ax1 = self.fig.add_subplot(211)
+        self.ax3 = self.fig.add_subplot(212)
+        #self.fig, (self.ax1, self.ax3) = plt.subplots(nrows=2, gridspec_kw={'hspace': 0.5})
         self.canvas = Canvas(self.fig)
         self.toolbar = NavigationToolbar(self.canvas, self)
         self.vbl = QVBoxLayout()
         self.vbl.addWidget(self.canvas)
-        self.vbl.addWidget(self.toolbar)  # Add the toolbar after the canvas to place it at the bottom
+        self.vbl.addWidget(self.toolbar)
+        # Add a second subplot sharing the y-axis
+        self.ax2 = self.ax1.twinx()
+        self.ax2.yaxis.set_label_position("right")
+        self.ax2.yaxis.tick_right()
+
+        # Add the toolbar after the canvas to place it at the bottom
         self.setLayout(self.vbl)
 
     def sizeHint(self):

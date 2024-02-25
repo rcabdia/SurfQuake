@@ -527,17 +527,83 @@
              <string>Statistics Parameters</string>
             </property>
             <layout class="QGridLayout" name="gridLayout_3">
-             <item row="0" column="0">
-              <widget class="QLabel" name="label">
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_18">
                <property name="text">
-                <string>Param</string>
+                <string>Number of bins</string>
                </property>
               </widget>
              </item>
-             <item row="1" column="0">
+             <item row="2" column="1">
+              <widget class="QDoubleSpinBox" name="minMagCB"/>
+             </item>
+             <item row="3" column="0" colspan="4" alignment="Qt::AlignHCenter">
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>Statistics Summary</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="2">
+              <widget class="QLabel" name="label_17">
+               <property name="text">
+                <string>Max Magnitude</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_16">
+               <property name="text">
+                <string>Min Magnitude</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="3">
+              <widget class="QDoubleSpinBox" name="maxMagCB"/>
+             </item>
+             <item row="4" column="0" colspan="5">
+              <widget class="QPlainTextEdit" name="statistics_Text"/>
+             </item>
+             <item row="5" column="0" colspan="3">
               <widget class="QPushButton" name="run_statisticsBtn">
                <property name="text">
                 <string>Run and Plot</string>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="3">
+              <widget class="QPushButton" name="clearStatisticsBtn">
+               <property name="text">
+                <string>clear</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1" colspan="2">
+              <widget class="QComboBox" name="binsSelectionCB">
+               <item>
+                <property name="text">
+                 <string>Monthly</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Daily</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Auto</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item row="1" column="3">
+              <widget class="QSpinBox" name="numBinsSB">
+               <property name="maximum">
+                <number>1000</number>
+               </property>
+               <property name="value">
+                <number>25</number>
                </property>
               </widget>
              </item>
