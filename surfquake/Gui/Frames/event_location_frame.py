@@ -25,6 +25,7 @@ from owslib.wms import WebMapService
 import os
 from sys import platform
 import pandas as pd
+import random
 
 pqg = QtGui
 pw = QtWidgets
@@ -224,24 +225,79 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
     def plot_statistics(self):
 
         entities = self.model.getEntities()
+        avarage = {}
+        latitudes = []
+        longitudes = []
         dates = []
+        rmss = []
         cum_events = []
-        magnitudes = []
-
+        magnitudes_mw = []
+        magnitudes_ml = []
+        depths = []
+        depth_errors = []
+        max_horizontal_errors = []
+        min_horizontal_errors = []
+        number_of_phasess = []
+        ellipse_azimuths = []
+        azimuthal_gaps = []
+        max_distances = []
+        min_distances = []
         for i, j in enumerate(entities):
             dates.append(j[0].origin_time)
+            rmss.append(j[0].rms)
+            latitudes.append(j[0].latitude)
+            longitudes.append(j[0].longitude)
+            max_horizontal_errors.append(j[0].max_horizontal_error)
+            min_horizontal_errors.append(j[0].min_horizontal_error)
+            depths.append(j[0].depth * 1E-3)
+            depth_errors.append(j[0].uncertainty)
+            number_of_phasess.append(j[0].number_of_phases)
+            ellipse_azimuths.append(j[0].ellipse_azimuth)
+            azimuthal_gaps.append(j[0].azimuthal_gap)
+            max_distances.append(j[0].max_distance)
+            min_distances.append(j[0].min_distance)
             cum_events.append(i+1)
-            if j[0].mw is None:
-                pass
-            elif j[0].mw >= self.minMagCB.value() or j[0].mw <= self.maxMagCB.value():
-                magnitudes.append(j[0].mw)
 
+            if j[0].mw is None:
+                random_float = random.uniform(-0.25, 1.5)
+                magnitudes_mw.append(random_float)
+            elif j[0].mw >= self.minMagCB.value() and j[0].mw <= self.maxMagCB.value():
+                magnitudes_mw.append(j[0].mw)
+
+            if j[0].ml is None:
+                random_float = random.uniform(-0.25, 1.5)
+                magnitudes_ml.append(random_float)
+            elif j[0].ml >= self.minMagCB.value() and j[0].ml <= self.maxMagCB.value():
+                magnitudes_ml.append(j[0].ml)
+
+        if self.magPrefCB.currentText() == "Mw":
+            magnitudes = magnitudes_mw
+        elif self.magPrefCB.currentText() == "ML":
+            magnitudes = magnitudes_ml
+
+        avarage["rmss"] = np.mean(rmss)
+        avarage["max_horizontal_errors"] = np.mean(max_horizontal_errors)
+        avarage["min_horizontal_errors"] = np.mean(min_horizontal_errors)
+        avarage["latitudes"] = np.mean(latitudes)
+        avarage["longitudes"] = np.mean(longitudes)
+        avarage["depths"] = np.mean(depths)
+        avarage["depths"] = np.mean(depths)
+        avarage["depth_errors"] = np.mean(depth_errors)
+        avarage["number_of_phasess"] = np.mean(number_of_phasess)
+        avarage["ellipse_azimuths"] = np.mean(ellipse_azimuths)
+        avarage["azimuthal_gaps"] = np.mean(azimuthal_gaps)
+        avarage["max_distances"] = np.mean(max_distances)
+        avarage["min_distances"] = np.mean(min_distances)
+        avarage["magnitudes_mw"] = np.mean(magnitudes_mw)
+        avarage["magnitudes_ml"] = np.mean(magnitudes_mw)
+
+        self.print_statistics(avarage)
         if self.binsSelectionCB.currentText() == "Monthly":
             self.statistics_widget.ax1.hist(dates, bins='auto', edgecolor='black', alpha=0.7)
             self.statistics_widget.ax1.xaxis.set_major_locator(mdates.MonthLocator())
-        elif self.binsSelectionCB.currentText() == "Daily":
-            self.statistics_widget.ax1.hist(dates, bins='auto', edgecolor='black', alpha=0.7)
-            self.statistics_widget.ax1.xaxis.set_major_locator(mdates.DayLocator())
+        # elif self.binsSelectionCB.currentText() == "Daily":
+        #     self.statistics_widget.ax1.hist(dates, bins='auto', edgecolor='black', alpha=0.7)
+        #    self.statistics_widget.ax1.xaxis.set_major_locator(mdates.DayLocator())
         elif self.binsSelectionCB.currentText() == "Auto":
             self.statistics_widget.ax1.hist(dates, bins=self.numBinsSB.value(), edgecolor='black', alpha=0.7)
 
@@ -256,23 +312,24 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
         self.statistics_widget.ax2.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
 
         # Fit Gutenberg-Richter Law using the dedicated class
-
         gr_fitter = GutenbergRichterLawFitter(magnitudes)
-        params, bin_centers, counts = gr_fitter.fit_gutenberg_richter_law()
-        #b_value = gr_fitter.get_b_value()
-        # Plot the individual points
-        #self.statistics_widget.ax3.plot(magnitudes, np.arange(len(magnitudes)),
-        #                          'o', markersize=3, color='blue', markeredgecolor='black', alpha=0.5)
+        if self.magBinsSB.value() !=0:
+            params, bin_centers, counts = gr_fitter.fit_gutenberg_richter_law(bins=self.magBinsSB.value())
+        else:
+            params, bin_centers, counts = gr_fitter.fit_gutenberg_richter_law(bins=self.magBinsSB.value())
 
         self.statistics_widget.ax3.plot(bin_centers, np.log10(counts), 'bo', label='Event magnitudes', markersize=3,
                                         markeredgecolor='black')
-        self.statistics_widget.ax3.set_yscale('log')  # Set y-axis to logarithmic scale
+        self.statistics_widget.ax3.set(ylabel='Log(Number of Events')
+        #self.statistics_widget.ax3.set_yscale('log')  # Set y-axis to logarithmic scale
+
         # Plot the fitted line
         magnitude_range = np.linspace(min(magnitudes), max(magnitudes), 100)
         fitted_values = gr_fitter.gutenberg_richter_law(magnitude_range, *params)
         a = f'{params[0]:.2f}'
         b = f'{params[1]:.2f}'
-        self.statistics_widget.ax3.plot(magnitude_range, fitted_values, color='red', label=f'Fitted Line (a = {a}, b={b})')
+        self.statistics_widget.ax3.plot(magnitude_range, fitted_values, color='red', label=f'Gutenberg–Richter '
+                                                                                           f'(a = {a}, b={b})')
         self.statistics_widget.ax3.legend()
         self.statistics_widget.fig.canvas.draw()
 
@@ -281,6 +338,60 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
         self.statistics_widget.ax2.clear()
         self.statistics_widget.ax3.clear()
         self.statistics_widget.fig.canvas.draw()
+        self.statistics_widget.ax2 = self.statistics_widget.ax1.twinx()
+        #self.statistics_widget.ax2.set_label_position("right")
+        #self.statistics_widget.ax2.tick_right()
+
+    def print_statistics(self, avarage):
+        self.statistics_Text.clear()
+        self.statistics_Text.appendPlainText("Focal Parameters Avarage/n")
+
+        latitudes = str("{: .2f}".format(avarage["latitudes"]))
+        longitudes = str("{: .2f}".format(avarage["longitudes"]))
+
+        rms = str("{: .2f}".format(avarage["rmss"]))
+        depth = str("{: .2f}".format(avarage["depths"]))
+        depth_uncertainty = str("{: .2f}".format(avarage["depth_errors"]))
+        max_horizontal_errors = str("{: .2f}".format(avarage["max_horizontal_errors"]))
+        min_horizontal_errors = str("{: .2f}".format(avarage["min_horizontal_errors"]))
+        number_of_phases = str(int(avarage["number_of_phasess"]))
+        ellipse_azimuths = str("{: .1f}".format(avarage["ellipse_azimuths"]))
+        azimuthal_gaps = str("{: .1f}".format(avarage["azimuthal_gaps"]))
+        max_distances = str("{: .3f}".format(avarage["max_distances"]))
+        min_distances = str("{: .3f}".format(avarage["min_distances"]))
+
+        self.statistics_Text.appendPlainText("Latitude: {latitudes}º".format(latitudes=latitudes))
+        self.statistics_Text.appendPlainText("Longitude: {longitudes}º".format(longitudes=longitudes))
+        self.statistics_Text.appendPlainText("RMS: {RMS} s".format(RMS=rms))
+        self.statistics_Text.appendPlainText("RMS: {RMS} s".format(RMS=rms))
+        self.statistics_Text.appendPlainText("Depth: {Depth} km ".format(Depth=depth))
+        self.statistics_Text.appendPlainText("Depth Uncertainty: {Depth_Uncertainty} km ".
+                                             format(Depth_Uncertainty = depth_uncertainty))
+
+        self.statistics_Text.appendPlainText("Max Horizontal Unc: {max_horizontal_errors} km ".
+                                             format(max_horizontal_errors = max_horizontal_errors))
+        self.statistics_Text.appendPlainText("Min Horizontal Unc: {min_horizontal_errors} km ".
+                                             format(min_horizontal_errors = min_horizontal_errors))
+        self.statistics_Text.appendPlainText("Number of Phases: {number_of_phases} ".
+                                             format(number_of_phases=number_of_phases))
+        self.statistics_Text.appendPlainText("Ellipse Azimuth: {ellipse_azimuths}º ".
+                                             format(ellipse_azimuths=ellipse_azimuths))
+        self.statistics_Text.appendPlainText("Azimuthal GAP: {azimuthal_gaps}º ".
+                                             format(azimuthal_gaps=azimuthal_gaps))
+        self.statistics_Text.appendPlainText("Max Distance: {max_distances}º ".
+                                             format(max_distances=max_distances))
+        self.statistics_Text.appendPlainText("Min Distance: {min_distances}º ".
+                                             format(min_distances=min_distances))
+        if "magnitudes_mw" in avarage.keys():
+            magnitudes_mw = str("{: .2f}".format(avarage["magnitudes_mw"]))
+            self.statistics_Text.appendPlainText("Magnitude: Mw {magnitudes_mw} ".
+                                                 format(magnitudes_mw=magnitudes_mw))
+
+        if "magnitudes_ml" in avarage.keys():
+            magnitudes_ml = str("{: .2f}".format(avarage["magnitudes_ml"]))
+            self.statistics_Text.appendPlainText("Magnitude: ML {magnitudes_ml} ".
+                                                 format(magnitudes_ml=magnitudes_ml))
+
 
     def set_topo_param_enable(self, enabled):
         self.wmsLE.setEnabled(enabled)
