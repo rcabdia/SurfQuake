@@ -2,25 +2,23 @@ import math
 import matplotlib.dates as mdates
 import cartopy
 from PyQt5 import QtWidgets, QtGui, QtCore
+from obspy.geodetics import gps2dist_azimuth
 from surfquake.Gui.Frames import BaseFrame
 from surfquake.Gui.Frames.qt_components import MessageDialog
 from surfquake.Gui.Frames.uis_frames import UiEventLocationFrame
 from surfquake.Gui.Models.sql_alchemy_model import SQLAlchemyModel
 from surfquake.Utils.statistics_utils import GutenbergRichterLawFitter
 from surfquake.db.models import EventLocationModel, FirstPolarityModel, MomentTensorModel, PhaseInfoModel
-from surfquake.db import generate_id
 from datetime import datetime, timedelta
 from surfquake.Utils import ObspyUtil
 from obspy.core.event import Origin
 from obspy.imaging.beachball import beach
-from surfquake import ROOT_DIR, magnitudes
-from surfquake.sq_isola_tools import read_log
+from surfquake import ROOT_DIR
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 from PIL import Image
 import numpy as np
 import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
-from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 from owslib.wms import WebMapService
 import os
 from sys import platform
@@ -147,6 +145,9 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
         self.topoCB.toggled.connect(self.set_topo_param_enable)
         self.set_topo_param_enable(False)
         self.topoCB.setChecked(False)
+        # Connect the custom signal to update the latitude and longitude in MapApp
+        self.map_widget.clickEventSignal.connect(self.double_click)
+
         el_columns = [getattr(EventLocationModel, c)
                       for c in EventLocationModel.__table__.columns.keys()[0:]]
 
@@ -193,6 +194,10 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
         copy_table = pw.QAction("Copy table to clipboard", self)
         copy_table.triggered.connect(self._copy_table)
         self.tableView.addAction(copy_table)
+
+        highlight_Event = pw.QAction("Highlight Event on Map", self)
+        highlight_Event.triggered.connect(self._highlight_Event)
+        self.tableView.addAction(highlight_Event)
 
         self.tableView.setItemDelegateForColumn(1, DateTimeFormatDelegate('dd/MM/yyyy hh:mm:ss.zzz'))
         self.tableView.resizeColumnsToContents()
@@ -493,7 +498,6 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
     def _update_magnitudes(self, magnitudes_dict):
 
         event_model = EventLocationModel.find_by(latitude=magnitudes_dict["lats"], longitude=magnitudes_dict["longs"],
-                                                 depth=magnitudes_dict["depths"],
                                                  origin_time=magnitudes_dict["date_id"])
         if event_model:
             event_model.mw = magnitudes_dict["mw"]
@@ -781,7 +785,7 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
             # magnitude legend
             kw = dict(prop="sizes", num=5, fmt="{x:.1f}", color="red", func=lambda s: np.log(s / 0.5))
             self.map_widget.ax.legend(*cs.legend_elements(**kw), loc="lower right", title="Magnitudes")
-            self.map_widget.fig.subplots_adjust(right=0.986, bottom=0.062, top=0.828, left = 0.014)
+            self.map_widget.fig.subplots_adjust(right=0.986, bottom=0.062, top=0.828, left=0.014)
             self.map_widget.fig.canvas.draw()
             self.inverted = False
 
@@ -826,6 +830,19 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
         plt.savefig(outfile, bbox_inches='tight', pad_inches=0, transparent=True, edgecolor='none')
         plt.clf()
         plt.close()
+
+
+    def _highlight_Event(self):
+        # Plot Selected Event
+        model = self.tableView.model()
+        current_idx = self.tableView.currentIndex()
+        lat = model.data(model.index(current_idx.row(), 4))
+        lon = model.data(model.index(current_idx.row(), 5))
+        lon_lat_transform = ccrs.PlateCarree()._as_mpl_transform(self.map_widget.ax)
+        self.map_widget.ax.annotate("Event Selected", xy=(lon, lat), xycoords=lon_lat_transform,
+                                    xytext=(lon + 0.3, lat + 0.3), textcoords=lon_lat_transform,
+                                    arrowprops=dict(arrowstyle="->", connectionstyle="arc3,rad=.2"))
+        self.map_widget.fig.canvas.draw()
 
     def _plot_foc_mec(self, index):
 
@@ -874,11 +891,33 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
 
             self.map_widget.fig.canvas.draw()
 
-    def export_event_location_to_earthquake_analysis(self):
-        from surfquake.Gui.controllers import Controller
+    def double_click(self, latitude, longitude):
 
-        controller: Controller = Controller()
-        if not controller.earthquake_analysis_frame:
-            controller.open_earthquake_window()
+        print(f'Clicked on Latitude: {latitude}, Longitude: {longitude}')
+        self.dataSelect(longitude, latitude)
 
-        controller.earthquake_analysis_frame.retrieve_event([0, 1, 2, 3])
+    def dataSelect(self, lon1, lat1):
+        dist = []
+        entities = self.model.getEntities()
+
+        for j in entities:
+            great_arc, az0, az2 = gps2dist_azimuth(lat1, lon1, j[0].latitude, j[0].longitude, a=6378137.0,
+                                                   f=0.0033528106647474805)
+            dist.append(great_arc)
+
+        idx, val = self.find_nearest(dist, min(dist))
+        self.tableView.selectRow(idx)
+
+    def find_nearest(self, array, value):
+        idx, val = min(enumerate(array), key=lambda x: abs(x[1] - value))
+        return idx, val
+
+    # This method just valid for ISP
+    # def export_event_location_to_earthquake_analysis(self):
+    #     from surfquake.Gui.controllers import Controller
+    #
+    #     controller: Controller = Controller()
+    #     if not controller.earthquake_analysis_frame:
+    #         controller.open_earthquake_window()
+    #
+    #     controller.earthquake_analysis_frame.retrieve_event([0, 1, 2, 3])
