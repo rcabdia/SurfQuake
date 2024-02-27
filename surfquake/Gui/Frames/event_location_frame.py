@@ -12,6 +12,7 @@ from surfquake.Gui.Models.sql_alchemy_model import SQLAlchemyModel
 from surfquake.Gui.Utils.pyqt_utils import BindPyqtObject
 from surfquake.Utils.explote_meta import find_coords
 from surfquake.Utils.statistics_utils import GutenbergRichterLawFitter
+from surfquake.db import generate_id
 from surfquake.db.models import EventLocationModel, FirstPolarityModel, MomentTensorModel, PhaseInfoModel
 from datetime import datetime, timedelta
 from surfquake.Utils import ObspyUtil
@@ -154,6 +155,7 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
         self.map_widget.clickEventSignal.connect(self.double_click)
         self.magSlider.valueChanged.connect(self.updateSlider)
 
+
         el_columns = [getattr(EventLocationModel, c)
                       for c in EventLocationModel.__table__.columns.keys()[0:]]
 
@@ -222,6 +224,7 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
 
         self.actionRead_hyp_folder.triggered.connect(self._readHypFolder)
         self.actionUpdate_Magnitudes.triggered.connect(self.update_magnitudes)
+        self.actionUpdate_MTI.triggered.connect(self.update_mti)
         #self.actionRead_last_location.triggered.connect(self._readLastLocation)
         self.btnRefreshQuery.clicked.connect(self._refreshQuery)
         self.btnShowAll.clicked.connect(self._showAll)
@@ -463,8 +466,9 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
                 if event.longitude < min_lon: min_lon = event.longitude
                 if event.depth > max_dep: max_dep = event.depth
                 if event.depth < min_dep: min_dep = event.depth
-                if event.ml > max_mag: max_mag = event.ml
-                if event.ml < min_mag: min_mag = event.ml
+                if event.ml is not None:
+                    if event.ml > max_mag: max_mag = event.ml
+                    if event.ml < min_mag: min_mag = event.ml
                 if event.origin_time < min_orig: min_orig = event.origin_time
                 if event.origin_time > max_orig: max_orig = event.origin_time
 
@@ -520,8 +524,6 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
 
         pqg.QGuiApplication.instance().clipboard().setText(results)
 
-
-
     def _checkQueryParameters(self):
         self.btnRefreshQuery.setEnabled(all(v.valid for v in self._validators))
 
@@ -552,6 +554,47 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
             data["ml"] = info.ML
             data["ml_error"] = info.ML_error
             self._update_magnitudes(data)
+
+    def _update_mti(self, info_mti):
+        mti_dict = {}
+        date_format = "%Y-%m-%d %H:%M:%S.%f"
+        date = datetime.strptime(info_mti.date_id, date_format)
+        event_model = EventLocationModel.find_by(origin_time=date)
+        mti = MomentTensorModel.find_by(event_info_id=event_model.id)
+        if mti:
+            mti.delete()
+        mti_dict['latitude'] = info_mti.lat
+        mti_dict['longitude'] = info_mti.long
+        mti_dict['depth'] = info_mti.depth
+        mti_dict['VR'] = info_mti.vr
+        mti_dict['CN'] = info_mti.cn
+        mti_dict['dc'] = info_mti.dc
+        mti_dict['clvd'] = info_mti.clvd
+        mti_dict['iso'] = info_mti.isotropic_component
+        mti_dict['mw_mt'] = info_mti.mw
+        mti_dict['mo'] = info_mti.mo
+        mti_dict['strike_mt'] = info_mti.plane_1_strike
+        mti_dict['dip_mt'] = info_mti.plane_1_dip
+        mti_dict['rake_mt'] = info_mti.plane_1_slip_rake
+        mti_dict['mtt'] = info_mti.mtt
+        mti_dict['mpp'] = info_mti.mpp
+        mti_dict['mrr'] = info_mti.mrr
+        mti_dict['mrt'] = info_mti.mrt
+        mti_dict['mrp'] = info_mti.mrp
+        mti_dict['mtp'] = info_mti.mtp
+        mti_dict['event_info_id'] = event_model.id
+        mti_dict['id'] = generate_id(16)
+        mti = MomentTensorModel.from_dict(mti_dict)
+        mti.save()
+        self._showAll()
+        self.refreshLimits()
+
+    def update_mti(self):
+        magnitude_file = self.on_click_select_file()
+        df = pd.read_csv(magnitude_file, sep=";", na_values='missing')
+        for i in range(len(df)):
+            info = df.loc[i]
+            self._update_mti(info)
 
     def _readHypFile(self, file_abs_path):
         origin: Origin = ObspyUtil.reads_hyp_to_origin(file_abs_path)

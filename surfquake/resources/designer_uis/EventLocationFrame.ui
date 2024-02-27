@@ -755,15 +755,15 @@
      <string>File</string>
     </property>
     <addaction name="actionRead_hyp_folder"/>
-    <addaction name="actionRead_last_location"/>
     <addaction name="actionUpdate_Magnitudes"/>
+    <addaction name="actionUpdate_MTI"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionRead_hyp_folder">
    <property name="text">
-    <string>Read hyp folder</string>
+    <string>Read Event location folder</string>
    </property>
   </action>
   <action name="actionRead_last_location">
@@ -774,6 +774,11 @@
   <action name="actionUpdate_Magnitudes">
    <property name="text">
     <string>Update Magnitudes</string>
+   </property>
+  </action>
+  <action name="actionUpdate_MTI">
+   <property name="text">
+    <string>Update MTI</string>
    </property>
   </action>
  </widget>
