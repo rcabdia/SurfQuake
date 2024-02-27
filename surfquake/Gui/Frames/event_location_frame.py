@@ -952,20 +952,20 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
         check = False
         if self.methodCB.currentText() == "First Polarity":
 
-            strike = model.data(model.index(index.row(), 24))
-            dip = model.data(model.index(index.row(), 25))
-            rake = model.data(model.index(index.row(), 26))
+            strike = model.data(model.index(index.row(), 25))
+            dip = model.data(model.index(index.row(), 26))
+            rake = model.data(model.index(index.row(), 27))
             if None not in [strike, dip, rake]:
                 self.plot_foc_mec(method=self.methodCB.currentText(), strike=strike, dip=dip, rake=rake)
                 check = True
 
         if self.methodCB.currentText() == "MTI":
-            mrr = model.data(model.index(index.row(), 43))
-            mtt = model.data(model.index(index.row(), 44))
-            mpp = model.data(model.index(index.row(), 45))
-            mrt = model.data(model.index(index.row(), 46))
-            mrp = model.data(model.index(index.row(), 47))
-            mtp = model.data(model.index(index.row(), 48))
+            mrr = model.data(model.index(index.row(), 44))
+            mtt = model.data(model.index(index.row(), 45))
+            mpp = model.data(model.index(index.row(), 46))
+            mrt = model.data(model.index(index.row(), 47))
+            mrp = model.data(model.index(index.row(), 48))
+            mtp = model.data(model.index(index.row(), 49))
 
             if None not in [mrr, mtt, mpp, mrt, mrp, mtp]:
                 self.plot_foc_mec(method=self.methodCB.currentText(), mrr=mrr, mtt=mtt, mpp=mpp, mrt=mrt, mrp=mrp,
@@ -974,8 +974,8 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
 
         if check:
             # plot in the map
-            lat = model.data(model.index(index.row(), 3))
-            lon = model.data(model.index(index.row(), 4))
+            lat = model.data(model.index(index.row(), 4))
+            lon = model.data(model.index(index.row(), 5))
             print(lat, lon)
             file = os.path.join(ROOT_DIR, 'db/map_class/foc_mec.png')
 
@@ -984,9 +984,9 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
             imagebox.image.axes = self.map_widget.ax
             ab = AnnotationBbox(imagebox, [lon + 0.3, lat + 0.3], frameon=False)
             self.map_widget.ax.add_artist(ab)
-
-            self.map_widget.ax.annotate('', xy=(lon, lat), xycoords='data',
-                                        xytext=(lon + 0.3, lat + 0.3), textcoords='data',
+            lon_lat_transform = ccrs.PlateCarree()._as_mpl_transform(self.map_widget.ax)
+            self.map_widget.ax.annotate('', xy=(lon, lat), xycoords=lon_lat_transform,
+                                        xytext=(lon + 0.3, lat + 0.3), textcoords=lon_lat_transform,
                                         arrowprops=dict(arrowstyle="->",
                                                         connectionstyle="arc3,rad=.2"))
 

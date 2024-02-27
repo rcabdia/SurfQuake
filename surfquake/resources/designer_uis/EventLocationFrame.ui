@@ -381,12 +381,12 @@
               <widget class="QComboBox" name="methodCB">
                <item>
                 <property name="text">
-                 <string>First Polarity</string>
+                 <string>MTI</string>
                 </property>
                </item>
                <item>
                 <property name="text">
-                 <string>MTI</string>
+                 <string>First Polarity</string>
                 </property>
                </item>
               </widget>
