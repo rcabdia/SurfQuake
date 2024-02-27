@@ -248,7 +248,7 @@
                 <number>2</number>
                </property>
                <property name="minimum">
-                <double>-2000.000000000000000</double>
+                <double>-10000.000000000000000</double>
                </property>
                <property name="maximum">
                 <double>900000.000000000000000</double>
@@ -270,7 +270,7 @@
                 <number>2</number>
                </property>
                <property name="minimum">
-                <double>-2000.000000000000000</double>
+                <double>-10000.000000000000000</double>
                </property>
                <property name="maximum">
                 <double>9000000.000000000000000</double>
@@ -343,7 +343,62 @@
              <string>Plot Map Parameters</string>
             </property>
             <layout class="QGridLayout" name="gridLayout_2">
-             <item row="4" column="1">
+             <item row="8" column="0" colspan="2" alignment="Qt::AlignHCenter">
+              <widget class="QCheckBox" name="topoCB">
+               <property name="text">
+                <string>Topography</string>
+               </property>
+              </widget>
+             </item>
+             <item row="7" column="0" colspan="2">
+              <widget class="Line" name="line">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="10" column="0">
+              <widget class="QLabel" name="label_15">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Layer</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_12">
+               <property name="text">
+                <string>Magnitude Prefered</string>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="1">
+              <widget class="QComboBox" name="methodCB">
+               <item>
+                <property name="text">
+                 <string>First Polarity</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>MTI</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item row="6" column="0">
+              <widget class="QLabel" name="label_13">
+               <property name="text">
+                <string>Focal Mechanism</string>
+               </property>
+              </widget>
+             </item>
+             <item row="9" column="1">
               <widget class="QLineEdit" name="wmsLE">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -359,7 +414,7 @@
                </property>
               </widget>
              </item>
-             <item row="5" column="1">
+             <item row="10" column="1">
               <widget class="QLineEdit" name="layerLE">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
@@ -369,14 +424,7 @@
                </property>
               </widget>
              </item>
-             <item row="0" column="0">
-              <widget class="QPushButton" name="pushButton">
-               <property name="text">
-                <string>Stations Coords</string>
-               </property>
-              </widget>
-             </item>
-             <item row="4" column="0">
+             <item row="9" column="0">
               <widget class="QLabel" name="label_14">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -389,7 +437,7 @@
                </property>
               </widget>
              </item>
-             <item row="1" column="1">
+             <item row="3" column="1">
               <widget class="QComboBox" name="magnitudeCB">
                <item>
                 <property name="text">
@@ -413,68 +461,83 @@
                </item>
               </widget>
              </item>
-             <item row="6" column="0" colspan="2">
+             <item row="12" column="0" colspan="2">
               <widget class="QPushButton" name="PlotMapBtn">
                <property name="text">
                 <string>Plot Map</string>
                </property>
               </widget>
              </item>
-             <item row="0" column="1">
-              <widget class="QLineEdit" name="lineEdit">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
+             <item row="4" column="0">
+              <widget class="QLabel" name="label_21">
+               <property name="text">
+                <string>Magnitude Amplification</string>
                </property>
               </widget>
              </item>
-             <item row="3" column="0">
-              <widget class="QCheckBox" name="topoCB">
-               <property name="text">
-                <string>Topography</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="QComboBox" name="methodCB">
-               <item>
-                <property name="text">
-                 <string>First Polarity</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>MTI</string>
-                </property>
-               </item>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="label_13">
-               <property name="text">
-                <string>Focal Mechanism</string>
+             <item row="2" column="0" colspan="2">
+              <widget class="Line" name="line_3">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
                </property>
               </widget>
              </item>
              <item row="1" column="0">
-              <widget class="QLabel" name="label_12">
+              <widget class="QCheckBox" name="stationNameCB">
                <property name="text">
-                <string>Magnitude Prefered</string>
+                <string>Stations Names</string>
                </property>
               </widget>
              </item>
-             <item row="5" column="0">
-              <widget class="QLabel" name="label_15">
+             <item row="5" column="0" colspan="2">
+              <widget class="Line" name="line_4">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0" colspan="2">
+              <widget class="QPushButton" name="loadMetaBtn">
+               <property name="text">
+                <string>Load Metadata</string>
+               </property>
+              </widget>
+             </item>
+             <item row="11" column="0" colspan="2">
+              <widget class="Line" name="line_2">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="1">
+              <widget class="QSlider" name="magSlider">
                <property name="sizePolicy">
-                <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
-               <property name="text">
-                <string>Layer</string>
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>4</number>
+               </property>
+               <property name="singleStep">
+                <number>5</number>
+               </property>
+               <property name="value">
+                <number>1</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="tickPosition">
+                <enum>QSlider::TicksBelow</enum>
+               </property>
+               <property name="tickInterval">
+                <number>1</number>
                </property>
               </widget>
              </item>

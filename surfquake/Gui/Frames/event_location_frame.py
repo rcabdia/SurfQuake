@@ -2,11 +2,15 @@ import math
 import matplotlib.dates as mdates
 import cartopy
 from PyQt5 import QtWidgets, QtGui, QtCore
+from matplotlib.transforms import offset_copy
+from obspy import read_inventory, Inventory
 from obspy.geodetics import gps2dist_azimuth
 from surfquake.Gui.Frames import BaseFrame
 from surfquake.Gui.Frames.qt_components import MessageDialog
 from surfquake.Gui.Frames.uis_frames import UiEventLocationFrame
 from surfquake.Gui.Models.sql_alchemy_model import SQLAlchemyModel
+from surfquake.Gui.Utils.pyqt_utils import BindPyqtObject
+from surfquake.Utils.explote_meta import find_coords
 from surfquake.Utils.statistics_utils import GutenbergRichterLawFitter
 from surfquake.db.models import EventLocationModel, FirstPolarityModel, MomentTensorModel, PhaseInfoModel
 from datetime import datetime, timedelta
@@ -140,13 +144,15 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
         self.setupUi(self)
         self.setWindowTitle('Events Location')
         self.setWindowIcon(pqg.QIcon(':\icons\compass-icon.png'))
+        self.inv = None
         self.cb = None
-        self.inverted = True
+        self.mag_amplification = 0.5
         self.topoCB.toggled.connect(self.set_topo_param_enable)
         self.set_topo_param_enable(False)
         self.topoCB.setChecked(False)
         # Connect the custom signal to update the latitude and longitude in MapApp
         self.map_widget.clickEventSignal.connect(self.double_click)
+        self.magSlider.valueChanged.connect(self.updateSlider)
 
         el_columns = [getattr(EventLocationModel, c)
                       for c in EventLocationModel.__table__.columns.keys()[0:]]
@@ -160,12 +166,12 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
         columns = [*el_columns, *fp_columns, *mti_columns]
 
         col_names = ['Id', 'Origin Time', 'Transformation', 'RMS',
-                     'Latitude', 'Longitude', 'Depth', 'Uncertainty',
+                     'Latitude', 'Longitude', 'Depth', 'Depth Unc.',
                      'Max. Hor. Error', 'Min. Hor. Error', 'Ellipse Az.',
                      'No. Phases', 'Az. Gap', 'Max. Dist.', 'Min. Dist.',
                      'Mb', 'Mb Error', 'Ms', 'Ms Error', 'Ml', 'Ml Error',
                      'Mw', 'Mw Error', 'Mc', 'Mc Error', 'Strike', 'Dip',
-                     'Rake', 'Misfit', 'Az. Gap', 'Stat. Pol. Count', 'Latitude_mti', 'Longitude_mti', 'Depth_mti',
+                     'Rake', 'Misfit', 'Az. Gap', 'Stat. Pol. Count', 'Latitude CMT', 'Longitude CMT', 'Depth CMT',
                      'VR', 'CN', 'dc', 'clvd', 'iso', 'Mw_mt', 'Mo', 'Strike_mt', 'dip_mt', 'rake_mt', 'mrr', 'mtt',
                      'mpp', 'mrt', 'mrp', 'mtp']
 
@@ -221,10 +227,34 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
         self.btnShowAll.clicked.connect(self._showAll)
         self.PlotMapBtn.clicked.connect(self.__plot_map)
 
+        self.loadMetaBtn.clicked.connect(self.load_stations)
+        # stations #
+
 
         ### statistics ###
         self.run_statisticsBtn.clicked.connect(self.plot_statistics)
         self.clearStatisticsBtn.clicked.connect(self.clear_statistics)
+
+
+    ## load metadata ##
+
+    def load_stations(self):
+        metadatata_file = ""
+        selected = pw.QFileDialog.getOpenFileName(self, "Select file")
+        if isinstance(selected[0], str) and os.path.isfile(selected[0]):
+            metadatata_file = selected[0]
+
+        md = MessageDialog(self)
+        try:
+            self.inv = read_inventory(metadatata_file)
+            md.set_info_message("Loaded Metadata")
+        except:
+            md.set_error_message("The file selected is not a valid metadata", )
+
+    def updateSlider(self, value):
+
+        self.mag_amplification = value/2
+
     ## statistics ##
 
     def plot_statistics(self):
@@ -705,7 +735,8 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
                 try:
                     self.cb.remove()
                 except Exception as e:
-                    print(f"Error removing colorbar: {e}")
+                    #print(f"Error removing colorbar: {e}")
+                    pass
 
             MAP_SERVICE_URL = map_service
             try:
@@ -734,7 +765,7 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
             # print(entities)
 
             mag = np.array(mag)
-            mag = 0.5 * np.exp(mag)
+            mag = self.mag_amplification * np.exp(1.2*mag)
             min_lon = min(lon) - 0.5
             max_lon = max(lon) + 0.5
             min_lat = min(lat) - 0.5
@@ -748,9 +779,9 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
                     self.map_widget.ax.add_wms(wms, layer)
                 else:
                     coastline_10m = cartopy.feature.NaturalEarthFeature('physical', 'coastline', '10m',
-                                                                        edgecolor='k', alpha=0.6, linewidth=0.5,
+                                                                        edgecolor='k', linewidth=0.5,
                                                                         facecolor=cartopy.feature.COLORS['land'])
-                    self.map_widget.ax.add_feature(coastline_10m)
+                    self.map_widget.ax.add_feature(coastline_10m, zorder=1)
 
             except:
                 os.environ["CARTOPY_USER_BACKGROUNDS"] = os.path.join(ROOT_DIR, "maps")
@@ -762,9 +793,9 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
             color_map = plt.cm.get_cmap('rainbow')
             reversed_color_map = color_map.reversed()
             cs = self.map_widget.ax.scatter(lon, lat, s=mag, c=depth, edgecolors="black", cmap=reversed_color_map,
-                                            transform=ccrs.PlateCarree())
+                                            transform=ccrs.PlateCarree(), zorder=2)
 
-            cax = self.map_widget.fig.add_axes([0.92, 0.1, 0.02, 0.8])  # Adjust these values as needed
+            cax = self.map_widget.fig.add_axes([0.87, 0.1, 0.02, 0.8])  # Adjust these values as needed
             self.cb = self.map_widget.fig.colorbar(cs, cax=cax, orientation='vertical', extend='both', label='Depth (km)')
             self.map_widget.lat.scatter(depth, lat, s=mag, c=depth, edgecolors="black", cmap=reversed_color_map)
             self.map_widget.lat.set_ylim((min_lat, max_lat))
@@ -772,8 +803,7 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
             self.map_widget.lon.xaxis.tick_top()
             self.map_widget.lon.yaxis.tick_right()
             self.map_widget.lat.set(ylabel='Latitude')
-            if self.inverted:
-                self.map_widget.lon.invert_yaxis()
+            self.map_widget.lon.invert_yaxis()
             self.map_widget.lon.yaxis.set_label_position('left')
             self.map_widget.lon.set(xlabel='Longitude')
             self.map_widget.lon.set_xlim((min_lon, max_lon))
@@ -782,6 +812,34 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
             self.map_widget.lon.yaxis.set_label_position('right')
             self.map_widget.lon.xaxis.set_ticks_position('top')
             self.map_widget.lon.yaxis.set_ticks_position('right')
+
+            # plot stations
+            if isinstance(self.inv, Inventory):
+                names = []
+                all_lon = []
+                all_lat = []
+                networks = find_coords(self.inv)
+                for key in networks.keys():
+                    names += networks[key][0]
+                    all_lon += networks[key][1]
+                    all_lat += networks[key][2]
+                self.map_widget.ax.scatter(all_lon, all_lat, s=14, marker="^", color='black', edgecolors="white",
+                                           alpha=0.7, transform=ccrs.PlateCarree())
+
+                if self.stationNameCB.isChecked():
+                    N = len(names)
+                    geodetic_transform = ccrs.PlateCarree()._as_mpl_transform(self.map_widget.ax)
+                    text_transform = offset_copy(geodetic_transform, units='dots', x=-25)
+                    for n in range(N):
+                        lon1 = all_lon[n]
+                        lat1 = all_lat[n]
+                        name = names[n]
+
+                        self.map_widget.ax.text(lon1, lat1, name, verticalalignment='center', horizontalalignment='right',
+                                transform=text_transform,
+                                bbox=dict(facecolor='sandybrown', alpha=0.5, boxstyle='round'))
+
+
             # magnitude legend
             kw = dict(prop="sizes", num=5, fmt="{x:.1f}", color="red", func=lambda s: np.log(s / 0.5))
             self.map_widget.ax.legend(*cs.legend_elements(**kw), loc="lower right", title="Magnitudes")
