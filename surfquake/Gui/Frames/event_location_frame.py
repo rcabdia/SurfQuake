@@ -994,20 +994,22 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
 
     def double_click(self, latitude, longitude):
 
-        print(f'Clicked on Latitude: {latitude}, Longitude: {longitude}')
         self.dataSelect(longitude, latitude)
 
     def dataSelect(self, lon1, lat1):
         dist = []
-        entities = self.model.getEntities()
-
-        for j in entities:
-            great_arc, az0, az2 = gps2dist_azimuth(lat1, lon1, j[0].latitude, j[0].longitude, a=6378137.0,
-                                                   f=0.0033528106647474805)
+        selection_model = self.tableView.model()
+        for row in range(selection_model.rowCount()):
+            lat_index = selection_model.index(row, 4)
+            lon_index = selection_model.index(row, 5)
+            # Retrieve data from the model using the index
+            lat = lat_index.data()
+            lon = lon_index.data()
+            great_arc, az0, az2 = gps2dist_azimuth(lat1, lon1, lat, lon, a=6378137.0, f=0.0033528106647474805)
             dist.append(great_arc)
-
         idx, val = self.find_nearest(dist, min(dist))
         self.tableView.selectRow(idx)
+
 
     def find_nearest(self, array, value):
         idx, val = min(enumerate(array), key=lambda x: abs(x[1] - value))

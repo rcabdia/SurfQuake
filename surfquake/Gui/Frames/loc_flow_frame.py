@@ -2,7 +2,7 @@ import os
 from surfquakecore.earthquake_location.structures import NLLConfig, GridConfiguration, TravelTimesConfiguration, \
     LocationParameters
 from surfquakecore.magnitudes.source_tools import ReadSource
-from surfquakecore.moment_tensor.mti_parse import read_isola_result
+from surfquakecore.moment_tensor.mti_parse import read_isola_result, WriteMTI
 from surfquakecore.moment_tensor.sq_isola_tools import BayesianIsolaCore
 from surfquakecore.real.real_core import RealCore
 from surfquakecore.real.structures import RealConfig, GeographicFrame, GridSearch, TravelTimeGridSearch, ThresholdPicks
@@ -699,6 +699,9 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         bi = BayesianIsolaGUICore(bic, model=self.get_model(), entities=self.get_db(),
                                   parameters=parameters)
         bi.run_inversion()
+        wm = WriteMTI(self.MTI_output_path.text())
+        file_output = os.path.join(self.MTI_output_path.text(), "mti_summary.txt")
+        wm.mti_summary(file_output)
         pyc.QMetaObject.invokeMethod(self.progress_dialog, 'accept', Qt.Qt.QueuedConnection)
         #########################
 
