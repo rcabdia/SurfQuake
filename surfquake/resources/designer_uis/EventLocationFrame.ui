@@ -649,12 +649,12 @@
               <widget class="QComboBox" name="binsSelectionCB">
                <item>
                 <property name="text">
-                 <string>Monthly</string>
+                 <string>Auto</string>
                 </property>
                </item>
                <item>
                 <property name="text">
-                 <string>Auto</string>
+                 <string>Manual</string>
                 </property>
                </item>
               </widget>

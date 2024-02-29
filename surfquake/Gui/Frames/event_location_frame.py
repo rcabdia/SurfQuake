@@ -299,13 +299,13 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
             if j[0].mw is None:
                 random_float = random.uniform(-0.25, 1.5)
                 magnitudes_mw.append(random_float)
-            elif j[0].mw >= self.minMagCB.value() and j[0].mw <= self.maxMagCB.value():
+            elif self.minMagCB.value() <= j[0].mw <= self.maxMagCB.value():
                 magnitudes_mw.append(j[0].mw)
 
             if j[0].ml is None:
                 random_float = random.uniform(-0.25, 1.5)
                 magnitudes_ml.append(random_float)
-            elif j[0].ml >= self.minMagCB.value() and j[0].ml <= self.maxMagCB.value():
+            elif self.minMagCB.value() <= j[0].ml <= self.maxMagCB.value():
                 magnitudes_ml.append(j[0].ml)
 
         if self.magPrefCB.currentText() == "Mw":
@@ -330,13 +330,19 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
         avarage["magnitudes_ml"] = np.mean(magnitudes_mw)
 
         self.print_statistics(avarage)
-        if self.binsSelectionCB.currentText() == "Monthly":
-            self.statistics_widget.ax1.hist(dates, bins='auto', edgecolor='black', alpha=0.7)
-            self.statistics_widget.ax1.xaxis.set_major_locator(mdates.MonthLocator())
-        # elif self.binsSelectionCB.currentText() == "Daily":
-        #     self.statistics_widget.ax1.hist(dates, bins='auto', edgecolor='black', alpha=0.7)
-        #    self.statistics_widget.ax1.xaxis.set_major_locator(mdates.DayLocator())
-        elif self.binsSelectionCB.currentText() == "Auto":
+        if self.binsSelectionCB.currentText() == "Auto":
+            min_date = min(dates)
+            max_date = max(dates)
+            one_month = timedelta(days=30)
+            date_difference = max_date - min_date
+            if date_difference <= one_month:
+                self.statistics_widget.ax1.hist(dates, bins='auto', edgecolor='black', alpha=0.7)
+                self.statistics_widget.ax1.xaxis.set_major_locator(mdates.DayLocator())
+            elif date_difference >= one_month:
+                self.statistics_widget.ax1.hist(dates, bins='auto', edgecolor='black', alpha=0.7)
+                self.statistics_widget.ax1.xaxis.set_major_locator(mdates.MonthLocator())
+
+        elif self.binsSelectionCB.currentText() == "Manual":
             self.statistics_widget.ax1.hist(dates, bins=self.numBinsSB.value(), edgecolor='black', alpha=0.7)
 
         self.statistics_widget.ax1.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
@@ -647,78 +653,6 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
         self._showAll()
         self.refreshLimits()
 
-    # def _readLastLocation(self):
-    #     # Insert event location or get if it already exists
-    #     hyp_path = os.path.join(location_output, 'last.hyp')
-    #     try:
-    #         event = self._readHypFile(hyp_path)
-    #     except Exception as e:
-    #         pw.QMessageBox.warning(self, self.windowTitle(), f'An error ocurred reading hyp file: {e}')
-    #         return
-    #
-    #     # TODO INCLUDES PICKING INFO
-    #     # TODO INCLUDES JSON WITH WAVEFORMS
-    #
-    #     # Update magnitude data
-    #     mag_file = os.path.join(location_output, 'magnitudes_output.mag')
-    #     if os.path.isfile(mag_file):
-    #         with open(mag_file) as f:
-    #             next(f)
-    #             mag_dict = {}
-    #             for line in f:
-    #                 key, value = line.split()
-    #                 key = key.lower().replace('std', 'error')
-    #                 try:
-    #                     value = float(value)
-    #                     mag_dict[key] = value
-    #                 except ValueError:
-    #                     pass
-    #             event.set_magnitudes(mag_dict)
-    #             event.save()
-    #
-    #     # Update first polarity data
-    #     # TODO: this could be improved by updating instead of removing the
-    #     # existing one
-    #     fp = FirstPolarityModel.find_by(event_info_id=event.id)
-    #     if fp:
-    #         fp.delete()
-    #
-    #     fp_file = os.path.join(location_output, 'first_polarity.fp')
-    #     if os.path.isfile(fp_file):
-    #         with open(fp_file) as f:
-    #             next(f)
-    #             fp_dict = {}
-    #             fp_fields = {'Strike': 'strike_fp', 'Dip': 'dip_fp',
-    #                          'Rake': 'rake_fp', 'misfit_first_polarity': 'misfit_fp',
-    #                          'azimuthal_gap': 'azimuthal_fp_Gap',
-    #                          'number_of_polarities': 'station_fp_polarities_count'}
-    #             for line in f:
-    #                 key, value = line.split()
-    #                 try:
-    #                     key = fp_fields[key]
-    #                     value = float(value)
-    #                     fp_dict[key] = value
-    #                 except (ValueError, KeyError):
-    #                     pass
-    #             fp_dict['event_info_id'] = event.id
-    #             fp_dict['id'] = generate_id(16)
-    #             fp = FirstPolarityModel.from_dict(fp_dict)
-    #             fp.save()
-    #
-    #     mti = MomentTensorModel.find_by(event_info_id=event.id)
-    #     if mti:
-    #         mti.delete()
-    #
-    #     mti_file = os.path.join(MOMENT_TENSOR_OUTPUT, 'log.txt')
-    #     if os.path.isfile(mti_file):
-    #         mti_dict = read_log(mti_file)
-    #         mti_dict['event_info_id'] = event.id
-    #         mti_dict['id'] = generate_id(16)
-    #         mti = MomentTensorModel.from_dict(mti_dict)
-    #         mti.save()
-    #
-    #     self._showAll()
-    #     self.refreshLimits()
 
     def _refreshQuery(self):
         lat = EventLocationModel.latitude.between(self.minLat.value(), self.maxLat.value())
@@ -1014,13 +948,3 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
     def find_nearest(self, array, value):
         idx, val = min(enumerate(array), key=lambda x: abs(x[1] - value))
         return idx, val
-
-    # This method just valid for ISP
-    # def export_event_location_to_earthquake_analysis(self):
-    #     from surfquake.Gui.controllers import Controller
-    #
-    #     controller: Controller = Controller()
-    #     if not controller.earthquake_analysis_frame:
-    #         controller.open_earthquake_window()
-    #
-    #     controller.earthquake_analysis_frame.retrieve_event([0, 1, 2, 3])
