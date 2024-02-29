@@ -47,11 +47,14 @@ class BayesianIsolaGUICore:
 
                 if event_info.mw is None:
                     # might be users has not ru magnitude module but wants to do an inversion
-                    event_info.mw =3.0
+                    event_info.mw = 3.0
+                if event_info.depth < 0:
+                    # might be users has not ru magnitude module but wants to do an inversion
+                    event_info.depth = 1500
 
                 mti_config = self.__get_mti_config(event_info)
-                print("Running inversion ", event_info.origin_time, event_info.latitude, event_info.longitude, event_info.depth,
-                      event_info.mw)
+                print("Running inversion ", event_info.origin_time, event_info.latitude, event_info.longitude,
+                      event_info.depth/1000, event_info.mw)
                 self.bayesian_isola.run_inversion(mti_config)
             except:
                 print("Failed Inversion of event ", event_info.origin_time, event_info.latitude, event_info.longitude, event_info.depth,
