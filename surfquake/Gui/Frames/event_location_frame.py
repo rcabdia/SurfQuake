@@ -238,6 +238,8 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
         self.run_statisticsBtn.clicked.connect(self.plot_statistics)
         self.clearStatisticsBtn.clicked.connect(self.clear_statistics)
 
+        self.showMTIBtn.clicked.connect(self.show_mtis)
+
 
     ## load metadata ##
 
@@ -742,6 +744,7 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
             # print(entities)
 
             mag = np.array(mag)
+            mag_original = 0.5 * np.exp(1.2*mag)
             mag = self.mag_amplification * np.exp(1.2*mag)
             min_lon = min(lon) - 0.5
             max_lon = max(lon) + 0.5
@@ -818,7 +821,7 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
 
 
             # magnitude legend
-            kw = dict(prop="sizes", num=5, fmt="{x:.1f}", color="red", func=lambda s: np.log(s / 0.5))
+            kw = dict(prop="sizes", num=5, fmt="{x:.1f}", color="red", func=lambda mag_original: np.log(mag_original / 0.5))
             self.map_widget.ax.legend(*cs.legend_elements(**kw), loc="lower right", title="Magnitudes")
             self.map_widget.fig.subplots_adjust(right=0.986, bottom=0.062, top=0.828, left=0.014)
             self.map_widget.fig.canvas.draw()
@@ -951,14 +954,30 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
 
     def show_mtis(self):
         entities = self.model.getEntities()
-        lats = []
-        longs = []
         moments = []
         for entity in entities:
-            if entity.mw_mt:
-                lats.appen(entity.latitude)
-                longs.append(entity.longitude)
-                moments.append([entity.mrr, entity.mrr, entity.mpp, entity.mrt, entity.mrp, entity.mtp])
+            if entity[0].moment_tensor:
+                mt = entity[0].moment_tensor[0]
+                moments.append([mt.mrr, mt.mtt, mt.mpp, mt.mrt, mt.mrp, mt.mtp, mt.latitude, mt.longitude])
 
-        print(moments)
+        for moment in moments:
+            self.plot_foc_mec(method=self.methodCB.currentText(), mrr=moment[0], mtt=moment[1], mpp=moment[2],
+                              mrt=moment[3], mrp=moment[4], mtp=moment[5])
+            # plot in the map
+            lat = moment[6]
+            lon = moment[7]
+            file = os.path.join(ROOT_DIR, 'db/map_class/foc_mec.png')
+            random_number = random.uniform(-0.3, 0.3)
+            img = Image.open(file)
+            imagebox = OffsetImage(img, zoom=0.08)
+            imagebox.image.axes = self.map_widget.ax
+            ab = AnnotationBbox(imagebox, [lon + random_number, lat - random_number], frameon=False)
+            self.map_widget.ax.add_artist(ab)
+            lon_lat_transform = ccrs.PlateCarree()._as_mpl_transform(self.map_widget.ax)
+            self.map_widget.ax.annotate('', xy=(lon, lat), xycoords=lon_lat_transform,
+                                        xytext=(lon + random_number, lat - random_number), textcoords=lon_lat_transform,
+                                        arrowprops=dict(arrowstyle="->",
+                                                        connectionstyle="arc3,rad=.2"))
+
+            self.map_widget.fig.canvas.draw()
 
