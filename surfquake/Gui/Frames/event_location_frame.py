@@ -800,7 +800,7 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
                     names += networks[key][0]
                     all_lon += networks[key][1]
                     all_lat += networks[key][2]
-                self.map_widget.ax.scatter(all_lon, all_lat, s=14, marker="^", color='black', edgecolors="white",
+                self.map_widget.ax.scatter(all_lon, all_lat, s=50, marker="^", color='black', edgecolors="white",
                                            alpha=0.7, transform=ccrs.PlateCarree())
 
                 if self.stationNameCB.isChecked():
@@ -912,15 +912,15 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
             lon = model.data(model.index(index.row(), 5))
             print(lat, lon)
             file = os.path.join(ROOT_DIR, 'db/map_class/foc_mec.png')
-
+            random_number = random.uniform(-0.3, 0.3)
             img = Image.open(file)
             imagebox = OffsetImage(img, zoom=0.08)
             imagebox.image.axes = self.map_widget.ax
-            ab = AnnotationBbox(imagebox, [lon + 0.3, lat + 0.3], frameon=False)
+            ab = AnnotationBbox(imagebox, [lon + random_number, lat - random_number], frameon=False)
             self.map_widget.ax.add_artist(ab)
             lon_lat_transform = ccrs.PlateCarree()._as_mpl_transform(self.map_widget.ax)
             self.map_widget.ax.annotate('', xy=(lon, lat), xycoords=lon_lat_transform,
-                                        xytext=(lon + 0.3, lat + 0.3), textcoords=lon_lat_transform,
+                                        xytext=(lon + random_number, lat - random_number), textcoords=lon_lat_transform,
                                         arrowprops=dict(arrowstyle="->",
                                                         connectionstyle="arc3,rad=.2"))
 
