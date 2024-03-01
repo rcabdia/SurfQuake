@@ -948,3 +948,17 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
     def find_nearest(self, array, value):
         idx, val = min(enumerate(array), key=lambda x: abs(x[1] - value))
         return idx, val
+
+    def show_mtis(self):
+        entities = self.model.getEntities()
+        lats = []
+        longs = []
+        moments = []
+        for entity in entities:
+            if entity.mw_mt:
+                lats.appen(entity.latitude)
+                longs.append(entity.longitude)
+                moments.append([entity.mrr, entity.mrr, entity.mpp, entity.mrt, entity.mrp, entity.mtp])
+
+        print(moments)
+
