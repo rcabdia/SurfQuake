@@ -1,4 +1,4 @@
-
+import cartopy
 from matplotlib.transforms import offset_copy
 import cartopy.crs as ccrs
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
@@ -11,12 +11,10 @@ from surfquake.loc_flow_tools.utils import ConversionUtils
 import matplotlib
 
 
-def plot_real_map(networks, earthquakes=False, **kwargs):
+def plot_real_map(networks,  **kwargs):
     matplotlib.use("Qt5Agg")
     ##Extract Area values##
-
     area = kwargs.pop('area', None)
-   # earthquakes = kwargs.pop(True, False)
 
     if area is not None:
         x = [area[0], area[1], area[2], area[3], area[4]]
@@ -43,18 +41,20 @@ def plot_real_map(networks, earthquakes=False, **kwargs):
     ymax = max(all_lat) + 1
     extent = [xmin, xmax, ymin, ymax]
     ax.set_extent(extent, crs=ccrs.PlateCarree())
-    wms = WebMapService(MAP_SERVICE_URL)
-    ax.add_wms(wms, layer)
+
+    try:
+        wms = WebMapService(MAP_SERVICE_URL)
+        ax.add_wms(wms, layer)
+    except:
+        coastline_10m = cartopy.feature.NaturalEarthFeature('physical', 'coastline', '10m',
+                                                            edgecolor='k', alpha=0.6, linewidth=0.5,
+                                                            facecolor=cartopy.feature.COLORS['land'])
+        ax.add_feature(coastline_10m)
 
 
     geodetic_transform = ccrs.PlateCarree()._as_mpl_transform(ax)
     text_transform = offset_copy(geodetic_transform, units='dots', x=-25)
     ax.scatter(all_lon, all_lat, s=12, marker="^", color='green', alpha=0.7, transform=ccrs.PlateCarree())
-
-    # if earthquakes:
-    #     catalog = ConversionUtils.previewCatalog(realout)
-    #     ax.scatter(catalog["longs"], catalog["lats"], s=12, marker="o", color='red', alpha= 0.75, transform=ccrs.PlateCarree())
-    #
 
     if area is not None:
         ax.plot(x, y, color='blue', transform=ccrs.PlateCarree())
@@ -71,8 +71,8 @@ def plot_real_map(networks, earthquakes=False, **kwargs):
 
     sub_ax = fig.add_axes([0.70, 0.73, 0.28, 0.28], projection=ccrs.PlateCarree())
     sub_ax.set_extent([-179.9, 180, -89.9, 90], geodetic)
-    effect = Stroke(linewidth=4, foreground='wheat', alpha=0.5)
-    sub_ax.outline_patch.set_path_effects([effect])
+    #effect = Stroke(linewidth=4, foreground='wheat', alpha=0.5)
+    #sub_ax.outline_patch.set_path_effects([effect])
 
     sub_ax.add_feature(cfeature.LAND)
     sub_ax.coastlines()

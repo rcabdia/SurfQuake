@@ -21,6 +21,8 @@ from surfquake.Utils import obspy_utils
 from surfquake.Gui.Frames.event_location_frame import EventLocationFrame
 from surfquake.Gui.Frames.parameters import ParametersSettings
 from obspy.core.inventory.inventory import Inventory
+
+from surfquake.Utils.pdf_plot import PDFmanger
 from surfquake.Utils.time_utils import AsycTime
 from surfquake.maps.plot_map import plot_real_map
 from surfquake.sq_isola_tools.sq_bayesian_isola_core import BayesianIsolaGUICore
@@ -106,6 +108,7 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         self.runlocBtn.clicked.connect(lambda: self.on_click_run_loc())
         # self.plotmapBtn.clicked.connect(lambda: self.on_click_plot_map())
         # self.stationsBtn.clicked.connect(lambda: self.on_click_select_metadata_file())
+        self.plotpdfBtn.clicked.connect(lambda: self.plot_pdf())
         self.actionData_Base.triggered.connect(lambda: self.open_data_base())
 
         # Magnitude
@@ -156,6 +159,18 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         selected = pw.QFileDialog.getOpenFileName(self, "Select file")
         if isinstance(selected[0], str) and os.path.isfile(selected[0]):
             bind.value = selected[0]
+
+    def plot_pdf(self):
+        selected = pw.QFileDialog.getOpenFileName(self, "Select *hyp file")
+        if isinstance(selected[0], str) and os.path.isfile(selected[0]):
+            file_Selected = selected[0]
+
+            if os.path.isfile(file_Selected):
+                print(file_Selected)
+            # scatter_x, scatter_y, scatter_z, pdf = self.nll_manager.get_NLL_scatter(file_Selected)
+            # self.pdf = PDFmanger(scatter_x, scatter_y, scatter_z, pdf)
+            # self.pdf.plot_scatter()
+
 
     def subprocess_feedback(self, err_msg: str, set_default_complete=True):
         """
