@@ -296,7 +296,9 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
             azimuthal_gaps.append(j[0].azimuthal_gap)
             max_distances.append(j[0].max_distance)
             min_distances.append(j[0].min_distance)
-            cum_events.append(i+1)
+            #cum_events.append(i+1)
+
+
 
             if j[0].mw is None:
                 random_float = random.uniform(-0.25, 1.5)
@@ -314,6 +316,11 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
             magnitudes = magnitudes_mw
         elif self.magPrefCB.currentText() == "ML":
             magnitudes = magnitudes_ml
+
+        dates = sorted(dates)
+        for i in range(len(dates)):
+            cum_events.append(i + 1)
+
 
         avarage["rmss"] = np.mean(rmss)
         avarage["max_horizontal_errors"] = np.mean(max_horizontal_errors)
@@ -390,7 +397,7 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
 
     def print_statistics(self, avarage):
         self.statistics_Text.clear()
-        self.statistics_Text.appendPlainText("Focal Parameters Avarage/n")
+        self.statistics_Text.appendPlainText("Focal Parameters Avarage")
 
         latitudes = str("{: .2f}".format(avarage["latitudes"]))
         longitudes = str("{: .2f}".format(avarage["longitudes"]))
@@ -408,7 +415,6 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
 
         self.statistics_Text.appendPlainText("Latitude: {latitudes}º".format(latitudes=latitudes))
         self.statistics_Text.appendPlainText("Longitude: {longitudes}º".format(longitudes=longitudes))
-        self.statistics_Text.appendPlainText("RMS: {RMS} s".format(RMS=rms))
         self.statistics_Text.appendPlainText("RMS: {RMS} s".format(RMS=rms))
         self.statistics_Text.appendPlainText("Depth: {Depth} km ".format(Depth=depth))
         self.statistics_Text.appendPlainText("Depth Uncertainty: {Depth_Uncertainty} km ".
