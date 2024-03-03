@@ -21,8 +21,7 @@ from surfquake.Utils import obspy_utils
 from surfquake.Gui.Frames.event_location_frame import EventLocationFrame
 from surfquake.Gui.Frames.parameters import ParametersSettings
 from obspy.core.inventory.inventory import Inventory
-
-from surfquake.Utils.pdf_plot import PDFmanger
+from surfquake.Utils.pdf_plot import plot_scatter
 from surfquake.Utils.time_utils import AsycTime
 from surfquake.maps.plot_map import plot_real_map
 from surfquake.sq_isola_tools.sq_bayesian_isola_core import BayesianIsolaGUICore
@@ -31,6 +30,8 @@ from surfquakecore.phasenet.phasenet_handler import PhasenetUtils
 from surfquakecore.phasenet.phasenet_handler import PhasenetISP
 from surfquakecore.earthquake_location.run_nll import Nllcatalog, NllManager
 from surfquakecore.magnitudes.run_magnitudes import Automag
+from obspy.core.event import Origin
+from surfquake.Utils import ObspyUtil
 
 pw = QtWidgets
 pqg = QtGui
@@ -161,15 +162,28 @@ class LocFlow(BaseFrame, UiLoc_Flow):
             bind.value = selected[0]
 
     def plot_pdf(self):
+        # from surfquakecore.earthquake_location.run_nll import get_
+        from surfquakecore.earthquake_location.run_nll import NllManager
         selected = pw.QFileDialog.getOpenFileName(self, "Select *hyp file")
+        ellipse = {}
         if isinstance(selected[0], str) and os.path.isfile(selected[0]):
+            ellipse = {}
             file_Selected = selected[0]
-
+            origin: Origin = ObspyUtil.reads_hyp_to_origin(file_Selected)
+            latitude = origin.latitude
+            longitude = origin.longitude
+            smin = origin.origin_uncertainty.min_horizontal_uncertainty
+            smax = origin.origin_uncertainty.max_horizontal_uncertainty
+            azimuth = origin.origin_uncertainty.azimuth_max_horizontal_uncertainty
+            ellipse['latitude'] = latitude
+            ellipse['longitude'] = longitude
+            ellipse['smin'] = smin
+            ellipse['smax'] = smax
+            ellipse['azimuth'] = azimuth
             if os.path.isfile(file_Selected):
                 print(file_Selected)
-            # scatter_x, scatter_y, scatter_z, pdf = self.nll_manager.get_NLL_scatter(file_Selected)
-            # self.pdf = PDFmanger(scatter_x, scatter_y, scatter_z, pdf)
-            # self.pdf.plot_scatter()
+                scatter_x, scatter_y, scatter_z, pdf = NllManager.get_NLL_scatter(file_Selected)
+                plot_scatter(scatter_x, scatter_y, scatter_z, pdf, ellipse)
 
 
     def subprocess_feedback(self, err_msg: str, set_default_complete=True):
