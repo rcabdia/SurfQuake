@@ -122,17 +122,14 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         self.printSourceResultsBtn.clicked.connect(lambda: self.print_source_results())
 
         # MTI
-        self.mti_path_bind = BindPyqtObject(self.mti_working_path, self.onChange_root_path)
         self.earth_model_bind = BindPyqtObject(self.earth_model_path, self.onChange_root_path)
-        self.workingDirectoryMTIBtn.clicked.connect(lambda: self.on_click_select_directory(self.mti_path_bind))
         self.earthModelMTIBtn.clicked.connect(lambda: self.on_click_select_file(self.earth_model_bind))
         self.mti_output_path_bind = BindPyqtObject(self.MTI_output_path, self.onChange_root_path)
         self.outputDirectoryMTIBtn.clicked.connect(lambda: self.on_click_select_directory(self.mti_output_path_bind))
-        #self.macroMITBtn.clicked.connect(lambda: self.open_parameters_settings())
         self.runInversionMTIBtn.clicked.connect(lambda: self.run_mti())
         self.printMTIresultsBtn.clicked.connect(lambda: self.print_mti())
+        
         # Dialog
-
         self.progress_dialog = pw.QProgressDialog(self)
         self.progress_dialog.setRange(0, 0)
         self.progress_dialog.setWindowTitle('Processing.....')
@@ -691,8 +688,7 @@ class LocFlow(BaseFrame, UiLoc_Flow):
 
     def get_inversion_parameters(self):
 
-        parameters = {'working_directory': self.mti_working_path.text(),
-                      'output_directory': self.MTI_output_path.text(),
+        parameters = {'output_directory': self.MTI_output_path.text(),
                       'earth_model': self.earth_model_path.text(),
                       'location_unc': self.HorizontalLocUncertainityMTIDB.value(),
                       'time_unc': self.timeUncertainityMTIDB.value(), 'depth_unc': self.depthUncertainityMTIDB.value(),
@@ -702,7 +698,8 @@ class LocFlow(BaseFrame, UiLoc_Flow):
                       'max_dist': self.maxDistMTIDB.value(), 'fmin': self.freq_minMTI.value(),
                       'fmax': self.freq_maxMTI.value(), 'rms_thresh': self.rms_threshMTI.value(),
                       'max_num_stationsMTI0': self.max_num_stationsMTI.value(),
-                      'source_duration': self.sourceTypeLenthgMTIDB.value()}
+                      'source_duration': self.sourceTypeLenthgMTIDB.value(),
+                      'max_number_stations': self.max_num_stationsMTI.value()}
 
         return parameters
 
@@ -726,7 +723,7 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         bic = BayesianIsolaCore(project=self.sp, inventory_file=self.metadata_path_bind.value,
                                 output_directory=self.MTI_output_path.text(),
                                 save_plots=parameters['plot_save'])
-        #bic.working_directory = self.mti_working_path.text()
+
         bi = BayesianIsolaGUICore(bic, model=self.get_model(), entities=self.get_db(),
                                   parameters=parameters)
         bi.run_inversion()
