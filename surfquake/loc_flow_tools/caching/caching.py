@@ -2,10 +2,8 @@ import os.path
 import pickle
 import shutil
 from typing import List, Union, Optional, Any
-
 from numpy import ndarray
-
-from loc_flow_tools.caching import caching_root_dir
+from surfquake.loc_flow_tools.caching import caching_root_dir
 
 
 class Cache:

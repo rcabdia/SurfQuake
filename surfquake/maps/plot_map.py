@@ -3,11 +3,9 @@ from matplotlib.transforms import offset_copy
 import cartopy.crs as ccrs
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 from owslib.wms import WebMapService
-from matplotlib.patheffects import Stroke
 import cartopy.feature as cfeature
 import shapely.geometry as sgeom
 from matplotlib import pyplot as plt
-from surfquake.loc_flow_tools.utils import ConversionUtils
 import matplotlib
 
 

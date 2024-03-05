@@ -6,8 +6,7 @@ from surfquakecore.moment_tensor.mti_parse import read_isola_result, WriteMTI
 from surfquakecore.moment_tensor.sq_isola_tools import BayesianIsolaCore
 from surfquakecore.real.real_core import RealCore
 from surfquakecore.real.structures import RealConfig, GeographicFrame, GridSearch, TravelTimeGridSearch, ThresholdPicks
-from surfquake import ROOT_DIR, nllinput, \
-    real_working_dir, real_output_data, source_config
+from surfquake import ROOT_DIR, source_config
 from surfquake.DataProcessing.metadata_manager import MetadataManager
 from surfquake.Exceptions.exceptions import parse_excepts
 from surfquake.Gui.Frames import BaseFrame
@@ -19,7 +18,6 @@ from sys import platform
 from concurrent.futures.thread import ThreadPoolExecutor
 from surfquake.Utils import obspy_utils
 from surfquake.Gui.Frames.event_location_frame import EventLocationFrame
-from surfquake.Gui.Frames.parameters import ParametersSettings
 from obspy.core.inventory.inventory import Inventory
 from surfquake.Utils.pdf_plot import plot_scatter
 from surfquake.Utils.time_utils import AsycTime
@@ -45,7 +43,6 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         super(LocFlow, self).__init__()
         self.setupUi(self)
         self.setWindowTitle('surfQuake')
-        self.__pick_output_path = nllinput
         self.__dataless_dir = None
         self.__nll_manager = None
         self.db_frame = None
@@ -55,7 +52,6 @@ class LocFlow(BaseFrame, UiLoc_Flow):
         self.inventory = None
         self.project = None
         self.config_automag = {}
-        self.parameters = ParametersSettings()
 
         ####### Metadata ##########
         self.metadata_path_bind = BindPyqtObject(self.datalessPathForm)
@@ -203,9 +199,6 @@ class LocFlow(BaseFrame, UiLoc_Flow):
                 md = MessageDialog(self)
                 md.set_info_message("Completed Successfully.")
 
-    def set_pick_output_path(self, file_path):
-        self.__pick_output_path = file_path
-        self.nll_manager.set_observation_file(file_path)
 
     def onChange_root_path(self, value):
         """
@@ -432,11 +425,12 @@ class LocFlow(BaseFrame, UiLoc_Flow):
                 min_num_s_wave_picks=self.ThresholdSwaveSB.value(),
                 num_stations_recorded=self.number_stations_picksSB.value())
         )
-
-        rc = RealCore(self.metadata_path_bind.value, real_config, self.real_bind.value, real_working_dir,
+        real_path_work = os.path.join(self.real_output_bind.value, "work_dir")
+        os.mkdir(real_path_work)
+        rc = RealCore(self.metadata_path_bind.value, real_config, self.real_bind.value, real_path_work,
                       self.real_output_bind.value)
         rc.run_real()
-        print("End of Events AssociationProcess, please see for results: ", real_output_data)
+        print("End of Events AssociationProcess, please see for results: ", self.real_output_bind.value)
         pyc.QMetaObject.invokeMethod(self.progress_dialog, 'accept', Qt.Qt.QueuedConnection)
 
     def get_nll_config(self):

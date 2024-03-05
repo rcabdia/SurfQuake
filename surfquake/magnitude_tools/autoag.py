@@ -1,15 +1,13 @@
 import os
-from collections import ChainMap
 import numpy as np
 from datetime import datetime
 from obspy import read, read_events, UTCDateTime, Stream
-from surfquake import location_output, all_locations
+from surfquake import all_locations
 from surfquake.magnitude_tools.automag_processing_tools import ssp_inversion
 from surfquake.magnitude_tools.automag_statistics import compute_summary_statistics, SourceSpecOutput
 from surfquake.magnitude_tools.automag_tools import preprocess_tools
 from surfquake.magnitude_tools.radiated_energy import Energy
 from surfquake.Utils.obspy_utils import MseedUtil
-#from surfquake.metadata_manager import MetadataManager
 from surfquake.Utils import read_nll_performance
 
 class Automag:
