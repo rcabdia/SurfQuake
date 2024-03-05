@@ -9,7 +9,6 @@ from surfquake.Gui.Frames import BaseFrame
 from surfquake.Gui.Frames.qt_components import MessageDialog
 from surfquake.Gui.Frames.uis_frames import UiEventLocationFrame
 from surfquake.Gui.Models.sql_alchemy_model import SQLAlchemyModel
-from surfquake.Gui.Utils.pyqt_utils import BindPyqtObject
 from surfquake.Utils.explote_meta import find_coords
 from surfquake.Utils.statistics_utils import GutenbergRichterLawFitter
 from surfquake.db import generate_id
@@ -167,9 +166,9 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
 
         columns = [*el_columns, *fp_columns, *mti_columns]
 
-        col_names = ['Id', 'Origin Time', 'Transformation', 'RMS',
-                     'Latitude', 'Longitude', 'Depth', 'Depth Unc.',
-                     'Max. Hor. Error', 'Min. Hor. Error', 'Ellipse Az.',
+        col_names = ['Id', 'Origin Time', 'Transformation', 'RMS [s]',
+                     'Latitude', 'Longitude', 'Depth [m]', 'Depth Unc [km]',
+                     'Semi Axis Min [km]', 'Semi Axis Maj [km]', 'Ellipse Az.',
                      'No. Phases', 'Az. Gap', 'Max. Dist.', 'Min. Dist.',
                      'Mb', 'Mb Error', 'Ms', 'Ms Error', 'Ml', 'Ml Error',
                      'Mw', 'Mw Error', 'Mc', 'Mc Error', 'Strike', 'Dip',

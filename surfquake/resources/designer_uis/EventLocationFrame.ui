@@ -583,7 +583,7 @@
       </widget>
       <widget class="QWidget" name="tab_2">
        <attribute name="title">
-        <string>Statististics</string>
+        <string>Statistics</string>
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
