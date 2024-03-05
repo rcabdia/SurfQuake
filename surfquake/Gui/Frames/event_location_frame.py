@@ -168,7 +168,7 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
 
         col_names = ['Id', 'Origin Time', 'Transformation', 'RMS [s]',
                      'Latitude', 'Longitude', 'Depth [m]', 'Depth Unc [km]',
-                     'Semi Axis Min [km]', 'Semi Axis Maj [km]', 'Ellipse Az.',
+                     'Semi Axis Maj [km]', 'Semi Axis Min [km]', 'Ellipse Az.',
                      'No. Phases', 'Az. Gap', 'Max. Dist.', 'Min. Dist.',
                      'Mb', 'Mb Error', 'Ms', 'Ms Error', 'Ml', 'Ml Error',
                      'Mw', 'Mw Error', 'Mc', 'Mc Error', 'Strike', 'Dip',
