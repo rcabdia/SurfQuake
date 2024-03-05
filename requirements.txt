@@ -15,4 +15,3 @@ future~=0.18.3
 tensorflow~=2.15.0
 pyproj~=3.6.1
 sourcespec==1.7
-surfquake==0.0.5
