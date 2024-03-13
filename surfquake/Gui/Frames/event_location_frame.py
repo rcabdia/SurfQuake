@@ -749,7 +749,7 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
             # print(entities)
 
             mag = np.array(mag)
-            mag_original = 0.5 * np.exp(1.2*mag)
+            #mag_original = 0.5 * np.exp(1.2*mag)
             mag = self.mag_amplification * np.exp(1.2*mag)
             min_lon = min(lon) - 0.5
             max_lon = max(lon) + 0.5
@@ -808,8 +808,8 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
                     names += networks[key][0]
                     all_lon += networks[key][1]
                     all_lat += networks[key][2]
-                self.map_widget.ax.scatter(all_lon, all_lat, s=50, marker="^", color='black', edgecolors="white",
-                                           alpha=0.7, transform=ccrs.PlateCarree())
+                self.map_widget.ax.scatter(all_lon, all_lat, s=75, marker="^", color='black', edgecolors="white",
+                                           alpha=0.7, transform=ccrs.PlateCarree(), zorder=3)
 
                 if self.stationNameCB.isChecked():
                     N = len(names)
@@ -826,7 +826,10 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
 
 
             # magnitude legend
-            kw = dict(prop="sizes", num=5, fmt="{x:.1f}", color="red", func=lambda mag_original: np.log(mag_original / 0.5))
+            #kw = dict(prop="sizes", num=5, fmt="{x:.1f}", color="red", func=lambda mag_original: np.log(mag_original / 0.5))
+            kw = dict(prop="sizes", num=5, fmt="{x:.1f}", color="red", func=lambda mag_original: np.log(mag_original /
+                                                                                                        self.mag_amplification))
+
             self.map_widget.ax.legend(*cs.legend_elements(**kw), loc="lower right", title="Magnitudes")
             self.map_widget.fig.subplots_adjust(right=0.986, bottom=0.062, top=0.828, left=0.014)
             self.map_widget.fig.canvas.draw()
