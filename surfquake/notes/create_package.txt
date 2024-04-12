@@ -136,4 +136,5 @@ $HOME/.pypirc
   password = token
 
 then:
-twine upload -r testpypi dist/* --verbose
+twine upload -r testpypi dist/* --verbose # testpypi repo
+twine dist/* # pip repo
