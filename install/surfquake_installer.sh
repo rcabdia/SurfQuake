@@ -61,16 +61,16 @@ then
      echo "# surfquake Installation" >> ~/.zshrc
      echo "# surfquake Installation" >> ~/.zprofile
 
-     echo "alias surfquake=${SURF_DIR}/surfquake.sh" >> ~/.bashrc
-     echo "alias surfquake=${SURF_DIR}/surfquake.sh" >> ~/.bash_profile
-     echo "alias surfquake=${SURF_DIR}/surfquake.sh" >> ~/.zshrc
-     echo "alias surfquake=${SURF_DIR}/surfquake.sh" >> ~/.zprofile
+     echo "alias surfq=${SURF_DIR}/surfquake.sh" >> ~/.bashrc
+     echo "alias surfq=${SURF_DIR}/surfquake.sh" >> ~/.bash_profile
+     echo "alias surfq=${SURF_DIR}/surfquake.sh" >> ~/.zshrc
+     echo "alias surfq=${SURF_DIR}/surfquake.sh" >> ~/.zprofile
 
      echo "#  Installation end" >> ~/.bashrc
-     echo "# surfquake Installation end" >> ~/.bash_profile
-     echo "# surfquake Installation end" >> ~/.zshrc
-     echo "# surfquake Installation end" >> ~/.zprofile
-     echo "Run surfquake by typing surfquake at terminal"
+     echo "# surfq Installation end" >> ~/.bash_profile
+     echo "# surfq Installation end" >> ~/.zshrc
+     echo "# surfq Installation end" >> ~/.zprofile
+     echo "Run surfquake GUI by typing surfq at terminal"
 else
     echo "To run surfquake execute surfquake.sh at ${SURF_DIR}"
 fi
