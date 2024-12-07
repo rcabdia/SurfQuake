@@ -137,4 +137,5 @@ $HOME/.pypirc
 
 then:
 twine upload -r testpypi dist/* --verbose # testpypi repo
-twine dist/* # pip repo
+twine check dist/*
+twine upload dist/* # pip repo

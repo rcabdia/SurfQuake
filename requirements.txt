@@ -2,9 +2,9 @@ pyqt5~=5.15.10
 setuptools~=65.5.1
 PyYAML~=6.0.1
 obspy~=1.4.0
-Cartopy~=0.22.0
+Cartopy~=0.23.0
 shapely~=2.0.2
-matplotlib~=3.8.2
+matplotlib~=3.8.4
 OWSLib~=0.29.3
 SQLAlchemy~=2.0.23
 Pillow~=10.1.0
@@ -15,4 +15,4 @@ future~=0.18.3
 tensorflow~=2.15.0
 pyproj~=3.6.1
 sourcespec==1.7
-surfquake
+surfquake==0.0.7
