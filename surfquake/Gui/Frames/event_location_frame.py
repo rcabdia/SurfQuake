@@ -240,6 +240,8 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
         self.showMTIBtn.clicked.connect(self.show_mtis)
 
 
+
+
     ## load metadata ##
 
     def load_stations(self):
@@ -696,16 +698,27 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
         self.map_widget.lat.set_ylim(self.map_widget.ax.get_ylim())
         self.map_widget.lon.set_xlim(self.map_widget.ax.get_xlim())
 
+        # Force update of tick labels after zoom
+        self.map_widget.lat.yaxis.set_major_locator(plt.MaxNLocator(integer=True))
+        self.map_widget.lon.xaxis.set_major_locator(plt.MaxNLocator(integer=True))
+
+
     def update_resize_axes(self, event):
 
         self.map_widget.lat.set_ylim(self.map_widget.ax.get_ylim())
         self.map_widget.lon.set_xlim(self.map_widget.ax.get_xlim())
+
+        # Force update of tick labels after zoom
+        self.map_widget.lat.yaxis.set_major_locator(plt.MaxNLocator(integer=True))
+        self.map_widget.lon.xaxis.set_major_locator(plt.MaxNLocator(integer=True))
+
 
     def plot_map(self, topography=False, map_service='https://www.gebco.net/data_and_products/gebco_web_services/2020/mapserv?',
                  layer='GEBCO_2020_Grid'):
 
         self.map_widget.fig.canvas.mpl_connect('draw_event', self.update_inset_axes)
         self.map_widget.fig.canvas.mpl_connect('resize_event', self.update_resize_axes)
+        self.map_widget.fig.canvas.mpl_connect('button_release_event', self.update_inset_axes)
 
         try:
             wms = ""
@@ -834,6 +847,7 @@ class EventLocationFrame(BaseFrame, UiEventLocationFrame):
             self.map_widget.fig.subplots_adjust(right=0.986, bottom=0.062, top=0.828, left=0.014)
             self.map_widget.fig.canvas.draw()
             self.inverted = False
+            self.map_widget.fig.canvas.flush_events()
 
         except:
             md = MessageDialog(self)

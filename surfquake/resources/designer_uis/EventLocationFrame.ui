@@ -74,6 +74,9 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="suffix">
+                <string> º</string>
+               </property>
                <property name="decimals">
                 <number>4</number>
                </property>
@@ -170,6 +173,9 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="suffix">
+                <string> º</string>
+               </property>
                <property name="decimals">
                 <number>4</number>
                </property>
@@ -189,6 +195,9 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="suffix">
+                <string> º</string>
+               </property>
                <property name="decimals">
                 <number>4</number>
                </property>
@@ -207,6 +216,9 @@
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
+               </property>
+               <property name="suffix">
+                <string> º</string>
                </property>
                <property name="decimals">
                 <number>4</number>
