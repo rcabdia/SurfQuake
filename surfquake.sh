@@ -13,6 +13,11 @@ else
 	conda activate surfquake
 fi
 
+# Detect if we are inside Wayland session
+if [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
+    export QT_QPA_PLATFORM=wayland
+fi
+
 pushd ${SURF_DIR} > /dev/null
 python start_surfquake.py
 popd > /dev/null
